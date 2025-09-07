@@ -2,15 +2,15 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"="width=device-width, initial-scale=1.0">
-  <title>Antosc | Soluções</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antosc | Industriais</title>
   <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
- <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
- <style>
+  <link rel="shortcut icon" href="imgs/favicon.ico" type="image/x-icon">
+  <style>
     :root {
       --primary: #0d3b66;
       --primary-light: #1a5c9f;
@@ -34,6 +34,7 @@
       background-color: var(--light);
       line-height: 1.6;
       overflow-x: hidden;
+      padding-top: 80px;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -223,122 +224,136 @@
       color: white;
     }
 
-    /* Services */
-    .services {
+    /* Industries */
+    .industries {
       padding: 5rem 0;
     }
 
-    .servicos {
+    .industry-card {
       background: #fff;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow-sm);
       padding: 2rem;
       margin-bottom: 2rem;
       transition: var(--transition);
-      overflow: hidden;
       height: 100%;
+      border: 1px solid rgba(0,0,0,0.05);
     }
 
-    .servicos:hover {
+    .industry-card:hover {
       transform: translateY(-6px);
       box-shadow: var(--shadow-lg);
     }
 
-    .servicos img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: var(--border-radius);
-      margin: 1rem 0;
+    .industry-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
-    .servicos h3 {
-      color: var(--primary-dark);
+    .industry-card h3 {
+      color: var(--primary);
       margin-bottom: 1rem;
       font-size: 1.5rem;
     }
 
-    .servicos a {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: .5rem 1.2rem;
-      border-radius: 50px;
-      background: var(--gradient-accent);
-      color: #fff;
-      font-weight: 600;
-      text-decoration: none;
-      transition: var(--transition);
+    .industry-card ul {
+      padding-left: 1.5rem;
     }
 
-    .servicos a:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+    .industry-card li {
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+    }
+
+    /* Stats Section */
+    .stats-section {
+      background: var(--gradient-primary);
       color: white;
+      padding: 4rem 0;
     }
 
-    /* Valor Acrescentado */
-    .valor-section {
-      background: var(--secondary);
-      padding: 5rem 0;
-    }
-
-    .valor-card {
-      border: 1px solid #e9ecef !important;
-      background: #fff;
-      transition: var(--transition);
-      padding: 2rem;
-      border-radius: var(--border-radius);
-      height: 100%;
+    .stat-item {
       text-align: center;
+      padding: 1.5rem;
     }
 
-    .valor-card:hover {
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* Solutions */
+    .solutions {
+      padding: 5rem 0;
+      background: var(--secondary);
+    }
+
+    .solution-box {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      text-align: center;
+      transition: var(--transition);
+      height: 100%;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .solution-box:hover {
       transform: translateY(-5px);
       box-shadow: var(--shadow-md);
     }
 
-    .valor-icon {
+    .solution-icon {
       font-size: 2.5rem;
       margin-bottom: 1rem;
+      color: var(--accent);
     }
 
-    /* Paisagem */
-    .paisagem {
-      position: relative;
-      height: 400px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .paisagem .hero-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .paisagem .hero-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(13, 59, 102, 0.75);
-    }
-
-    .paisagem h1,
-    .paisagem p {
-      position: relative;
-      color: #fff;
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 5rem 0;
       text-align: center;
-      z-index: 2;
     }
-    
-        /* =========================
+
+    .cta-section h2 {
+      color: white;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-section p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .btn-light {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-light:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+          /* =========================
            RODAPÉ / FOOTER
            ========================= */
         footer {
@@ -445,20 +460,6 @@
         footer .small {
             font-size: 0.875rem;
         }
-    /* Animations */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.8s forwards;
-    }
-
-    @keyframes fadeUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
     /* Responsive */
     @media (max-width: 768px) {
       .hero-title {
@@ -469,12 +470,12 @@
         font-size: 1rem;
       }
       
-      .services {
+      .industries {
         padding: 3rem 0;
       }
       
-      .servicos {
-        margin-bottom: 1.5rem;
+      .stat-number {
+        font-size: 2rem;
       }
     }
   </style>
@@ -503,7 +504,7 @@
             <a class="nav-link" href="solucao.html">Soluções</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="industriais.html">Industriais</a>
+            <a class="nav-link active" href="industriais.html">Industriais</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="sucesso.html">Casos de sucesso</a>
@@ -521,158 +522,252 @@
 
   <!-- HERO Section -->
   <header class="hero-section">
-    <img class="hero-image" src="imgs/paisagem.jpg" alt="ANTOSC - Infraestruturas de telecomunicações">
+    <img class="hero-image" src="imgs/industriais.jpg" alt="ANTOSC - Soluções Industriais">
     <div class="hero-overlay" aria-hidden="true"></div>
 
     <div class="hero-content">
       <div class="container">
         <div class="row justify-content-center">
-          <div class="col-lg-8">
-            <div class="fade-up" style="animation-delay: 0.05s">
-              <h1 class="hero-title">Soluções que conectam Angola — infraestrutura, energia e partilha</h1>
-            </div>
-            <div class="fade-up" style="animation-delay: 0.12s">
-              <p class="hero-sub">Serviços de Tower Sharing, Energia-as-a-Service, RAN Sharing e infraestruturas críticas com SLA e sustentabilidade.</p>
-            </div>
-            <div class="fade-up" style="animation-delay: 0.18s">
-              <a href="#solucoes" class="btn btn-primary">Explorar soluções</a>
-            </div>
+          <div class="col-lg-10">
+            <h1 class="hero-title">Conectividade especializada para todos os setores industriais</h1>
+            <p class="hero-sub">Infraestrutura crítica que suporta as necessidades específicas de cada indústria em Angola</p>
+            <a href="#industrias" class="btn btn-primary">Descubra nossas soluções</a>
           </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Services Section -->
-  <section class="services" id="solucoes">
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">+250</div>
+            <div class="stat-label">Torres Ativas</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">18</div>
+            <div class="stat-label">Províncias</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">99.9%</div>
+            <div class="stat-label">Uptime</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">15+</div>
+            <div class="stat-label">Setores</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Industries Section -->
+  <section class="industries" id="industrias">
     <div class="container">
       <div class="row">
         <div class="col-12 text-center mb-5">
-          <h2 class="section-title">Serviços</h2>
+          <h2 class="section-title">Setores Industriais Atendidos</h2>
+          <p class="text-muted">Soluções personalizadas para as necessidades específicas de cada setor</p>
         </div>
       </div>
 
       <div class="row g-4">
+        <!-- Telecomunicações -->
         <div class="col-lg-6" data-aos="fade-up">
-          <div class="servicos h-100">
-            <h3>Espaço em torres</h3>
-            <img src="imgs/torres.jpg" alt="Espaço em torres">
-            <p>
-              Na <strong>Antosc</strong>, entendemos que a conectividade é a espinha dorsal da economia moderna. Por isso, disponibilizamos infraestruturas de torres de telecomunicações estrategicamente
-              posicionadas para garantir cobertura, eficiência e confiabilidade aos nossos parceiros.
-            </p>
-            <a href="#">Detalhes</a>
+          <div class="industry-card h-100">
+            <div class="industry-icon">
+              <i class="fas fa-signal"></i>
+            </div>
+            <h3>Telecomunicações</h3>
+            <p>Soluções de tower sharing, RAN sharing e infraestrutura crítica para operadoras móveis e provedores de internet.</p>
+            <ul>
+              <li>Torre compartilhada multi-operador</li>
+              <li>RAN Sharing com SLA garantido</li>
+              <li>Edge Data Centers estratégicos</li>
+              <li>Power-as-a-Service para sites remotos</li>
+            </ul>
           </div>
         </div>
 
+        <!-- Petróleo e Gás -->
         <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-          <div class="servicos h-100">
-            <h3>Espaço em Gabinete</h3>
-            <img src="imgs/racks.jpg" alt="Espaço em Gabinete">
-            <p>
-              Na <strong>Antosc</strong>, disponibilizamos gabinetes dedicados e partilhados para instalação de equipamentos de telecomunicações,
-              TI e networking. A nossa infraestrutura garante segurança, organização e eficiência energética.
-            </p>
-            <a href="#">Detalhes</a>
+          <div class="industry-card h-100">
+            <div class="industry-icon">
+              <i class="fas fa-oil-can"></i>
+            </div>
+            <h3>Petróleo e Gás</h3>
+            <p>Infraestrutura de comunicação robusta para operações offshore e onshore em ambientes desafiadores.</p>
+            <ul>
+              <li>Comunicação segura em plataformas offshore</li>
+              <li>Monitoramento remoto de ativos críticos</li>
+              <li>Soluções de energia híbrida para campos remotos</li>
+              <li>Redundância de conectividade em tempo real</li>
+            </ul>
           </div>
         </div>
 
+        <!-- Mineração -->
         <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-          <div class="servicos h-100">
-            <h3>Espaço em Datacenters Edge</h3>
-            <img src="imgs/micro.jpg" alt="Datacenters Edge">
-            <p>
-              Na <strong>Antosc</strong>, oferecemos infraestruturas Edge Data Center estrategicamente distribuídas para aproximar a capacidade computacional do utilizador final.
-            </p>
-            <a href="#">Detalhes</a>
+          <div class="industry-card h-100">
+            <div class="industry-icon">
+              <i class="fas fa-hard-hat"></i>
+            </div>
+            <h3>Mineração</h3>
+            <p>Conectividade confiável para operações de mineração em locais remotos e de difícil acesso.</p>
+            <ul>
+              <li>Infraestrutura de torres em áreas de mineração</li>
+              <li>Monitoramento de equipamentos pesados</li>
+              <li>Sistemas de segurança e comunicação de emergência</li>
+              <li>Energia renovável para operações sustentáveis</li>
+            </ul>
           </div>
         </div>
 
+        <!-- Agricultura -->
         <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
-          <div class="servicos h-100">
-            <h3>Espaço em solo</h3>
-            <img src="imgs/solo.jpg" alt="Espaço em solo">
-            <p>
-              Na <strong>Antosc</strong>, disponibilizamos áreas dedicadas em solo para a instalação de equipamentos de telecomunicações, energia e infraestrutura de apoio.
-            </p>
-            <a href="#">Detalhes</a>
+          <div class="industry-card h-100">
+            <div class="industry-icon">
+              <i class="fas fa-tractor"></i>
+            </div>
+            <h3>Agricultura</h3>
+            <p>Tecnologia de conectividade para agricultura de precisão e gestão eficiente de propriedades rurais.</p>
+            <ul>
+              <li>IoT para monitoramento de culturas</li>
+              <li>Conectividade em áreas rurais remotas</li>
+              <li>Sistemas de irrigação inteligente</li>
+              <li>Monitoramento de gado e equipamentos agrícolas</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Saúde -->
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="400">
+          <div class="industry-card h-100">
+            <div class="industry-icon">
+              <i class="fas fa-hospital"></i>
+            </div>
+            <h3>Saúde</h3>
+            <p>Conectividade crítica para hospitais, clínicas e serviços de emergência em todo o território.</p>
+            <ul>
+              <li>Telemedicina em áreas remotas</li>
+              <li>Sistemas de comunicação de emergência</li>
+              <li>Backup de conectividade para hospitais</li>
+              <li>Monitoramento remoto de pacientes</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Transportes e Logística -->
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="500">
+          <div class="industry-card h-100">
+            <div class="industry-icon">
+              <i class="fas fa-truck"></i>
+            </div>
+            <h3>Transportes e Logística</h3>
+            <p>Soluções de rastreamento e comunicação para frota e operações logísticas em todo o país.</p>
+            <ul>
+              <li>Rastreamento de veículos em tempo real</li>
+              <li>Comunicação entre frota e centros de distribuição</li>
+              <li>Monitoramento de carga e condições ambientais</li>
+              <li>Sistemas de gestão de frota conectados</li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Valor Acrescentado -->
-  <section class="valor-section">
+  <!-- Solutions Section -->
+  <section class="solutions">
     <div class="container">
-      <div class="row text-center mb-5">
-        <div class="col-12">
-          <h2 class="section-title">Valor Acrescentado</h2>
-          <p class="text-muted">Benefícios diretos que a ANTOSC entrega aos seus clientes</p>
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Soluções Especializadas</h2>
+          <p class="text-muted">Tecnologia adaptada às necessidades específicas de cada setor industrial</p>
         </div>
       </div>
-      
+
       <div class="row g-4">
-        <div class="col-md-6 col-lg-4" data-aos="fade-up">
-          <div class="valor-card h-100">
-            <div class="valor-icon">💰</div>
-            <h6 class="fw-bold">Redução de OPEX</h6>
-            <p class="small text-muted">Corte expressivo nos custos operacionais.</p>
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="solution-box h-100">
+            <div class="solution-icon">
+              <i class="fas fa-tower-cell"></i>
+            </div>
+            <h4>Tower Sharing</h4>
+            <p>Compartilhamento de infraestrutura de torres para múltiplos operadores, reduzindo custos e acelerando a implantação.</p>
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="valor-card h-100">
-            <div class="valor-icon">🏗️</div>
-            <h6 class="fw-bold">Redução de CAPEX</h6>
-            <p class="small text-muted">Menores investimentos em infraestrutura.</p>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="solution-box h-100">
+            <div class="solution-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <h4>Energia Híbrida</h4>
+            <p>Soluções de power-as-a-service com energia solar, baterias e geradores diesel para locais remotos.</p>
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="valor-card h-100">
-            <div class="valor-icon">📈</div>
-            <h6 class="fw-bold">Foco no Negócio</h6>
-            <p class="small text-muted">Garantimos a base para que foque no seu core business.</p>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="solution-box h-100">
+            <div class="solution-icon">
+              <i class="fas fa-microchip"></i>
+            </div>
+            <h4>Edge Computing</h4>
+            <p>Data centers de borda para processamento próximo ao usuário, reduzindo latência e melhorando performance.</p>
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
-          <div class="valor-card h-100">
-            <div class="valor-icon">🌱</div>
-            <h6 class="fw-bold">Menor Impacto Ambiental</h6>
-            <p class="small text-muted">Soluções sustentáveis e eco-friendly.</p>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="solution-box h-100">
+            <div class="solution-icon">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <h4>RAN Sharing</h4>
+            <p>Compartilhamento de infraestrutura de rede de acesso por rádio entre múltiplos operadores.</p>
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
-          <div class="valor-card h-100">
-            <div class="valor-icon">✅</div>
-            <h6 class="fw-bold">Serviços Garantidos</h6>
-            <p class="small text-muted">Alta disponibilidade assegurada por SLAs.</p>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+          <div class="solution-box h-100">
+            <div class="solution-icon">
+              <i class="fas fa-satellite"></i>
+            </div>
+            <h4>Conectividade Rural</h4>
+            <p>Soluções especializadas para conectar áreas rurais e remotas com tecnologia de ponta.</p>
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
-          <div class="valor-card h-100">
-            <div class="valor-icon">⚡</div>
-            <h6 class="fw-bold">Melhoramentos Contínuos</h6>
-            <p class="small text-muted">Evolução constante dos seus serviços.</p>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+          <div class="solution-box h-100">
+            <div class="solution-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h4>Segurança Industrial</h4>
+            <p>Sistemas de comunicação e monitoramento para garantir segurança em ambientes industriais.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Paisagem Section -->
-  <section class="paisagem">
-    <img class="hero-image" src="imgs/torres.jpg" alt="Paisagem ANTOSC">
-    <div class="hero-overlay" aria-hidden="true"></div>
+  <!-- CTA Section -->
+  <section class="cta-section">
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-lg-8 text-center">
-          <h1 class="display-4 fw-bold mb-3"><strong>Infraestrutura partilhada</strong></h1>
-          <p class="lead">Serviços Especializados</p>
+        <div class="col-lg-8">
+          <h2 class="display-5 fw-bold">Pronto para transformar sua operação industrial?</h2>
+          <p class="lead">Entre em contato conosco para discutir soluções personalizadas para o seu setor.</p>
+          <a href="contact.html" class="btn btn-light btn-lg">Fale com um especialista</a>
         </div>
       </div>
     </div>
@@ -709,7 +804,7 @@
           <li><a href="solucao.html" class="text-muted text-decoration-none">Soluções</a></li>
           <li><a href="sucesso.html" class="text-muted text-decoration-none">Casos de Sucesso</a></li>
           <li><a href="sobre.html" class="text-muted text-decoration-none">Sobre</a></li>
-          <li><a href="contact.html" class="text-muted text-decoration-none">Contacto</a></li>
+          <li><a href="contacto.html" class="text-muted text-decoration-none">Contacto</a></li>
         </ul>
       </div>
 
@@ -779,12 +874,13 @@
       once: true
     });
 
-    // Feather icons
+    // Active nav link
     document.addEventListener('DOMContentLoaded', function() {
-      // Animação para hero content
-      const fadeUpElements = document.querySelectorAll('.fade-up');
-      fadeUpElements.forEach((el, index) => {
-        el.style.animationDelay = (index * 0.07) + 's';
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        if (link.getAttribute('href') === 'industriais.html') {
+          link.classList.add('active');
+        }
       });
     });
   </script>

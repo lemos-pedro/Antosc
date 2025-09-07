@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antosc | Casos de Sucesso</title>
+  <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="imgs/favicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      --primary: #0d3b66;
+      --primary-light: #1a5c9f;
+      --primary-dark: #082947;
+      --secondary: #f8f9fa;
+      --accent: #3498db;
+      --dark: #2c3e50;
+      --light: #ffffff;
+      --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #4db8ff 100%);
+      --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12);
+      --border-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--dark);
+      background-color: var(--light);
+      line-height: 1.6;
+      overflow-x: hidden;
+      padding-top: 80px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      position: relative;
+      display: inline-block;
+      padding-bottom: .5rem;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 60px;
+      height: 3px;
+      background: var(--accent);
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: var(--gradient-primary);
+      box-shadow: var(--shadow-md);
+      padding: 0.8rem 1rem;
+      transition: var(--transition);
+    }
+
+    .navbar-brand img {
+      width: 155px;
+      filter: brightness(0) invert(1);
+    }
+
+    .nav-link {
+      color: #ecf0f1 !important;
+      font-weight: 500;
+      margin: 0 10px;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-link:hover {
+      color: #3498db !important;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--accent);
+      transition: var(--transition);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Estilização personalizada do botão hamburguer */
+    .custom-toggler {
+      border: none;
+      background: transparent;
+      padding: 0;
+      width: 30px;
+      height: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .custom-toggler span {
+      display: block;
+      position: absolute;
+      height: 3px;
+      width: 100%;
+      background: #ecf0f1;
+      border-radius: 3px;
+      opacity: 1;
+      left: 0;
+      transform: rotate(0deg);
+      transition: .25s ease-in-out;
+    }
+
+    .custom-toggler span:nth-child(1) {
+      top: 0px;
+    }
+
+    .custom-toggler span:nth-child(2) {
+      top: 8px;
+    }
+
+    .custom-toggler span:nth-child(3) {
+      top: 16px;
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(1) {
+      top: 8px;
+      transform: rotate(135deg);
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(2) {
+      opacity: 0;
+      left: -30px;
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(3) {
+      top: 8px;
+      transform: rotate(-135deg);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      position: relative;
+      height: 70vh;
+      min-height: 500px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 17, 18, 0.75);
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      color: white;
+      text-align: center;
+      margin-bottom: -50px;
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+
+    .hero-content p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      color: white;
+    }
+
+    .btn-primary {
+      background: var(--gradient-accent);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      color: white;
+    }
+
+    /* Cases Section */
+    .cases {
+      padding: 5rem 0;
+    }
+
+    .case-card {
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: var(--transition);
+      height: 100%;
+      box-shadow: var(--shadow-sm);
+      border: none;
+    }
+
+    .case-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .case-img {
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .case-card .card-body {
+      padding: 1.5rem;
+    }
+
+    .case-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .case-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: var(--accent);
+    }
+
+    .case-results {
+      background: rgba(52, 152, 219, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .case-results h6 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .case-results ul {
+      padding-left: 1.2rem;
+      margin-bottom: 0;
+    }
+
+    .case-results li {
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .btn-outline-primary {
+      border-radius: 50px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-outline-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Filter Section */
+    .filter-section {
+      background: var(--secondary);
+      padding: 3rem 0;
+    }
+
+    .filter-pills .nav-link {
+      background: white;
+      color: var(--dark);
+      border-radius: 50px;
+      margin: 0.3rem;
+      padding: 0.5rem 1.2rem;
+      font-weight: 500;
+      transition: var(--transition);
+      border: 1px solid #e9ecef;
+    }
+
+    .filter-pills .nav-link:hover,
+    .filter-pills .nav-link.active {
+      background: var(--gradient-accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* Stats Section */
+    .stats-section {
+      background: var(--gradient-primary);
+      color: white;
+      padding: 4rem 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* Testimonials */
+    .testimonials {
+      padding: 5rem 0;
+      background: var(--secondary);
+    }
+
+    .testimonial-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      height: 100%;
+      border: none;
+    }
+
+    .testimonial-text {
+      font-style: italic;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .testimonial-text::before {
+  content: "“"; /* aspas decorativa inicial */
+  font-size: 4rem;
+  position: absolute;
+  top: -20px;
+  left: -15px;
+  color: var(--accent);
+  opacity: 0.2;
+  font-family: Georgia, serif;
+}
+
+
+    .client-info {
+      display: flex;
+      align-items: center;
+    }
+
+    .client-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 1rem;
+      border: 3px solid var(--accent);
+    }
+
+    .client-details h6 {
+      margin-bottom: 0.2rem;
+      color: var(--primary);
+    }
+
+    .client-details small {
+      color: var(--dark);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 5rem 0;
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      color: white;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-section p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .btn-light {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-light:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+          /* =========================
+           RODAPÉ / FOOTER
+           ========================= */
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%) !important;
+            padding-top: 4rem !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-accent);
+        }
+
+        footer h6 {
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        footer h6::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        footer .text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        footer a.text-muted {
+            transition: var(--transition);
+        }
+
+        footer a.text-muted:hover {
+            color: white !important;
+            padding-left: 5px;
+        }
+
+        footer ul.list-unstyled li {
+            margin-bottom: 0.75rem;
+        }
+
+        footer form {
+            position: relative;
+        }
+
+        footer input.form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+        }
+
+        footer input.form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        footer input.form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+        footer .btn-primary {
+            background: var(--gradient-accent);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        footer .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        footer .fa-lg {
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        footer a:hover .fa-lg {
+            color: white !important;
+            transform: translateY(-3px);
+        }
+
+        footer hr {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        footer .small {
+            font-size: 0.875rem;
+        }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .hero-sub {
+        font-size: 1rem;
+      }
+      
+      .cases {
+        padding: 3rem 0;
+      }
+      
+      .stat-number {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="imgs/Antosc.png" alt="Logo Antosc">
+      </a>
+
+      <button class="custom-toggler navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="solucao.html">Soluções</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="industriais.html">Industriais</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="casos-de-sucesso.html">Casos de sucesso</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="sobre.html">Sobre</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contacto.html">contacto</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO Section -->
+  <header class="hero-section">
+    <img class="hero-image" src="imgs/conexão.jpg" alt="ANTOSC - Casos de Sucesso">
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <h1 class="hero-title">Resultados comprovados em todo o território angolano</h1>
+            <p class="hero-sub">Conheça como a ANTOSC transformou desafios em soluções eficazes para empresas de diversos setores</p>
+            <a href="#cases" class="btn btn-primary">Ver casos</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Projetos Realizados</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">98%</div>
+            <div class="stat-label">Satisfação do Cliente</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">40%</div>
+            <div class="stat-label">Redução de CAPEX</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">65%</div>
+            <div class="stat-label">Economia de Energia</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter Section -->
+  <section class="filter-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-4">
+          <h2 class="section-title">Filtrar por Setor</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <ul class="nav nav-pills filter-pills justify-content-center flex-wrap">
+            <li class="nav-item">
+              <a class="nav-link active" href="#">Todos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Telecomunicações</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Petróleo e Gás</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Mineração</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Agricultura</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Saúde</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cases Section -->
+  <section class="cases" id="cases">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Casos de Sucesso</h2>
+          <p class="text-muted">Soluções personalizadas que geraram resultados mensuráveis</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Case 1 -->
+        <div class="col-lg-4 col-md-6" data-aos="fade-up">
+          <div class="card case-card h-100">
+            <img src="imgs/expansao.jpg" class="card-img-top case-img" alt="Expansão em Luanda">
+            <div class="card-body d-flex flex-column">
+              <div class="case-meta">
+                <span><i class="fas fa-map-marker-alt me-1"></i> Luanda</span>
+                <span><i class="fas fa-calendar me-1"></i> 2023</span>
+              </div>
+              <h3>Expansão de Cobertura Urbana</h3>
+              <p>Implantação de 50 sites em 6 meses para operadora móvel em Luanda, acelerando cobertura e reduzindo OPEX.</p>
+              
+              <div class="case-results flex-grow-1">
+                <h6>Resultados Alcançados:</h6>
+                <ul>
+                  <li>+45% de cobertura em áreas periféricas</li>
+                  <li>Redução de 30% nos custos operacionais</li>
+                  <li>Tempo de implantação reduzido em 40%</li>
+                </ul>
+              </div>
+              
+              <a href="#" class="btn btn-outline-primary mt-auto" data-bs-toggle="modal" data-bs-target="#caseModal1">Ver detalhes</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="card case-card h-100">
+            <img src="imgs/hibrido.jpg" class="card-img-top case-img" alt="Energia Híbrida">
+            <div class="card-body d-flex flex-column">
+              <div class="case-meta">
+                <span><i class="fas fa-map-marker-alt me-1"></i> Huíla</span>
+                <span><i class="fas fa-calendar me-1"></i> 2022</span>
+              </div>
+              <h3>Energia Híbrida em Regiões Rurais</h3>
+              <p>Solução de energia híbrida com monitorização remota em áreas rurais, reduzindo dependência de diesel.</p>
+              
+              <div class="case-results flex-grow-1">
+                <h6>Resultados Alcançados:</h6>
+                <ul>
+                  <li>Uptime de 99.9% garantido</li>
+                  <li>Economia de 65% em combustível</li>
+                  <li>Redução de 70% nas visitas técnicas</li>
+                </ul>
+              </div>
+              
+              <a href="#" class="btn btn-outline-primary mt-auto" data-bs-toggle="modal" data-bs-target="#caseModal2">Ver detalhes</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="card case-card h-100">
+            <img src="imgs/antena.jpg" class="card-img-top case-img" alt="RAN Sharing">
+            <div class="card-body d-flex flex-column">
+              <div class="case-meta">
+                <span><i class="fas fa-map-marker-alt me-1"></i> Benguela</span>
+                <span><i class="fas fa-calendar me-1"></i> 2023</span>
+              </div>
+              <h3>RAN Sharing Multi-Operador</h3>
+              <p>Implementação de RAN Sharing entre múltiplos operadores, reduzindo duplicidade de investimentos.</p>
+              
+              <div class="case-results flex-grow-1">
+                <h6>Resultados Alcançados:</h6>
+                <ul>
+                  <li>Redução de 40% no CAPEX</li>
+                  <li>Melhoria de 25% na qualidade do sinal</li>
+                  <li>Redução de 35% no consumo energético</li>
+                </ul>
+              </div>
+              
+              <a href="#" class="btn btn-outline-primary mt-auto" data-bs-toggle="modal" data-bs-target="#caseModal3">Ver detalhes</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 4 -->
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+          <div class="card case-card h-100">
+            <img src="imgs/remoto.jpg" class="card-img-top case-img" alt="Mineração">
+            <div class="card-body d-flex flex-column">
+              <div class="case-meta">
+                <span><i class="fas fa-map-marker-alt me-1"></i> Lunda Norte</span>
+                <span><i class="fas fa-calendar me-1"></i> 2022</span>
+              </div>
+              <h3>Conectividade para Operações de Mineração</h3>
+              <p>Infraestrutura de comunicação robusta para operações de mineração em locais remotos.</p>
+              
+              <div class="case-results flex-grow-1">
+                <h6>Resultados Alcançados:</h6>
+                <ul>
+                  <li>Conectividade 24/7 em áreas remotas</li>
+                  <li>Redução de 50% em tempo de inatividade</li>
+                  <li>Melhoria de 60% na segurança operacional</li>
+                </ul>
+              </div>
+              
+              <a href="#" class="btn btn-outline-primary mt-auto" data-bs-toggle="modal" data-bs-target="#caseModal4">Ver detalhes</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 5 -->
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+          <div class="card case-card h-100">
+            <img src="imgs/agricultura.jpg" class="card-img-top case-img" alt="Agricultura">
+            <div class="card-body d-flex flex-column">
+              <div class="case-meta">
+                <span><i class="fas fa-map-marker-alt me-1"></i> Bié</span>
+                <span><i class="fas fa-calendar me-1"></i> 2023</span>
+              </div>
+              <h3>Conectividade Rural para Agricultura</h3>
+              <p>Solução de conectividade para propriedades rurais, suportando IoT e monitoramento agrícola.</p>
+              
+              <div class="case-results flex-grow-1">
+                <h6>Resultados Alcançados:</h6>
+                <ul>
+                  <li>Cobertura em 200km² de área rural</li>
+                  <li>Aumento de 30% na produtividade</li>
+                  <li>Redução de 25% em custos operacionais</li>
+                </ul>
+              </div>
+              
+              <a href="#" class="btn btn-outline-primary mt-auto" data-bs-toggle="modal" data-bs-target="#caseModal5">Ver detalhes</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 6 -->
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+          <div class="card case-card h-100">
+            <img src="imgs/telemedicina.jpg" class="card-img-top case-img" alt="Saúde">
+            <div class="card-body d-flex flex-column">
+              <div class="case-meta">
+                <span><i class="fas fa-map-marker-alt me-1"></i> Cabinda</span>
+                <span><i class="fas fa-calendar me-1"></i> 2023</span>
+              </div>
+              <h3>Telemedicina em Áreas Remotas</h3>
+              <p>Implementação de conectividade crítica para telemedicina em hospitais e clínicas remotas.</p>
+              
+              <div class="case-results flex-grow-1">
+                <h6>Resultados Alcançados:</h6>
+                <ul>
+                  <li>Atendimento a 5000+ pacientes mensais</li>
+                  <li>Redução de 40% em deslocamentos médicos</li>
+                  <li>Uptime de 99.95% garantido</li>
+                </ul>
+              </div>
+              
+              <a href="#" class="btn btn-outline-primary mt-auto" data-bs-toggle="modal" data-bs-target="#caseModal6">Ver detalhes</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Depoimentos de Clientes</h2>
+          <p class="text-muted">O que nossos parceiros dizem sobre nossos serviços</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6" data-aos="fade-up">
+          <div class="testimonial-card h-100">
+            <div class="testimonial-text">
+              "A parceria com a ANTOSC nos permitiu expandir nossa cobertura em Luanda de forma rápida e eficiente, reduzindo significativamente nossos custos operacionais."
+            </div>
+            <div class="client-info">
+              <img src="https://placehold.co/60x60/3498db/ffffff?text=AC" class="client-avatar" alt="Cliente">
+              <div class="client-details">
+                <h6>António Costa</h6>
+                <small>Diretor de Operações, Operadora Móvel</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="testimonial-card h-100">
+            <div class="testimonial-text">
+              "Com a infraestrutura da ANTOSC, conseguimos conectar nossas propriedades rurais e implementar tecnologias de agricultura de precisão com excelentes resultados."
+            </div>
+            <div class="client-info">
+              <img src="https://placehold.co/60x60/2c3e50/ffffff?text=MS" class="client-avatar" alt="Cliente">
+              <div class="client-details">
+                <h6>Maria Santos</h6>
+                <small>Diretora, Cooperativa Agrícola</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="display-5 fw-bold">Pronto para transformar seu negócio?</h2>
+          <p class="lead">Entre em contato conosco para discutir como podemos ajudar sua empresa a alcançar resultados excepcionais.</p>
+          <a href="contact.html" class="btn btn-light btn-lg">Fale com um especialista</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modals -->
+  <!-- Modal 1 -->
+  <div class="modal fade" id="caseModal1" tabindex="-1" aria-labelledby="caseModal1Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="caseModal1Label">Expansão de Cobertura Urbana - Luanda</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <img src="imgs/expansao.jpg" class="img-fluid rounded" alt="Expansão em Luanda">
+            </div>
+            <div class="col-md-6">
+              <h6>Detalhes do Projeto</h6>
+              <p><strong>Cliente:</strong> Operadora Móvel Nacional</p>
+              <p><strong>Duração:</strong> 6 meses</p>
+              <p><strong>Localização:</strong> Luanda, Angola</p>
+              <p><strong>Setor:</strong> Telecomunicações</p>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <h6>Desafio</h6>
+            <p>O cliente enfrentava dificuldades para expandir sua cobertura em áreas periféricas de Luanda devido aos altos custos de infraestrutura e longos prazos de implantação.</p>
+            
+            <h6>Solução</h6>
+            <p>A ANTOSC implementou uma solução de Tower Sharing com 50 sites estratégicamente posicionados, utilizando infraestrutura híbrida de energia para reduzir custos operacionais.</p>
+            
+            <h6>Resultados</h6>
+            <ul>
+              <li>+45% de cobertura em áreas periféricas</li>
+              <li>Redução de 30% nos custos operacionais</li>
+              <li>Tempo de implantação reduzido em 40%</li>
+              <li>Melhoria de 25% na qualidade do sinal</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <a href="contact.html" class="btn btn-primary">Solicitar Proposta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2 -->
+  <div class="modal fade" id="caseModal2" tabindex="-1" aria-labelledby="caseModal2Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="caseModal2Label">Energia Híbrida em Regiões Rurais</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <img src="imgs/hibrido.jpg" class="img-fluid rounded" alt="Energia Híbrida">
+            </div>
+            <div class="col-md-6">
+              <h6>Detalhes do Projeto</h6>
+              <p><strong>Cliente:</strong> Empresa de Telecomunicações</p>
+              <p><strong>Duração:</strong> 4 meses</p>
+              <p><strong>Localização:</strong> Huíla, Angola</p>
+              <p><strong>Setor:</strong> Telecomunicações</p>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <h6>Desafio</h6>
+            <p>Alta dependência de geradores diesel em áreas rurais com falhas frequentes de energia, resultando em altos custos operacionais e downtime.</p>
+            
+            <h6>Solução</h6>
+            <p>Implementação de sistema híbrido com painéis solares, baterias e geradores diesel, integrado a sistema de monitorização remota para otimização em tempo real.</p>
+            
+            <h6>Resultados</h6>
+            <ul>
+              <li>Uptime de 99.9% garantido</li>
+              <li>Economia de 65% em combustível</li>
+              <li>Redução de 70% nas visitas técnicas</li>
+              <li>Redução de 50% nos custos operacionais</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <a href="contact.html" class="btn btn-primary">Solicitar Proposta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3 -->
+  <div class="modal fade" id="caseModal3" tabindex="-1" aria-labelledby="caseModal3Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="caseModal3Label">RAN Sharing Multi-Operador</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <img src="imgs/antena.jpg" class="img-fluid rounded" alt="RAN Sharing">
+            </div>
+            <div class="col-md-6">
+              <h6>Detalhes do Projeto</h6>
+              <p><strong>Clientes:</strong> 3 Operadoras Móveis</p>
+              <p><strong>Duração:</strong> 8 meses</p>
+              <p><strong>Localização:</strong> Benguela, Angola</p>
+              <p><strong>Setor:</strong> Telecomunicações</p>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <h6>Desafio</h6>
+            <p>Duplicidade de investimentos em infraestrutura de rede por múltiplos operadores, resultando em altos custos de CAPEX e impacto ambiental.</p>
+            
+            <h6>Solução</h6>
+            <p>Implementação de solução de RAN Sharing com compartilhamento de equipamentos de rede, garantindo qualidade de serviço individualizada para cada operador.</p>
+            
+            <h6>Resultados</h6>
+            <ul>
+              <li>Redução de 40% no CAPEX</li>
+              <li>Melhoria de 25% na qualidade do sinal</li>
+              <li>Redução de 35% no consumo energético</li>
+              <li>Menor impacto ambiental com 30% menos equipamentos</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <a href="contact.html" class="btn btn-primary">Solicitar Proposta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4 -->
+  <div class="modal fade" id="caseModal4" tabindex="-1" aria-labelledby="caseModal4Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="caseModal4Label">Conectividade para Operações de Mineração</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <img src="imgs/remoto.jpg" class="img-fluid rounded" alt="Mineração">
+            </div>
+            <div class="col-md-6">
+              <h6>Detalhes do Projeto</h6>
+              <p><strong>Cliente:</strong> Empresa de Mineração</p>
+              <p><strong>Duração:</strong> 6 meses</p>
+              <p><strong>Localização:</strong> Lunda Norte, Angola</p>
+              <p><strong>Setor:</strong> Mineração</p>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <h6>Desafio</h6>
+            <p>Necessidade de conectividade confiável 24/7 em local remoto para operações críticas de mineração e monitoramento de equipamentos.</p>
+            
+            <h6>Solução</h6>
+            <p>Instalação de torre dedicada com sistema de energia híbrida e redundância, integrada a sistema de monitoramento e comunicação de emergência.</p>
+            
+            <h6>Resultados</h6>
+            <ul>
+              <li>Conectividade 24/7 em áreas remotas</li>
+              <li>Redução de 50% em tempo de inatividade</li>
+              <li>Melhoria de 60% na segurança operacional</li>
+              <li>Monitoramento em tempo real de 50+ equipamentos</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <a href="contact.html" class="btn btn-primary">Solicitar Proposta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5 -->
+  <div class="modal fade" id="caseModal5" tabindex="-1" aria-labelledby="caseModal5Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="caseModal5Label">Conectividade Rural para Agricultura</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <img src="imgs/agricultura.jpg" class="img-fluid rounded" alt="Agricultura">
+            </div>
+            <div class="col-md-6">
+              <h6>Detalhes do Projeto</h6>
+              <p><strong>Cliente:</strong> Cooperativa Agrícola</p>
+              <p><strong>Duração:</strong> 5 meses</p>
+              <p><strong>Localização:</strong> Bié, Angola</p>
+              <p><strong>Setor:</strong> Agricultura</p>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <h6>Desafio</h6>
+            <p>Falta de conectividade em propriedades rurais dispersas, impossibilitando implementação de tecnologias de agricultura de precisão.</p>
+            
+            <h6>Solução</h6>
+            <p>Implementação de rede de conectividade com cobertura de 200km², integrada a sensores IoT para monitoramento de solo, clima e irrigação.</p>
+            
+            <h6>Resultados</h6>
+            <ul>
+              <li>Cobertura em 200km² de área rural</li>
+              <li>Aumento de 30% na produtividade</li>
+              <li>Redução de 25% em custos operacionais</li>
+              <li>Monitoramento de 5000+ sensores em tempo real</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <a href="contact.html" class="btn btn-primary">Solicitar Proposta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6 -->
+  <div class="modal fade" id="caseModal6" tabindex="-1" aria-labelledby="caseModal6Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="caseModal6Label">Telemedicina em Áreas Remotas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <img src="imgs/telemedicina.jpg" class="img-fluid rounded" alt="Saúde">
+            </div>
+            <div class="col-md-6">
+              <h6>Detalhes do Projeto</h6>
+              <p><strong>Cliente:</strong> Ministério da Saúde</p>
+              <p><strong>Duração:</strong> 7 meses</p>
+              <p><strong>Localização:</strong> Cabinda, Angola</p>
+              <p><strong>Setor:</strong> Saúde</p>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <h6>Desafio</h6>
+            <p>Impossibilidade de atendimento médico adequado em áreas remotas devido à falta de conectividade para telemedicina e comunicação de emergência.</p>
+            
+            <h6>Solução</h6>
+            <p>Implementação de infraestrutura de conectividade crítica com redundância, integrada a sistema de telemedicina e comunicação de emergência 24/7.</p>
+            
+            <h6>Resultados</h6>
+            <ul>
+              <li>Atendimento a 5000+ pacientes mensais</li>
+              <li>Redução de 40% em deslocamentos médicos</li>
+              <li>Uptime de 99.95% garantido</li>
+              <li>Melhoria de 35% no tempo de resposta emergencial</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <a href="contact.html" class="btn btn-primary">Solicitar Proposta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+     8) RODAPÉ / FOOTER
+     ========================= -->
+<footer class="bg-dark text-light pt-5">
+  <div class="container">
+    <div class="row gy-4">
+
+      <!-- Coluna: Marca + Descrição -->
+      <div class="col-md-4">
+        <a href="index.html" class="d-inline-flex align-items-center mb-3 text-decoration-none">
+          <img src="imgs/Antosc.png" alt="ANTOSC logo" style="height:48px;" class="me-2">
+        </a>
+        <p class="small text-muted">
+          Infraestrutura crítica que sustenta a conectividade de Angola — partilha de torres, energia e serviços com SLAs rigorosos.
+        </p>
+
+        <ul class="list-unstyled small">
+          <li><strong>Endereço:</strong>  Smart Village Talatona, Zona CS1, Rota Al 19ª Talatona - Luanda Angola</li>
+          <li><strong>Tel:</strong> +244 924 408 039</li>
+          <li><strong>Email:</strong> <a href="mailto:geral@antosc.co.ao" class="text-muted text-decoration-underline">info@antosc.co.ao</a></li>
+        </ul>
+      </div>
+
+      <!-- Coluna: Links rápidos (sitemap) -->
+      <div class="col-md-2">
+        <h6 class="text-white fw-bold">Explorar</h6>
+        <ul class="list-unstyled">
+          <li><a href="index.html" class="text-muted text-decoration-none">Início</a></li>
+          <li><a href="solucao.html" class="text-muted text-decoration-none">Soluções</a></li>
+          <li><a href="sucesso.html" class="text-muted text-decoration-none">Casos de Sucesso</a></li>
+          <li><a href="sobre.html" class="text-muted text-decoration-none">Sobre</a></li>
+          <li><a href="contacto.html" class="text-muted text-decoration-none">Contacto</a></li>
+        </ul>
+      </div>
+
+      <!-- Coluna: Serviços / Indústrias -->
+      <div class="col-md-2">
+        <h6 class="text-white fw-bold">Serviços</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-muted text-decoration-none">Tower Sharing</a></li>
+          <li><a href="#" class="text-muted text-decoration-none">Energia & Serviços</a></li>
+          <li><a href="#" class="text-muted text-decoration-none">RAN Sharing</a></li>
+          <li><a href="#" class="text-muted text-decoration-none">Soluções para ISPs</a></li>
+        </ul>
+      </div>
+
+      <!-- Coluna: Newsletter + Redes Sociais -->
+      <div class="col-md-4">
+        <h6 class="text-white fw-bold">Newsletter</h6>
+        <p class="small text-muted">Receba atualizações sobre projetos, parcerias e inovações. Sem spam — apenas informação relevante.</p>
+
+        <form action="/subscribe" method="post" class="d-flex" aria-label="Formulário de subscrição da newsletter">
+          <label for="footer-email" class="visually-hidden">Email</label>
+          <input id="footer-email" name="email" type="email" required class="form-control me-2" placeholder="seu.email@exemplo.com" aria-required="true">
+          <button type="submit" class="btn btn-primary">Subscrever</button>
+        </form>
+
+        <div class="mt-3">
+          <h6 class="text-white fw-bold mb-2">Siga-nos</h6>
+          <nav aria-label="Redes sociais">
+            <a href="https://www.linkedin.com/company/antosc/posts/?feedView=all" class="me-2 text-muted text-decoration-none" aria-label="LinkedIn ANTOSC" target="_blank" rel="noopener">
+              <i class="fab fa-linkedin fa-lg"></i>
+            </a>
+            <a href="https://www.youtube.com/" class="me-2 text-muted text-decoration-none" aria-label="YouTube ANTOSC" target="_blank" rel="noopener">
+              <i class="fab fa-youtube fa-lg"></i>
+            </a>
+            <a href="#" class="me-2 text-muted text-decoration-none" aria-label="Twitter ANTOSC" target="_blank" rel="noopener">
+              <i class="fab fa-x-twitter fa-lg"></i>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <hr class="border-secondary my-4">
+
+    <div class="row align-items-center">
+      <div class="col-md-6 small text-muted">
+        © <span id="year">2025</span> ANTOSC S.A. — Todos os direitos reservados. 
+      </div>
+      
+      <div class="col-md-6 text-md-end">
+        <a href="/privacy.html" class="text-muted text-decoration-none small me-3">Política de Privacidade</a>
+        <a href="/terms.html" class="text-muted text-decoration-none small me-3">Termos & Condições</a>
+        <a href="/sitemap.xml" class="text-muted text-decoration-none small">Mapa do Site</a>
+      </div>
+    </div>
+  </div>
+</footer>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true
+    });
+
+    // Active nav link
+    document.addEventListener('DOMContentLoaded', function() {
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        if (link.getAttribute('href') === 'casos-de-sucesso.html') {
+          link.classList.add('active');
+        }
+      });
+
+      // Filter functionality
+      const filterLinks = document.querySelectorAll('.filter-pills .nav-link');
+      filterLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          filterLinks.forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+          
+          // In a real implementation, this would filter the cases
+          // For this demo, we'll just show a message
+          console.log('Filtrando por:', this.textContent);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antosc | Sobre</title>
+  <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d3b66;
+      --primary-light: #1a5c9f;
+      --primary-dark: #082947;
+      --secondary: #f8f9fa;
+      --accent: #3498db;
+      --dark: #2c3e50;
+      --light: #ffffff;
+      --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #4db8ff 100%);
+      --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12);
+      --border-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--dark);
+      background-color: var(--light);
+      line-height: 1.6;
+      overflow-x: hidden;
+      padding-top: 80px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      position: relative;
+      display: inline-block;
+      padding-bottom: .5rem;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 60px;
+      height: 3px;
+      background: var(--accent);
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: var(--gradient-primary);
+      box-shadow: var(--shadow-md);
+      padding: 0.8rem 1rem;
+      transition: var(--transition);
+    }
+
+    .navbar-brand img {
+      width: 155px;
+      filter: brightness(0) invert(1);
+    }
+
+    .nav-link {
+      color: #ecf0f1 !important;
+      font-weight: 500;
+      margin: 0 10px;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-link:hover {
+      color: #3498db !important;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--accent);
+      transition: var(--transition);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Estilização personalizada do botão hamburguer */
+    .custom-toggler {
+      border: none;
+      background: transparent;
+      padding: 0;
+      width: 30px;
+      height: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .custom-toggler span {
+      display: block;
+      position: absolute;
+      height: 3px;
+      width: 100%;
+      background: #ecf0f1;
+      border-radius: 3px;
+      opacity: 1;
+      left: 0;
+      transform: rotate(0deg);
+      transition: .25s ease-in-out;
+    }
+
+    .custom-toggler span:nth-child(1) {
+      top: 0px;
+    }
+
+    .custom-toggler span:nth-child(2) {
+      top: 8px;
+    }
+
+    .custom-toggler span:nth-child(3) {
+      top: 16px;
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(1) {
+      top: 8px;
+      transform: rotate(135deg);
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(2) {
+      opacity: 0;
+      left: -30px;
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(3) {
+      top: 8px;
+      transform: rotate(-135deg);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      position: relative;
+      height: 70vh;
+      min-height: 500px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 17, 18, 0.75);
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      color: white;
+      text-align: center;
+      margin-bottom: -50px;
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+
+    .hero-content p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      color: white;
+    }
+
+    .btn-primary {
+      background: var(--gradient-accent);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      color: white;
+    }
+
+    /* About Section */
+    .about {
+      padding: 5rem 0;
+    }
+
+    .about-content {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 3rem;
+      box-shadow: var(--shadow-sm);
+      height: 100%;
+    }
+
+    .about-img {
+      border-radius: var(--border-radius);
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+
+    /* Mission Vision Values */
+    .mvv {
+      padding: 5rem 0;
+      background: var(--secondary);
+    }
+
+    .mvv-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      height: 100%;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      border: none;
+    }
+
+    .mvv-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .mvv-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Timeline */
+    .timeline-section {
+      padding: 5rem 0;
+    }
+
+    .timeline {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 0;
+    }
+
+    .timeline::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      background: var(--gradient-primary);
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      margin-left: -2px;
+    }
+
+    .timeline-item {
+      padding: 25px 40px;
+      position: relative;
+      width: 50%;
+    }
+
+    .timeline-item::after {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      right: -12px;
+      background: var(--gradient-accent);
+      border: 4px solid white;
+      top: 32px;
+      border-radius: 50%;
+      z-index: 1;
+      box-shadow: var(--shadow-md);
+    }
+
+    .timeline-item.left {
+      left: 0;
+    }
+
+    .timeline-item.right {
+      left: 50%;
+    }
+
+    .timeline-item.right::after {
+      left: -12px;
+    }
+
+    .timeline-content {
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      background: white;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+    }
+
+    .timeline-content:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .timeline-content h4 {
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Stats Section */
+    .stats-section {
+      background: var(--gradient-primary);
+      color: white;
+      padding: 4rem 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* Leadership */
+    .leadership {
+      padding: 5rem 0;
+      background: var(--secondary);
+    }
+
+    .leader-card {
+      background: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: var(--transition);
+      height: 100%;
+      box-shadow: var(--shadow-sm);
+      border: none;
+    }
+
+    .leader-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .leader-img {
+      height: 420px;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .leader-info {
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .leader-info h5 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .leader-role {
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    /* ESG Section */
+    .esg {
+      padding: 5rem 0;
+    }
+
+    .esg-card {
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: var(--transition);
+      height: 100%;
+      border: none;
+    }
+
+    .esg-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .esg-img {
+      height: 200px;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .esg-content {
+      padding: 1.5rem;
+    }
+
+    .esg-content h5 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 5rem 0;
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      color: white;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-section p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .btn-light {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-light:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+          /* =========================
+           RODAPÉ / FOOTER
+           ========================= */
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%) !important;
+            padding-top: 4rem !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-accent);
+        }
+
+        footer h6 {
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        footer h6::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        footer .text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        footer a.text-muted {
+            transition: var(--transition);
+        }
+
+        footer a.text-muted:hover {
+            color: white !important;
+            padding-left: 5px;
+        }
+
+        footer ul.list-unstyled li {
+            margin-bottom: 0.75rem;
+        }
+
+        footer form {
+            position: relative;
+        }
+
+        footer input.form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+        }
+
+        footer input.form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        footer input.form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+        footer .btn-primary {
+            background: var(--gradient-accent);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        footer .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        footer .fa-lg {
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        footer a:hover .fa-lg {
+            color: white !important;
+            transform: translateY(-3px);
+        }
+
+        footer hr {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        footer .small {
+            font-size: 0.875rem;
+        }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .hero-sub {
+        font-size: 1rem;
+      }
+      
+      .about-content {
+        padding: 2rem 1.5rem;
+      }
+      
+      .timeline::after {
+        left: 20px;
+      }
+      
+      .timeline-item {
+        width: 100%;
+        padding: 0 25px 0 60px;
+      }
+      
+      .timeline-item::after {
+        left: 15px;
+      }
+      
+      .timeline-item.right {
+        left: 0;
+      }
+      
+      .timeline-item.right::after {
+        left: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="imgs/Antosc.png" alt="Logo Antosc">
+      </a>
+
+      <button class="custom-toggler navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="solucao.html">Soluções</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="industriais.html">Industriais</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="casos-de-sucesso.html">Casos de sucesso</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="sobre.html">Sobre</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contacto.html">contacto</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO Section -->
+  <header class="hero-section">
+    <img class="hero-image" src="imgs/torres.jpg" alt="ANTOSC - Sobre">
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <h1 class="hero-title">Conectando Angola com infraestrutura de excelência</h1>
+            <p class="hero-sub">Líder em tower sharing e soluções de telecomunicações desde 2017</p>
+            <a href="#about" class="btn btn-primary">Conheça nossa história</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">+250</div>
+            <div class="stat-label">Torres Ativas</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">18</div>
+            <div class="stat-label">Províncias</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">600+</div>
+            <div class="stat-label">Colaboradores</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">99.9%</div>
+            <div class="stat-label">Uptime</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="row align-items-center g-5">
+     
+        <div class="col-lg-6" data-aos="fade-left">
+          <div class="about-content">
+            <h2 class="section-title mb-4">Sobre a ANTOSC</h2>
+            <p>A ANTOSC é a primeira e maior empresa de infraestrutura de telecomunicações em Angola, fundada em maio de 2017 como resposta ao decreto governamental que incentivava o compartilhamento de torres.</p>
+            <p>Nossa missão é fornecer infraestrutura crítica de telecomunicações com excelência operacional, sustentabilidade e inovação, conectando Angola e promovendo o desenvolvimento digital do país.</p>
+            <p>Com mais de 250 torres ativas em 18 províncias, somos parceiros estratégicos de operadoras móveis, provedores de internet e empresas de diversos setores que dependem de conectividade confiável.</p>
+            <div class="mt-4">
+              <a href="#timeline" class="btn btn-outline-primary">Nossa História</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission, Vision, Values -->
+  <section class="mvv">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Missão, Visão e Valores</h2>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Mission -->
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="card mvv-card h-100">
+            <div class="card-body text-center">
+              <div class="mvv-icon">
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <h4>Missão</h4>
+              <p class="text-muted">Ser empresa de vanguarda nas telecomunicações angolanas, entregando valor a acionistas, colaboradores e ao mercado, com uma rede robusta de mais de 200 sites.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vision -->
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card mvv-card h-100">
+            <div class="card-body text-center">
+              <div class="mvv-icon">
+                <i class="fas fa-eye"></i>
+              </div>
+              <h4>Visão</h4>
+              <p class="text-muted">Liderar o mercado de partilha de infraestruturas de telecomunicações em Angola, sendo referência em qualidade, inovação e sustentabilidade.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Values -->
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card mvv-card h-100">
+            <div class="card-body text-center">
+              <div class="mvv-icon">
+                <i class="fas fa-heart"></i>
+              </div>
+              <h4>Valores</h4>
+              <ul class="text-start text-muted">
+                <li>Qualidade</li>
+                <li>Inovação</li>
+                <li>Ética & Transparência</li>
+                <li>Respeito</li>
+                <li>Sustentabilidade ambiental</li>
+                <li>Tempo de resposta</li>
+                <li>Valorização da diversidade</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline Section -->
+  <section class="timeline-section" id="timeline">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Nossa História</h2>
+          <p class="text-muted">Marcos importantes em nossa trajetória de crescimento</p>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <!-- 2017 -->
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <h4>2017 - Fundação</h4>
+            <p>A ANTOSC foi fundada em maio de 2017, tornando-se a primeira TowerCo de Angola, em resposta ao decreto que incentivava o compartilhamento de torres.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item right">
+          <div class="timeline-content">
+            <h4>2017 - Primeiros Projetos</h4>
+            <p>Entre 2017 e 2019, construímos 18 torres, planejando 100 sites para 2018 e a meta ambiciosa de 450 torres até 2023.</p>
+          </div>
+        </div>
+
+        <!-- 2019 -->
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <h4>2019 - Expansão Técnica</h4>
+            <p>O ex-CEO Marcos Chaves trouxe experiência de Nortel, Alcatel-Lucent, Ericsson e Nokia, além da Unitel, onde ajudou a expandir de 850 mil para 8 milhões de clientes.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item right">
+          <div class="timeline-content">
+            <h4>2019 - Licença Multisserviços</h4>
+            <p>A obtenção da Licença Multisserviços (LMS) em novembro de 2019 foi um marco, permitindo atuar com infraestruturas ativas e passivas.</p>
+          </div>
+        </div>
+
+        <!-- 2020-2021 -->
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <h4>2019-2021 - Sustentabilidade</h4>
+            <p>Investimento em soluções de energia híbrida reduziu em até 70% os custos de diesel, crucial para locais remotos com rede elétrica instável.</p>
+          </div>
+        </div>
+
+        <!-- 2022 -->
+        <div class="timeline-item right">
+          <div class="timeline-content">
+            <h4>2022 - Inovação 5G</h4>
+            <p>Inauguração de torre multiprovedor em Talatona, com suporte a 5G, atendendo clientes como Unitel e Africell.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <h4>2022 - Expansão de Portfólio</h4>
+            <p>Expansão do portfólio para fibra óptica wholesale, RAN Sharing e Edge Datacenters, reforçando inovação e resiliência.</p>
+          </div>
+        </div>
+
+        <!-- 2023 -->
+        <div class="timeline-item right">
+          <div class="timeline-content">
+            <h4>2023 - Crescimento</h4>
+            <p>Atingimos cerca de 150 sites, 600 colaboradores e mais de 2.500 geradores ativos em todo o território.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <h4>2023 - Impacto Social</h4>
+            <p>O administrador António Nunes destacou o papel da ANTOSC na expansão da agricultura digital e inclusão em áreas rurais.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Leadership Section -->
+  <section class="leadership">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Liderança</h2>
+          <p class="text-muted">Equipe executiva comprometida com a excelência e inovação</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- CEO -->
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="card leader-card h-100">
+            <img src="imgs/ceo.jpg" class="leader-img" alt="CEO">
+            <div class="leader-info">
+              <h5>António Nunes</h5>
+              <span class="leader-role">CEO</span>
+              <p class="small text-muted">Lidera a Antosc com foco em inovação, sustentabilidade e eficiência, consolidando a posição da empresa como referência em infraestruturas críticas em Angola.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diretor Técnico -->
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card leader-card h-100">
+            <img src="imgs/tecnico - Cópia.jpg" class="leader-img" alt="Diretor Técnico">
+            <div class="leader-info">
+              <h5>João Baptista</h5>
+              <span class="leader-role">Diretor Técnico de Engenharia e Operações</span>
+              <p class="small text-muted">Responsável pela conceção, implementação e manutenção das infraestruturas, garantindo inovação tecnológica, qualidade e eficiência operacional em todo o país.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diretor Financeiro -->
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card leader-card h-100">
+            <img src="imgs/finanças.jpg" class="leader-img" alt="Diretor Financeiro">
+            <div class="leader-info">
+              <h5>Nuno Costa</h5>
+              <span class="leader-role">Diretor Financeiro</span>
+              <p class="small text-muted">Responsável pela gestão estratégica dos recursos da Antosc, garantindo rigor, transparência e sustentabilidade para apoiar a expansão das telecomunicações em Angola.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ESG Section -->
+  <section class="esg">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Sustentabilidade & ESG</h2>
+          <p class="text-muted">Compromisso com práticas sustentáveis e responsabilidade social</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6" data-aos="fade-right">
+          <div class="card esg-card h-100">
+            <img src="imgs/renovavel.jpg" class="esg-img" alt="Energia Renovável">
+            <div class="esg-content">
+              <h5>Energia Renovável</h5>
+              <p>Implementação de soluções híbridas com painéis solares e baterias para reduzir dependência de diesel e emissões de carbono.</p>
+              <ul>
+                <li>Redução de 65% no consumo de combustível</li>
+                <li>Economia de 70% em custos energéticos</li>
+                <li>Menor impacto ambiental em áreas remotas</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6" data-aos="fade-left">
+          <div class="card esg-card h-100">
+            <img src="imgs/impacto.jpg" class="esg-img" alt="Comunidade">
+            <div class="esg-content">
+              <h5>Impacto Comunitário</h5>
+              <p>Programas de inclusão digital e desenvolvimento local em comunidades onde operamos.</p>
+              <ul>
+                <li>Conectividade em áreas rurais remotas</li>
+                <li>Programas de formação técnica</li>
+                <li>Parcerias com comunidades locais</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="display-5 fw-bold">Conectando o futuro de Angola</h2>
+          <p class="lead">Junte-se a nós nesta jornada de inovação e conectividade.</p>
+          <a href="contact.html" class="btn btn-light btn-lg">Entre em contato</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================
+     8) RODAPÉ / FOOTER
+     ========================= -->
+<footer class="bg-dark text-light pt-5">
+  <div class="container">
+    <div class="row gy-4">
+
+      <!-- Coluna: Marca + Descrição -->
+      <div class="col-md-4">
+        <a href="index.html" class="d-inline-flex align-items-center mb-3 text-decoration-none">
+          <img src="imgs/Antosc.png" alt="ANTOSC logo" style="height:48px;" class="me-2">
+        </a>
+        <p class="small text-muted">
+          Infraestrutura crítica que sustenta a conectividade de Angola — partilha de torres, energia e serviços com SLAs rigorosos.
+        </p>
+
+        <ul class="list-unstyled small">
+          <li><strong>Endereço:</strong>  Smart Village Talatona, Zona CS1, Rota Al 19ª Talatona - Luanda Angola</li>
+          <li><strong>Tel:</strong> +244 924 408 039</li>
+          <li><strong>Email:</strong> <a href="mailto:geral@antosc.co.ao" class="text-muted text-decoration-underline">info@antosc.co.ao</a></li>
+        </ul>
+      </div>
+
+      <!-- Coluna: Links rápidos (sitemap) -->
+      <div class="col-md-2">
+        <h6 class="text-white fw-bold">Explorar</h6>
+        <ul class="list-unstyled">
+          <li><a href="index.html" class="text-muted text-decoration-none">Início</a></li>
+          <li><a href="solucao.html" class="text-muted text-decoration-none">Soluções</a></li>
+          <li><a href="sucesso.html" class="text-muted text-decoration-none">Casos de Sucesso</a></li>
+          <li><a href="sobre.html" class="text-muted text-decoration-none">Sobre</a></li>
+          <li><a href="contacto.html" class="text-muted text-decoration-none">Contacto</a></li>
+        </ul>
+      </div>
+
+      <!-- Coluna: Serviços / Indústrias -->
+      <div class="col-md-2">
+        <h6 class="text-white fw-bold">Serviços</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-muted text-decoration-none">Tower Sharing</a></li>
+          <li><a href="#" class="text-muted text-decoration-none">Energia & Serviços</a></li>
+          <li><a href="#" class="text-muted text-decoration-none">RAN Sharing</a></li>
+          <li><a href="#" class="text-muted text-decoration-none">Soluções para ISPs</a></li>
+        </ul>
+      </div>
+
+      <!-- Coluna: Newsletter + Redes Sociais -->
+      <div class="col-md-4">
+        <h6 class="text-white fw-bold">Newsletter</h6>
+        <p class="small text-muted">Receba atualizações sobre projetos, parcerias e inovações. Sem spam — apenas informação relevante.</p>
+
+        <form action="/subscribe" method="post" class="d-flex" aria-label="Formulário de subscrição da newsletter">
+          <label for="footer-email" class="visually-hidden">Email</label>
+          <input id="footer-email" name="email" type="email" required class="form-control me-2" placeholder="seu.email@exemplo.com" aria-required="true">
+          <button type="submit" class="btn btn-primary">Subscrever</button>
+        </form>
+
+        <div class="mt-3">
+          <h6 class="text-white fw-bold mb-2">Siga-nos</h6>
+          <nav aria-label="Redes sociais">
+            <a href="https://www.linkedin.com/company/antosc/posts/?feedView=all" class="me-2 text-muted text-decoration-none" aria-label="LinkedIn ANTOSC" target="_blank" rel="noopener">
+              <i class="fab fa-linkedin fa-lg"></i>
+            </a>
+            <a href="https://www.youtube.com/" class="me-2 text-muted text-decoration-none" aria-label="YouTube ANTOSC" target="_blank" rel="noopener">
+              <i class="fab fa-youtube fa-lg"></i>
+            </a>
+            <a href="#" class="me-2 text-muted text-decoration-none" aria-label="Twitter ANTOSC" target="_blank" rel="noopener">
+              <i class="fab fa-x-twitter fa-lg"></i>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <hr class="border-secondary my-4">
+
+    <div class="row align-items-center">
+      <div class="col-md-6 small text-muted">
+        © <span id="year">2025</span> ANTOSC S.A. — Todos os direitos reservados. 
+      </div>
+      
+      <div class="col-md-6 text-md-end">
+        <a href="/privacy.html" class="text-muted text-decoration-none small me-3">Política de Privacidade</a>
+        <a href="/terms.html" class="text-muted text-decoration-none small me-3">Termos & Condições</a>
+        <a href="/sitemap.xml" class="text-muted text-decoration-none small">Mapa do Site</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true
+    });
+
+    // Active nav link
+    document.addEventListener('DOMContentLoaded', function() {
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        if (link.getAttribute('href') === 'sobre.html') {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -2,15 +2,13 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"="width=device-width, initial-scale=1.0">
-  <title>Antosc | Soluções</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antosc | Contacto</title>
   <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
- <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
- <style>
+  <style>
     :root {
       --primary: #0d3b66;
       --primary-light: #1a5c9f;
@@ -34,6 +32,7 @@
       background-color: var(--light);
       line-height: 1.6;
       overflow-x: hidden;
+      padding-top: 80px;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -155,8 +154,8 @@
     /* Hero Section */
     .hero-section {
       position: relative;
-      height: 70vh;
-      min-height: 500px;
+      height: 60vh;
+      min-height: 400px;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -205,6 +204,32 @@
       color: white;
     }
 
+    /* Contact Section */
+    .contact {
+      padding: 5rem 0;
+    }
+
+    .contact-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      height: 100%;
+    }
+
+    .contact-form .form-control {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+      margin-bottom: 1rem;
+      transition: var(--transition);
+    }
+
+    .contact-form .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    }
+
     .btn-primary {
       background: var(--gradient-accent);
       border: none;
@@ -212,9 +237,9 @@
       border-radius: 50px;
       color: white;
       font-weight: 600;
-      text-decoration: none;
       transition: var(--transition);
       display: inline-block;
+      width: 100%;
     }
 
     .btn-primary:hover {
@@ -223,122 +248,127 @@
       color: white;
     }
 
-    /* Services */
-    .services {
-      padding: 5rem 0;
-    }
-
-    .servicos {
-      background: #fff;
+    /* Contact Info */
+    .contact-info {
+      background: var(--gradient-primary);
+      color: white;
       border-radius: var(--border-radius);
-      box-shadow: var(--shadow-sm);
       padding: 2rem;
-      margin-bottom: 2rem;
-      transition: var(--transition);
-      overflow: hidden;
       height: 100%;
     }
 
-    .servicos:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-lg);
+    .contact-item {
+      display: flex;
+      margin-bottom: 1.5rem;
     }
 
-    .servicos img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: var(--border-radius);
-      margin: 1rem 0;
-    }
-
-    .servicos h3 {
-      color: var(--primary-dark);
-      margin-bottom: 1rem;
+    .contact-icon {
       font-size: 1.5rem;
+      margin-right: 1rem;
+      min-width: 40px;
     }
 
-    .servicos a {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: .5rem 1.2rem;
-      border-radius: 50px;
-      background: var(--gradient-accent);
-      color: #fff;
-      font-weight: 600;
+    .contact-details h5 {
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-details a {
+      color: rgba(255, 255, 255, 0.8);
       text-decoration: none;
       transition: var(--transition);
     }
 
-    .servicos a:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+    .contact-details a:hover {
       color: white;
+      text-decoration: underline;
     }
 
-    /* Valor Acrescentado */
-    .valor-section {
-      background: var(--secondary);
+    /* Map Section */
+    .map-section {
       padding: 5rem 0;
+      background: var(--secondary);
     }
 
-    .valor-card {
-      border: 1px solid #e9ecef !important;
-      background: #fff;
-      transition: var(--transition);
-      padding: 2rem;
+    .map-container {
+      height: 400px;
       border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .map-placeholder {
+      width: 100%;
       height: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
       text-align: center;
     }
 
-    .valor-card:hover {
+    /* Offices Section */
+    .offices {
+      padding: 5rem 0;
+    }
+
+    .office-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      height: 100%;
+      transition: var(--transition);
+      border: 1px solid #e9ecef;
+    }
+
+    .office-card:hover {
       transform: translateY(-5px);
       box-shadow: var(--shadow-md);
     }
 
-    .valor-icon {
-      font-size: 2.5rem;
+    .office-card h4 {
+      color: var(--primary);
       margin-bottom: 1rem;
     }
 
-    /* Paisagem */
-    .paisagem {
-      position: relative;
-      height: 400px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .paisagem .hero-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .paisagem .hero-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(13, 59, 102, 0.75);
-    }
-
-    .paisagem h1,
-    .paisagem p {
-      position: relative;
-      color: #fff;
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 5rem 0;
       text-align: center;
-      z-index: 2;
     }
-    
-        /* =========================
+
+    .cta-section h2 {
+      color: white;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-section p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .btn-light {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-light:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+          /* =========================
            RODAPÉ / FOOTER
            ========================= */
         footer {
@@ -445,19 +475,6 @@
         footer .small {
             font-size: 0.875rem;
         }
-    /* Animations */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.8s forwards;
-    }
-
-    @keyframes fadeUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -469,12 +486,12 @@
         font-size: 1rem;
       }
       
-      .services {
+      .contact {
         padding: 3rem 0;
       }
       
-      .servicos {
-        margin-bottom: 1.5rem;
+      .map-container {
+        height: 300px;
       }
     }
   </style>
@@ -506,13 +523,13 @@
             <a class="nav-link" href="industriais.html">Industriais</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="sucesso.html">Casos de sucesso</a>
+            <a class="nav-link" href="casos-de-sucesso.html">Casos de sucesso</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="sobre.html">Sobre</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contacto.html">contacto</a>
+            <a class="nav-link active" href="contacto.html">contacto</a>
           </li>
         </ul>
       </div>
@@ -521,163 +538,212 @@
 
   <!-- HERO Section -->
   <header class="hero-section">
-    <img class="hero-image" src="imgs/paisagem.jpg" alt="ANTOSC - Infraestruturas de telecomunicações">
+    <img class="hero-image" src="imgs/contacto.png" alt="ANTOSC - Contacto">
     <div class="hero-overlay" aria-hidden="true"></div>
 
     <div class="hero-content">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-8">
-            <div class="fade-up" style="animation-delay: 0.05s">
-              <h1 class="hero-title">Soluções que conectam Angola — infraestrutura, energia e partilha</h1>
-            </div>
-            <div class="fade-up" style="animation-delay: 0.12s">
-              <p class="hero-sub">Serviços de Tower Sharing, Energia-as-a-Service, RAN Sharing e infraestruturas críticas com SLA e sustentabilidade.</p>
-            </div>
-            <div class="fade-up" style="animation-delay: 0.18s">
-              <a href="#solucoes" class="btn btn-primary">Explorar soluções</a>
-            </div>
+            <h1 class="hero-title">Entre em contato conosco</h1>
+            <p class="hero-sub">Estamos prontos para ajudar sua empresa a conectar-se ao futuro</p>
           </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Services Section -->
-  <section class="services" id="solucoes">
+  <!-- Contact Section -->
+  <section class="contact">
     <div class="container">
       <div class="row">
         <div class="col-12 text-center mb-5">
-          <h2 class="section-title">Serviços</h2>
+          <h2 class="section-title">Fale Conosco</h2>
+          <p class="text-muted">Preencha o formulário abaixo e nossa equipe entrará em contato</p>
         </div>
       </div>
 
       <div class="row g-4">
-        <div class="col-lg-6" data-aos="fade-up">
-          <div class="servicos h-100">
-            <h3>Espaço em torres</h3>
-            <img src="imgs/torres.jpg" alt="Espaço em torres">
-            <p>
-              Na <strong>Antosc</strong>, entendemos que a conectividade é a espinha dorsal da economia moderna. Por isso, disponibilizamos infraestruturas de torres de telecomunicações estrategicamente
-              posicionadas para garantir cobertura, eficiência e confiabilidade aos nossos parceiros.
-            </p>
-            <a href="#">Detalhes</a>
+        <div class="col-lg-8">
+          <div class="contact-card">
+            <form class="contact-form">
+              <div class="row">
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Seu nome" required>
+                </div>
+                <div class="col-md-6">
+                  <input type="email" class="form-control" placeholder="Seu email" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <input type="tel" class="form-control" placeholder="Seu telefone">
+                </div>
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Empresa">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <select class="form-control">
+                    <option selected>Selecione o assunto</option>
+                    <option>Solicitação de orçamento</option>
+                    <option>Parcerias comerciais</option>
+                    <option>Suporte técnico</option>
+                    <option>Carreiras</option>
+                    <option>Outros</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <textarea class="form-control" rows="5" placeholder="Sua mensagem" required></textarea>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary">Enviar Mensagem</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
 
-        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-          <div class="servicos h-100">
-            <h3>Espaço em Gabinete</h3>
-            <img src="imgs/racks.jpg" alt="Espaço em Gabinete">
-            <p>
-              Na <strong>Antosc</strong>, disponibilizamos gabinetes dedicados e partilhados para instalação de equipamentos de telecomunicações,
-              TI e networking. A nossa infraestrutura garante segurança, organização e eficiência energética.
-            </p>
-            <a href="#">Detalhes</a>
-          </div>
-        </div>
-
-        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-          <div class="servicos h-100">
-            <h3>Espaço em Datacenters Edge</h3>
-            <img src="imgs/micro.jpg" alt="Datacenters Edge">
-            <p>
-              Na <strong>Antosc</strong>, oferecemos infraestruturas Edge Data Center estrategicamente distribuídas para aproximar a capacidade computacional do utilizador final.
-            </p>
-            <a href="#">Detalhes</a>
-          </div>
-        </div>
-
-        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
-          <div class="servicos h-100">
-            <h3>Espaço em solo</h3>
-            <img src="imgs/solo.jpg" alt="Espaço em solo">
-            <p>
-              Na <strong>Antosc</strong>, disponibilizamos áreas dedicadas em solo para a instalação de equipamentos de telecomunicações, energia e infraestrutura de apoio.
-            </p>
-            <a href="#">Detalhes</a>
+        <div class="col-lg-4">
+          <div class="contact-info">
+            <h3 class="mb-4">Informações de Contato</h3>
+            
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="contact-details">
+                <h5>Endereço</h5>
+                <p>Smart Village Talatona, Zona CS1, Rota Al 19ª<br>Talatona - Luanda, Angola</p>
+              </div>
+            </div>
+            
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-phone-alt"></i>
+              </div>
+              <div class="contact-details">
+                <h5>Telefone</h5>
+                <p><a href="tel:+244924408039">+244 924 408 039</a></p>
+              </div>
+            </div>
+            
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-details">
+                <h5>Email</h5>
+                <p><a href="mailto:info@antosc.co.ao">info@antosc.co.ao</a></p>
+              </div>
+            </div>
+            
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="contact-details">
+                <h5>Horário de Atendimento</h5>
+                <p>Segunda a Sexta: 8h - 17h<br>Sábado: 9h - 13h</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Valor Acrescentado -->
-  <section class="valor-section">
+  <!-- Map Section -->
+  <section class="map-section">
     <div class="container">
-      <div class="row text-center mb-5">
-        <div class="col-12">
-          <h2 class="section-title">Valor Acrescentado</h2>
-          <p class="text-muted">Benefícios diretos que a ANTOSC entrega aos seus clientes</p>
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Nossa Localização</h2>
+          <p class="text-muted">Visite nosso escritório principal em Luanda</p>
         </div>
       </div>
       
-      <div class="row g-4">
-        <div class="col-md-6 col-lg-4" data-aos="fade-up">
-          <div class="valor-card h-100">
-            <div class="valor-icon">💰</div>
-            <h6 class="fw-bold">Redução de OPEX</h6>
-            <p class="small text-muted">Corte expressivo nos custos operacionais.</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="valor-card h-100">
-            <div class="valor-icon">🏗️</div>
-            <h6 class="fw-bold">Redução de CAPEX</h6>
-            <p class="small text-muted">Menores investimentos em infraestrutura.</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="valor-card h-100">
-            <div class="valor-icon">📈</div>
-            <h6 class="fw-bold">Foco no Negócio</h6>
-            <p class="small text-muted">Garantimos a base para que foque no seu core business.</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
-          <div class="valor-card h-100">
-            <div class="valor-icon">🌱</div>
-            <h6 class="fw-bold">Menor Impacto Ambiental</h6>
-            <p class="small text-muted">Soluções sustentáveis e eco-friendly.</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
-          <div class="valor-card h-100">
-            <div class="valor-icon">✅</div>
-            <h6 class="fw-bold">Serviços Garantidos</h6>
-            <p class="small text-muted">Alta disponibilidade assegurada por SLAs.</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
-          <div class="valor-card h-100">
-            <div class="valor-icon">⚡</div>
-            <h6 class="fw-bold">Melhoramentos Contínuos</h6>
-            <p class="small text-muted">Evolução constante dos seus serviços.</p>
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="map-container">
+            <div class="map-placeholder">
+              <div>
+                <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
+                <h4>Smart Village Talatona</h4>
+                <p>Zona CS1, Rota Al 19ª<br>Talatona - Luanda, Angola</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Paisagem Section -->
-  <section class="paisagem">
-    <img class="hero-image" src="imgs/torres.jpg" alt="Paisagem ANTOSC">
-    <div class="hero-overlay" aria-hidden="true"></div>
+  <!-- Offices Section -->
+  <section class="offices">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h2 class="section-title">Nossos Escritórios</h2>
+          <p class="text-muted">Presentes em todo o território nacional</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="office-card h-100">
+            <h4><i class="fas fa-building me-2"></i> Luanda (Sede)</h4>
+            <p><i class="fas fa-map-marker-alt me-2"></i> Smart Village Talatona, Zona CS1</p>
+            <p><i class="fas fa-phone-alt me-2"></i> +244 924 408 039</p>
+            <p><i class="fas fa-envelope me-2"></i> info@antosc.co.ao</p>
+          </div>
+        </div>
+
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="office-card h-100">
+            <h4><i class="fas fa-building me-2"></i> Benguela</h4>
+            <p><i class="fas fa-map-marker-alt me-2"></i> Av. 17 de Setembro, Nº 123</p>
+            <p><i class="fas fa-phone-alt me-2"></i> +244 924 408 040</p>
+            <p><i class="fas fa-envelope me-2"></i> benguela@antosc.co.ao</p>
+          </div>
+        </div>
+
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="office-card h-100">
+            <h4><i class="fas fa-building me-2"></i> Huíla</h4>
+            <p><i class="fas fa-map-marker-alt me-2"></i> Rua Direita, Nº 45 - Lubango</p>
+            <p><i class="fas fa-phone-alt me-2"></i> +244 924 408 041</p>
+            <p><i class="fas fa-envelope me-2"></i> huila@antosc.co.ao</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-lg-8 text-center">
-          <h1 class="display-4 fw-bold mb-3"><strong>Infraestrutura partilhada</strong></h1>
-          <p class="lead">Serviços Especializados</p>
+        <div class="col-lg-8">
+          <h2 class="display-5 fw-bold">Pronto para começar?</h2>
+          <p class="lead">Entre em contato conosco hoje mesmo e descubra como podemos transformar sua conectividade.</p>
+          <a href="tel:+244924408039" class="btn btn-light btn-lg me-3">
+            <i class="fas fa-phone-alt me-2"></i>Ligue agora
+          </a>
+          <a href="mailto:info@antosc.co.ao" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-envelope me-2"></i>Envie um email
+          </a>
         </div>
       </div>
     </div>
   </section>
 
+  
   <!-- =========================
      8) RODAPÉ / FOOTER
      ========================= -->
@@ -709,7 +775,7 @@
           <li><a href="solucao.html" class="text-muted text-decoration-none">Soluções</a></li>
           <li><a href="sucesso.html" class="text-muted text-decoration-none">Casos de Sucesso</a></li>
           <li><a href="sobre.html" class="text-muted text-decoration-none">Sobre</a></li>
-          <li><a href="contact.html" class="text-muted text-decoration-none">Contacto</a></li>
+          <li><a href="contacto.html" class="text-muted text-decoration-none">Contacto</a></li>
         </ul>
       </div>
 
@@ -768,24 +834,26 @@
   </div>
 </footer>
 
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    // Initialize AOS
-    AOS.init({
-      duration: 800,
-      easing: 'ease-in-out',
-      once: true
-    });
-
-    // Feather icons
+    // Active nav link
     document.addEventListener('DOMContentLoaded', function() {
-      // Animação para hero content
-      const fadeUpElements = document.querySelectorAll('.fade-up');
-      fadeUpElements.forEach((el, index) => {
-        el.style.animationDelay = (index * 0.07) + 's';
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        if (link.getAttribute('href') === 'contacto.html') {
+          link.classList.add('active');
+        }
       });
+
+      // Form submission
+      const contactForm = document.querySelector('.contact-form');
+      if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          alert('Mensagem enviada com sucesso! Nossa equipe entrará em contato em breve.');
+          this.reset();
+        });
+      }
     });
   </script>
 </body>
