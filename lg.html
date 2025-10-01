@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANTOSC - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+   <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
+   <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #6f42c1 100%);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(255, 255, 255, 0.12);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --glow-color: rgba(13, 110, 253, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Partículas animadas */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.05) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 30%);
+            animation: float 20s infinite linear;
+            z-index: 0;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-20px, 20px) rotate(90deg); }
+            50% { transform: translate(20px, -20px) rotate(180deg); }
+            75% { transform: translate(-20px, -20px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            position: relative;
+            z-index: 10;
+            animation: fadeIn 0.8s ease-out;
+            transform: translateY(0);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+        
+        .shake {
+            animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 
+                0 0 30px rgba(111, 66, 193, 0.4),
+                0 0 60px rgba(13, 110, 253, 0.3);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 30px rgba(111, 66, 193, 0.4), 0 0 60px rgba(13, 110, 253, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(111, 66, 193, 0.6), 0 0 80px rgba(13, 110, 253, 0.5); }
+            100% { box-shadow: 0 0 30px rgba(111, 66, 193, 0.4), 0 0 60px rgba(13, 110, 253, 0.3); }
+        }
+        
+        .logo i {
+            font-size: 3rem;
+            color: white;
+        }
+        
+        .login-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group-text {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+            color: white;
+            padding: 15px;
+            height: 55px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--border-color);
+            box-shadow: 0 0 0 3px var(--glow-color);
+            outline: none;
+        }
+        
+        .input-group:focus-within .input-group-text {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--border-color);
+            box-shadow: 0 0 0 3px var(--glow-color);
+        }
+        
+        .form-check-input {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .form-check-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        .btn-login {
+            background: #0d6efd;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            height: 55px;
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+        }
+        
+        .btn-login:hover {
+            background: #6f42c1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(111, 66, 193, 0.6);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .links-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .auth-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            margin: 0 15px;
+        }
+        
+        .auth-link:hover {
+            color: #0d6efd;
+            text-decoration: underline;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        .divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-color);
+        }
+        
+        .divider span {
+            background: transparent;
+            padding: 0 15px;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .logo i {
+                font-size: 2.5rem;
+            }
+            
+            .login-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-control, .btn-login {
+                height: 50px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .auth-link {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginCard">
+        <div class="logo-container">
+            <div class="logo">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <h1 class="login-title">Bem-vindo à ANTOSC</h1>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-person"></i>
+                    </span>
+                    <input type="text" class="form-control" id="username" placeholder="Usuário ou e-mail" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <input type="password" class="form-control" id="password" placeholder="Senha" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remember">
+                    <label class="form-check-label" for="remember">
+                        Lembrar-me
+                    </label>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-login btn-primary w-100">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Entrar
+            </button>
+        </form>
+        
+        <div class="divider">
+            <span>ANTOSC</span>
+        </div>
+        
+        <div class="links-container">
+            <a href="#" class="auth-link">
+                <i class="bi bi-key me-1"></i>Esqueci minha senha
+            </a>
+           
+        </div>
+    </div>
+
+</body>
+</html>

@@ -3,12 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Antosc | Sobre</title>
   <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Sobre a ANTOSC</title>
+  <meta name="description" content="A ANTOSC é referência em infraestrutura de telecomunicações em Angola. Mais de 10 anos de experiência em soluções inovadoras e confiáveis.">
+  <meta name="keywords" content="sobre ANTOSC, história telecom Angola, infraestrutura confiável">
+
+  <meta property="og:title" content="Sobre a ANTOSC">
+  <meta property="og:description" content="Mais de uma década de experiência em infraestrutura de telecomunicações em Angola.">
+  <meta property="og:image" content="https://antosc.vercel.app/imgs/og-sobre.webp">
+  <meta property="og:url" content="https://antosc.vercel.app/sobre.html">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "ANTOSC",
+  "url": "https://antosc.vercel.app",
+  "logo": "https://antosc.vercel.app/imgs/antosc-logo.png",
+  "foundingDate": "2015",
+  "description": "ANTOSC é líder em infraestrutura de telecomunicações em Angola, oferecendo soluções robustas em telecom, energia e conectividade.",
+  "contactPoint": [{
+    "@type": "ContactPoint",
+    "telephone": "+244-924-408-039",
+    "contactType": "customer service",
+    "areaServed": "AO",
+    "availableLanguage": ["pt", "en"]
+  }],
+  "address": {
+    "@type": "00000",
+    "streetAddress": " Smart Village Talatona, Zona CS1, Rota Al 19ª Talatona - Luanda Angola",
+    "addressLocality": "Luanda",
+    "addressCountry": "AO"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/company/antosc",
+    "https://www.instagram.com/antosc",
+    "https://www.facebook.com/antosc"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "Sobre a ANTOSC",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "ANTOSC",
+    "foundingDate": "2015"
+  }
+}
+</script>
   <style>
     :root {
       --primary: #0d3b66;
@@ -629,7 +677,7 @@
   <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
       <a class="navbar-brand" href="index.html">
-        <img src="imgs/Antosc.png" alt="Logo Antosc">
+        <img src="imgs/Antosc.png" loading="lazy" alt="Logo Antosc">
       </a>
 
       <button class="custom-toggler navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
@@ -644,18 +692,19 @@
           <li class="nav-item">
             <a class="nav-link" href="index.html">Inicio</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="solucao.html">Soluções</a>
+              <li class="nav-item">
+            <a class="nav-link" href="sobre.html">Sobre</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="industriais.html">Industriais</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="casos-de-sucesso.html">Casos de sucesso</a>
+            <a class="nav-link" href="solucao.html">Soluções</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="sobre.html">Sobre</a>
+            <a class="nav-link" href="sucesso.html">Casos de sucesso</a>
           </li>
+      
           <li class="nav-item">
             <a class="nav-link" href="contacto.html">contacto</a>
           </li>
@@ -688,13 +737,13 @@
       <div class="row text-center">
         <div class="col-md-3 col-6">
           <div class="stat-item">
-            <div class="stat-number">+250</div>
+            <div class="stat-number">250</div>
             <div class="stat-label">Torres Ativas</div>
           </div>
         </div>
         <div class="col-md-3 col-6">
           <div class="stat-item">
-            <div class="stat-number">18</div>
+            <div class="stat-number">21</div>
             <div class="stat-label">Províncias</div>
           </div>
         </div>
@@ -794,87 +843,98 @@
     </div>
   </section>
 
-  <!-- Timeline Section -->
-  <section class="timeline-section" id="timeline">
-    <div class="container">
-      <div class="row">
-        <div class="col-12 text-center mb-5">
-          <h2 class="section-title">Nossa História</h2>
-          <p class="text-muted">Marcos importantes em nossa trajetória de crescimento</p>
-        </div>
-      </div>
 
-      <div class="timeline">
-        <!-- 2017 -->
-        <div class="timeline-item left">
-          <div class="timeline-content">
-            <h4>2017 - Fundação</h4>
-            <p>A ANTOSC foi fundada em maio de 2017, tornando-se a primeira TowerCo de Angola, em resposta ao decreto que incentivava o compartilhamento de torres.</p>
-          </div>
-        </div>
+<!-- =========================
+     TIMELINE
+========================= -->
+<section id="timeline" class="py-5" style="background-color:#F0F2F5;">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">Nossa História</h2>
+    <div class="timeline">
 
-        <div class="timeline-item right">
-          <div class="timeline-content">
-            <h4>2017 - Primeiros Projetos</h4>
-            <p>Entre 2017 e 2019, construímos 18 torres, planejando 100 sites para 2018 e a meta ambiciosa de 450 torres até 2023.</p>
-          </div>
-        </div>
-
-        <!-- 2019 -->
-        <div class="timeline-item left">
-          <div class="timeline-content">
-            <h4>2019 - Expansão Técnica</h4>
-            <p>O ex-CEO Marcos Chaves trouxe experiência de Nortel, Alcatel-Lucent, Ericsson e Nokia, além da Unitel, onde ajudou a expandir de 850 mil para 8 milhões de clientes.</p>
-          </div>
-        </div>
-
-        <div class="timeline-item right">
-          <div class="timeline-content">
-            <h4>2019 - Licença Multisserviços</h4>
-            <p>A obtenção da Licença Multisserviços (LMS) em novembro de 2019 foi um marco, permitindo atuar com infraestruturas ativas e passivas.</p>
-          </div>
-        </div>
-
-        <!-- 2020-2021 -->
-        <div class="timeline-item left">
-          <div class="timeline-content">
-            <h4>2019-2021 - Sustentabilidade</h4>
-            <p>Investimento em soluções de energia híbrida reduziu em até 70% os custos de diesel, crucial para locais remotos com rede elétrica instável.</p>
-          </div>
-        </div>
-
-        <!-- 2022 -->
-        <div class="timeline-item right">
-          <div class="timeline-content">
-            <h4>2022 - Inovação 5G</h4>
-            <p>Inauguração de torre multiprovedor em Talatona, com suporte a 5G, atendendo clientes como Unitel e Africell.</p>
-          </div>
-        </div>
-
-        <div class="timeline-item left">
-          <div class="timeline-content">
-            <h4>2022 - Expansão de Portfólio</h4>
-            <p>Expansão do portfólio para fibra óptica wholesale, RAN Sharing e Edge Datacenters, reforçando inovação e resiliência.</p>
-          </div>
-        </div>
-
-        <!-- 2023 -->
-        <div class="timeline-item right">
-          <div class="timeline-content">
-            <h4>2023 - Crescimento</h4>
-            <p>Atingimos cerca de 150 sites, 600 colaboradores e mais de 2.500 geradores ativos em todo o território.</p>
-          </div>
-        </div>
-
-        <div class="timeline-item left">
-          <div class="timeline-content">
-            <h4>2023 - Impacto Social</h4>
-            <p>O administrador António Nunes destacou o papel da ANTOSC na expansão da agricultura digital e inclusão em áreas rurais.</p>
+      <!-- ITEM -->
+      <div class="timeline-item left">
+        <div class="timeline-content card shadow-sm">
+          <div class="card-body">
+            <h4 class="fw-bold">2017</h4>
+            <p>A ANTOSC foi fundada em <strong>maio de 2017</strong>, tornando-se a <strong>primeira TowerCo de Angola</strong>, em resposta ao decreto que incentivava o compartilhamento de torres.</p>
           </div>
         </div>
       </div>
+
+      <!-- ITEM -->
+      <div class="timeline-item right">
+        <div class="timeline-content card shadow-sm">
+          <div class="card-body">
+            <h4 class="fw-bold">2017-2019</h4>
+            <p>Construção de 18 torres iniciais, com planejamento estratégico para expansão de até <strong>450 torres até 2023</strong>, consolidando presença nacional.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM -->
+      <div class="timeline-item left">
+        <div class="timeline-content card shadow-sm">
+          <div class="card-body">
+            <h4 class="fw-bold">2019</h4>
+            <p>Obtenção da <strong>Licença Multisserviços (LMS)</strong> em novembro, permitindo operar com infraestruturas ativas e passivas, abrindo novas oportunidades de negócio.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM -->
+      <div class="timeline-item right">
+        <div class="timeline-content card shadow-sm">
+          <div class="card-body">
+            <h4 class="fw-bold">2019</h4>
+            <p>Implementação de soluções de energia híbrida, reduzindo em até <strong>70% os custos de diesel</strong> e garantindo operação sustentável em regiões remotas.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM -->
+      <div class="timeline-item left">
+        <div class="timeline-content card shadow-sm">
+          <div class="card-body">
+            <h4 class="fw-bold">2022</h4>
+            <p>Inauguração da primeira torre multiprovedor em Talatona, compatível com <strong>5G</strong>, atendendo clientes estratégicos como Unitel e Africell.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM -->
+      <div class="timeline-item right">
+        <div class="timeline-content card shadow-sm">
+          <div class="card-body">
+            <h4 class="fw-bold">2022</h4>
+            <p>Expansão para serviços de fibra óptica wholesale, <strong>RAN Sharing</strong> e Edge Datacenters, fortalecendo inovação tecnológica e resiliência da rede.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM -->
+      <div class="timeline-item left">
+        <div class="timeline-content card shadow-sm">
+          <div class="card-body">
+            <h4 class="fw-bold">2023</h4>
+            <p>Atingiu cerca de <strong>150 sites</strong>, <strong>600 colaboradores</strong> e mais de <strong>2.500 geradores ativos</strong> em todo o território nacional.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM -->
+      <div class="timeline-item right">
+        <div class="timeline-content card shadow-sm">
+          <div class="card-body">
+            <h4 class="fw-bold">2023</h4>
+            <p>A gerência atual, liderada pelo administrador <strong>António Nunes</strong>, reforçou o papel da ANTOSC na expansão da agricultura digital e inclusão tecnológica em áreas rurais.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- Leadership Section -->
   <section class="leadership">
@@ -893,7 +953,7 @@
             <img src="imgs/ceo.jpg" class="leader-img" alt="CEO">
             <div class="leader-info">
               <h5>António Nunes</h5>
-              <span class="leader-role">CEO</span>
+              <span class="leader-role">Director Executivo</span>
               <p class="small text-muted">Lidera a Antosc com foco em inovação, sustentabilidade e eficiência, consolidando a posição da empresa como referência em infraestruturas críticas em Angola.</p>
             </div>
           </div>
@@ -905,7 +965,7 @@
             <img src="imgs/tecnico - Cópia.jpg" class="leader-img" alt="Diretor Técnico">
             <div class="leader-info">
               <h5>João Baptista</h5>
-              <span class="leader-role">Diretor Técnico de Engenharia e Operações</span>
+              <span class="leader-role">Diretor de operações Técnicas</span>
               <p class="small text-muted">Responsável pela conceção, implementação e manutenção das infraestruturas, garantindo inovação tecnológica, qualidade e eficiência operacional em todo o país.</p>
             </div>
           </div>

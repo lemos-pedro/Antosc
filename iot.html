@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema MIB - Upload e Processamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --dark-bg: #121212;
+            --card-bg: #ffffff;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .login-bg {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .dashboard-bg {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .upload-card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .upload-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .file-table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .status-badge {
+            font-size: 0.85em;
+            padding: 0.5em 0.8em;
+        }
+        
+        .btn-primary-custom {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: white;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-button {
+            width: 100%;
+            background-color: #f8f9fa;
+            border: 2px dashed #ced4da;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-button:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .file-name {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div id="login-screen" class="login-bg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-card p-4 fade-in">
+                        <div class="text-center mb-4">
+                            <div class="d-flex justify-content-center align-items-center mb-3">
+                                <i class="bi bi-file-earmark-zip text-primary" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h2 class="h4 fw-bold">Sistema MIB</h2>
+                            <p class="text-muted">Faça login para continuar</p>
+                        </div>
+                        
+                        <form id="login-form">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Usuário</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" id="username" placeholder="Digite seu usuário" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Senha</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" placeholder="Digite sua senha" required>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary-custom btn-lg">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                                </button>
+                            </div>
+                            
+                            <div id="login-error" class="alert alert-danger mt-3 d-none" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <span id="login-error-text">Credenciais inválidas</span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard-screen" class="dashboard-bg d-none">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-fluid">
+                <a class="navbar-brand logo-text" href="#">
+                    <i class="bi bi-file-earmark-zip me-2"></i>
+                    MIB Manager
+                </a>
+                
+                <div class="d-flex align-items-center">
+                    <span class="text-white me-3">
+                        <i class="bi bi-person-circle me-1"></i>
+                        <span id="user-name">Usuário</span>
+                    </span>
+                    <button id="logout-btn" class="btn btn-outline-light">
+                        <i class="bi bi-box-arrow-right me-1"></i>Sair
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container py-4">
+            <!-- Upload Card -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="upload-card card fade-in">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">
+                                <i class="bi bi-cloud-upload me-2"></i>
+                                Upload de Arquivo MIB
+                            </h5>
+                            
+                            <form id="upload-form">
+                                <div class="file-input-wrapper mb-3">
+                                    <div class="file-input-button">
+                                        <i class="bi bi-folder2-open text-primary" style="font-size: 2rem;"></i>
+                                        <div class="mt-2">
+                                            <strong>Clique para selecionar</strong> ou arraste o arquivo aqui
+                                        </div>
+                                        <div class="text-muted small mt-1">
+                                            Apenas arquivos .zip são permitidos
+                                        </div>
+                                        <input type="file" id="mib-file" accept=".zip" required>
+                                    </div>
+                                </div>
+                                
+                                <div id="file-name" class="file-name text-center d-none"></div>
+                                
+                                <div id="progress-container" class="mt-3 d-none">
+                                    <div class="progress">
+                                        <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <span id="progress-text">0%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid mt-3">
+                                    <button type="submit" class="btn btn-primary-custom btn-lg" id="upload-btn">
+                                        <i class="bi bi-upload me-2"></i>
+                                        Enviar Arquivo
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <div id="upload-message" class="mt-3 d-none">
+                                <div id="success-message" class="alert alert-success d-none" role="alert">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span id="success-text">Arquivo enviado com sucesso!</span>
+                                </div>
+                                <div id="error-message" class="alert alert-danger d-none" role="alert">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <span id="error-text">Erro ao enviar arquivo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Files Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card file-table fade-in">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-list me-2"></i>
+                                Arquivos Enviados
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome do Arquivo</th>
+                                            <th>Data de Envio</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="files-table-body">
+                                        <!-- Files will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div id="no-files-message" class="text-center py-5 d-none">
+                                <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                                <p class="mt-3 text-muted">Nenhum arquivo enviado ainda</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do backend
+        const API_BASE = 'http://localhost:8000';
+        
+        // Estados da aplicação
+        let currentUser = null;
+        let authToken = null;
+        
+        // Elementos do DOM
+        const loginScreen = document.getElementById('login-screen');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        const loginForm = document.getElementById('login-form');
+        const uploadForm = document.getElementById('upload-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const mibFileInput = document.getElementById('mib-file');
+        const fileNameDisplay = document.getElementById('file-name');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const uploadBtn = document.getElementById('upload-btn');
+        const uploadMessage = document.getElementById('upload-message');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        const filesTableBody = document.getElementById('files-table-body');
+        const noFilesMessage = document.getElementById('no-files-message');
+        const userNameDisplay = document.getElementById('user-name');
+        const loginError = document.getElementById('login-error');
+        
+        // Event Listeners
+        loginForm.addEventListener('submit', handleLogin);
+        uploadForm.addEventListener('submit', handleUpload);
+        logoutBtn.addEventListener('click', handleLogout);
+        mibFileInput.addEventListener('change', handleFileSelect);
+        
+        // Funções de manipulação de eventos
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simular chamada ao backend
+            simulateLogin(username, password)
+                .then(data => {
+                    if (data.success) {
+                        currentUser = username;
+                        authToken = data.token;
+                        showDashboard();
+                    } else {
+                        showError(loginError, data.message || 'Credenciais inválidas');
+                    }
+                })
+                .catch(error => {
+                    showError(loginError, 'Erro de conexão com o servidor');
+                });
+        }
+        
+        function handleUpload(e) {
+            e.preventDefault();
+            
+            const file = mibFileInput.files[0];
+            if (!file) {
+                showError(uploadMessage, 'Por favor, selecione um arquivo');
+                return;
+            }
+            
+            // Simular upload de arquivo
+            simulateUpload(file)
+                .then(data => {
+                    if (data.success) {
+                        showSuccess(uploadMessage, 'Arquivo enviado com sucesso!');
+                        loadFiles(); // Recarregar a lista de arquivos
+                        mibFileInput.value = ''; // Limpar o input
+                        fileNameDisplay.classList.add('d-none');
+                    } else {
+                        showError(uploadMessage, data.message || 'Erro ao enviar arquivo');
+                    }
+                })
+                .catch(error => {
+                    showError(uploadMessage, 'Erro de conexão com o servidor');
+                });
+        }
+        
+        function handleLogout() {
+            currentUser = null;
+            authToken = null;
+            showLogin();
+        }
+        
+        function handleFileSelect() {
+            const file = mibFileInput.files[0];
+            if (file) {
+                fileNameDisplay.textContent = `Arquivo selecionado: ${file.name}`;
+                fileNameDisplay.classList.remove('d-none');
+            } else {
+                fileNameDisplay.classList.add('d-none');
+            }
+        }
+        
+        // Funções de navegação
+        function showLogin() {
+            loginScreen.classList.remove('d-none');
+            dashboardScreen.classList.add('d-none');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            hideError(loginError);
+        }
+        
+        function showDashboard() {
+            loginScreen.classList.add('d-none');
+            dashboardScreen.classList.remove('d-none');
+            userNameDisplay.textContent = currentUser;
+            loadFiles();
+        }
+        
+        // Funções de UI
+        function showProgress() {
+            progressContainer.classList.remove('d-none');
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = 'Enviando...';
+        }
+        
+        function hideProgress() {
+            progressContainer.classList.add('d-none');
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = 'Enviar Arquivo';
+        }
+        
+        function updateProgress(percent) {
+            progressBar.style.width = `${percent}%`;
+            progressText.textContent = `${percent}%`;
+        }
+        
+        function showSuccess(container, message) {
+            hideError(container);
+            const successDiv = container.querySelector('.alert-success') || successMessage;
+            const successText = successDiv.querySelector('span') || successDiv;
+            
+            successText.textContent = message;
+            successDiv.classList.remove('d-none');
+            container.classList.remove('d-none');
+            
+            setTimeout(() => {
+                successDiv.classList.add('d-none');
+                container.classList.add('d-none');
+            }, 5000);
+        }
+        
+        function showError(container, message) {
+            hideSuccess(container);
+            const errorDiv = container.querySelector('.alert-danger') || errorMessage;
+            const errorText = errorDiv.querySelector('span') || errorDiv;
+            
+            errorText.textContent = message;
+            errorDiv.classList.remove('d-none');
+            container.classList.remove('d-none');
+        }
+        
+        function hideSuccess(container) {
+            const successDiv = container.querySelector('.alert-success') || successMessage;
+            successDiv.classList.add('d-none');
+        }
+        
+        function hideError(container) {
+            const errorDiv = container.querySelector('.alert-danger') || loginError;
+            errorDiv.classList.add('d-none');
+        }
+        
+        // Funções de carregamento de dados
+        function loadFiles() {
+            // Simular carregamento de arquivos
+            simulateLoadFiles()
+                .then(files => {
+                    renderFilesTable(files);
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar arquivos:', error);
+                });
+        }
+        
+        function renderFilesTable(files) {
+            if (files.length === 0) {
+                filesTableBody.innerHTML = '';
+                noFilesMessage.classList.remove('d-none');
+                return;
+            }
+            
+            noFilesMessage.classList.add('d-none');
+            
+            filesTableBody.innerHTML = files.map(file => `
+                
+                    
+                        
+                        ${file.name}
+                    </td>
+                    <td>${formatDate(file.uploadDate)}
+                    
+                        
+                            ${getStatusText(file.status)}
+                        
+                    
+                    
+                        <i class="bi bi-download"></i> </button> </td> </tr> `).join(''); } function getStatusClass(status) { switch(status) { case 'processed': return 'bg-success'; case 'processing': return 'bg-warning'; case 'error': return 'bg-danger'; default: return 'bg-secondary'; } } function getStatusText(status) { switch(status) { case 'processed': return 'Processado'; case 'processing': return 'Processando'; case 'error': return 'Erro'; default: return 'Desconhecido'; } } function formatDate(dateString) { const date = new Date(dateString); return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}); } // Funções de simulação (substituir por chamadas reais à API) function simulateLogin(username, password) { return new Promise((resolve) => { setTimeout(() => { if (username === 'admin' && password === 'admin') { resolve({ success: true, token: 'fake-jwt-token-12345' }); } else { resolve({ success: false, message: 'Usuário ou senha incorretos' }); } }, 1000); }); } function simulateUpload(file) { return new Promise((resolve) => { showProgress(); // Simular progresso let progress = 0; const interval = setInterval(() => { progress += Math.random() * 15; if (progress >= 100) { progress = 100; clearInterval(interval); hideProgress(); // Simular resultado do upload setTimeout(() => { if (file.name.includes('error')) { resolve({ success: false, message: 'Erro durante o processamento do arquivo' }); } else { resolve({ success: true, message: 'Arquivo enviado com sucesso' }); } }, 500); } updateProgress(progress); }, 200); }); } function simulateLoadFiles() { return new Promise((resolve) => { setTimeout(() => { resolve([ { id: '1', name: 'mib_data_2023.zip', uploadDate: '2023-10-15T14:30:00Z', status: 'processed' }, { id: '2', name: 'backup_mib.zip', uploadDate: '2023-10-14T09:15:00Z', status: 'processing' }, { id: '3', name: 'mib_archive.zip', uploadDate: '2023-10-13T16:45:00Z', status: 'error' } ]); }, 500); }); } function downloadFile(fileId) { alert(`Download do arquivo ${fileId} iniciado`); // Implementar download real aqui } // Inicialização showLogin();
+        </script> 
+    </body>
+</html>

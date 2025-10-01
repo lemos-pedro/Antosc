@@ -3,11 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Antosc | Contacto</title>
   <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Contacto — ANTOSC</title>
+  <meta name="description" content="Entre em contacto com a ANTOSC para propostas, parcerias ou mais informações sobre soluções de telecomunicações e energia em Angola.">
+  <meta name="keywords" content="contacto ANTOSC, telecom Angola, propostas, suporte cliente">
+
+  <meta property="og:title" content="Contacto — ANTOSC">
+  <meta property="og:description" content="Fale com a equipa ANTOSC e descubra soluções personalizadas para o seu negócio.">
+  <meta property="og:image" content="https://antosc.vercel.app/imgs/og-contacto.webp">
+  <meta property="og:url" content="https://antosc.vercel.app/contacto.html">
+ <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "ANTOSC",
+  "url": "https://antosc.vercel.app",
+  "logo": "https://antoscimgs/antosc-logo.png",
+  "foundingDate": "2015",
+  "description": "ANTOSC é líder em infraestrutura de telecomunicações em Angola, oferecendo soluções robustas em telecom, energia e conectividade.",
+  "contactPoint": [{
+    "@type": "ContactPoint",
+    "telephone": "+244-924-408-039",
+    "contactType": "customer service",
+    "areaServed": "AO",
+    "availableLanguage": ["pt", "en"]
+  }],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": " Smart Village Talatona, Zona CS1, Rota Al 19ª Talatona - Luanda Angola",
+    "addressLocality": "Luanda",
+    "addressCountry": "AO"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/company/antosc",
+    "https://www.instagram.com/antosc",
+    "https://www.facebook.com/antosc"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "ANTOSC",
+    "contactPoint": [{
+      "@type": "ContactPoint",
+      "telephone": "+244-924-408-039",
+      "contactType": "sales",
+      "areaServed": "AO",
+      "availableLanguage": ["pt", "en"]
+    }]
+  }
+}
+</script>
+
   <style>
     :root {
       --primary: #0d3b66;
@@ -566,46 +620,47 @@
       <div class="row g-4">
         <div class="col-lg-8">
           <div class="contact-card">
-            <form class="contact-form">
-              <div class="row">
-                <div class="col-md-6">
-                  <input type="text" class="form-control" placeholder="Seu nome" required>
-                </div>
-                <div class="col-md-6">
-                  <input type="email" class="form-control" placeholder="Seu email" required>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <input type="tel" class="form-control" placeholder="Seu telefone">
-                </div>
-                <div class="col-md-6">
-                  <input type="text" class="form-control" placeholder="Empresa">
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <select class="form-control">
-                    <option selected>Selecione o assunto</option>
-                    <option>Solicitação de orçamento</option>
-                    <option>Parcerias comerciais</option>
-                    <option>Suporte técnico</option>
-                    <option>Carreiras</option>
-                    <option>Outros</option>
-                  </select>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <textarea class="form-control" rows="5" placeholder="Sua mensagem" required></textarea>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <button type="submit" class="btn btn-primary">Enviar Mensagem</button>
-                </div>
-              </div>
-            </form>
+            <form id="contact-form">
+  <div class="row">
+    <div class="col-md-6">
+      <input type="text" name="nome" class="form-control" placeholder="Seu nome" required>
+    </div>
+    <div class="col-md-6">
+      <input type="email" name="email" class="form-control" placeholder="Seu email" required>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <input type="tel" name="telefone" class="form-control" placeholder="Seu telefone">
+    </div>
+    <div class="col-md-6">
+      <input type="text" name="empresa" class="form-control" placeholder="Empresa">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <select name="assunto" class="form-control">
+        <option selected>Selecione o assunto</option>
+        <option>Solicitação de orçamento</option>
+        <option>Parcerias comerciais</option>
+        <option>Suporte técnico</option>
+        <option>Carreiras</option>
+        <option>Outros</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <textarea name="mensagem" class="form-control" rows="5" placeholder="Sua mensagem" required></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Enviar Mensagem</button>
+    </div>
+  </div>
+</form>
+
           </div>
         </div>
 
@@ -834,6 +889,8 @@
   </div>
 </footer>
 
+<script src="google_script.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Active nav link
@@ -856,5 +913,42 @@
       }
     });
   </script>
+ 
+<script>
+  const scriptURL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbx09wMJOhz62IyF5yD3aSvMIBz-Tz4HwegZJLB1D-rrJLbYENxhZpRrTB-puoHr36Ls/exec";
+
+  document.getElementById("contact-form").addEventListener("submit", e => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    fetch(scriptURL, {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text()) // <-- texto primeiro
+    .then(text => {
+      console.log("Resposta bruta:", text);
+      try {
+        const json = JSON.parse(text);
+        if (json.status === "success") {
+          alert("Mensagem enviada com sucesso!");
+          e.target.reset();
+        } else {
+          alert("Erro: " + (json.message || "Resposta inesperada"));
+        }
+      } catch (err) {
+        console.error("Resposta não é JSON:", text);
+        alert("Erro: resposta inválida do servidor.");
+      }
+    })
+    .catch(error => {
+      console.error("Erro ao enviar formulário:", error);
+      alert("Ocorreu um erro. Verifique a consola.");
+    });
+  });
+</script>
+
+
 </body>
 </html>

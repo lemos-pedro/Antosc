@@ -1,0 +1,69 @@
+# =========================
+# ARQUIVO .HTACCESS - ANTOSC
+# =========================
+
+# Ativa o Rewrite Engine
+RewriteEngine On
+
+# =========================
+# REDIRECIONAMENTO DE ERROS
+# =========================
+# Página 404 - Não encontrado
+ErrorDocument 404 /404.html
+
+# Página 403 - Acesso negado
+ErrorDocument 403 /403.html
+
+# Página 500 - Erro interno do servidor
+ErrorDocument 500 /500.html
+
+# =========================
+# REGRAS DE SEO E REDIRECIONAMENTOS
+# =========================
+# Redireciona www para não-www (opcional, escolha uma)
+# RewriteCond %{HTTP_HOST} ^www\.antosc\.vercel\.app [NC]
+# RewriteRule ^(.*)$ https://antosc.vercel.app/$1 [L,R=301]
+
+# Redirecionamento para HTTPS (caso não esteja configurado no servidor)
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
+
+# =========================
+# CONFIGURAÇÃO DE CACHE PARA ATIVOS ESTÁTICOS
+# =========================
+<IfModule mod_expires.c>
+  ExpiresActive On
+  # Imagens
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  # CSS e JS
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType application/x-javascript "access plus 1 month"
+  # Fontes
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# =========================
+# SEGURANÇA
+# =========================
+# Impede listagem de diretórios
+Options -Indexes
+
+# Protege .htaccess
+<Files .htaccess>
+  Require all denied
+</Files>
+
+# Protege arquivos sensíveis
+<FilesMatch "\.(htpasswd|ini|log|sh|env)$">
+  Require all denied
+</FilesMatch>
+
+# =========================
+# FIM DO ARQUIVO .HTACCESS
+# =========================

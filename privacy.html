@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidade - ANTOSC</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="shortcut icon" href="imgs/favicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      --primary-blue: #0d3b66;
+      --secondary-blue: #3498db;
+      --accent-orange: #e74c3c;
+      --light-gray: #f8f9fa;
+      --dark-gray: #343a40;
+      --white: #ffffff;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--light-gray);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      padding-top: 80px;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-blue), #1a5276);
+      box-shadow: var(--shadow-lg);
+      padding: 0.8rem 1rem;
+      transition: var(--transition);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .navbar-brand img {
+      width: 155px;
+      filter: brightness(0) invert(1);
+      transition: var(--transition);
+    }
+
+    .navbar-brand:hover img {
+      transform: scale(1.05);
+    }
+
+    .nav-link {
+      color: var(--white) !important;
+      font-weight: 500;
+      margin: 0 10px;
+      transition: var(--transition);
+      position: relative;
+      padding: 8px 0;
+    }
+
+    .nav-link:hover {
+      color: var(--secondary-blue) !important;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--secondary-blue);
+      transition: var(--transition);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Estilização personalizada do botão hamburguer */
+    .custom-toggler {
+      border: none;
+      background: transparent;
+      padding: 0;
+      width: 30px;
+      height: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .custom-toggler span {
+      display: block;
+      position: absolute;
+      height: 3px;
+      width: 100%;
+      background: var(--white);
+      border-radius: 3px;
+      opacity: 1;
+      left: 0;
+      transform: rotate(0deg);
+      transition: .25s ease-in-out;
+    }
+
+    .custom-toggler span:nth-child(1) {
+      top: 0px;
+    }
+
+    .custom-toggler span:nth-child(2) {
+      top: 8px;
+    }
+
+    .custom-toggler span:nth-child(3) {
+      top: 16px;
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(1) {
+      top: 8px;
+      transform: rotate(135deg);
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(2) {
+      opacity: 0;
+      left: -30px;
+    }
+
+    .custom-toggler[aria-expanded="true"] span:nth-child(3) {
+      top: 8px;
+      transform: rotate(-135deg);
+    }
+
+    /* Header Section */
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-blue), #1a5276);
+      color: var(--white);
+      padding: 3rem 0;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Policy Sections */
+    .policy-container {
+      max-width: 900px;
+      margin: 0 auto 3rem;
+    }
+
+    .policy-section {
+      background-color: var(--white);
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .policy-section:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .policy-header {
+      background: linear-gradient(135deg, var(--primary-blue), #1a5276);
+      color: var(--white);
+      padding: 1.5rem;
+      border-bottom: 3px solid var(--secondary-blue);
+    }
+
+    .policy-header h3 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .policy-content {
+      padding: 1.8rem;
+    }
+
+    .policy-content p {
+      margin-bottom: 0;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .policy-content a {
+      color: var(--secondary-blue);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .policy-content a:hover {
+      color: var(--accent-orange);
+      text-decoration: underline;
+    }
+
+    /* Last Update Section */
+    .last-update {
+      background: linear-gradient(135deg, var(--secondary-blue), #2980b9);
+      color: var(--white);
+      text-align: center;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+      box-shadow: var(--shadow-md);
+    }
+
+    .last-update p {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .last-update strong {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #0d3b66, #1a5276, #2c3e50);
+      padding-top: 4rem;
+      position: relative;
+      overflow: hidden;
+      color: white;
+    }
+
+    footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #3498db, #e74c3c);
+    }
+
+    footer h6 {
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+      color: white;
+    }
+
+    footer h6::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background: #3498db;
+    }
+
+    footer .text-muted {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    footer a.text-muted {
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    footer a.text-muted:hover {
+      color: white !important;
+      padding-left: 5px;
+    }
+
+    footer ul.list-unstyled li {
+      margin-bottom: 0.75rem;
+    }
+
+    footer form {
+      position: relative;
+    }
+
+    footer input.form-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 50px;
+      padding: 0.75rem 1.25rem;
+    }
+
+    footer input.form-control::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    footer input.form-control:focus {
+      background: rgba(26, 82, 118, 0.3);
+      border-color: #3498db;
+      box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+      color: white;
+    }
+
+    footer .btn-primary {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      border: none;
+      border-radius: 50px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    footer .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      background: linear-gradient(135deg, #2980b9, #3498db);
+    }
+
+    footer .fa-lg {
+      font-size: 1.5rem;
+      transition: var(--transition);
+    }
+
+    footer a:hover .fa-lg {
+      color: white !important;
+      transform: translateY(-3px);
+    }
+
+    footer hr {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    footer .small {
+      font-size: 0.875rem;
+    }
+
+    /* Responsive Improvements */
+    @media (max-width: 768px) {
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      
+      .page-header {
+        padding: 2rem 0;
+      }
+      
+      .policy-header {
+        padding: 1.2rem;
+      }
+      
+      .policy-header h3 {
+        font-size: 1.2rem;
+      }
+      
+      .policy-content {
+        padding: 1.5rem;
+      }
+      
+      body {
+        padding-top: 70px;
+      }
+      
+      footer .text-md-end {
+        text-align: left !important;
+        margin-top: 1rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .page-header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .policy-header h3 {
+        font-size: 1.1rem;
+      }
+      
+      .policy-content {
+        padding: 1.2rem;
+      }
+      
+      .policy-content p {
+        font-size: 1rem;
+      }
+    }
+
+    /* Animation for sections */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .policy-section {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .policy-section:nth-child(1) { animation-delay: 0.1s; }
+    .policy-section:nth-child(2) { animation-delay: 0.2s; }
+    .policy-section:nth-child(3) { animation-delay: 0.3s; }
+    .policy-section:nth-child(4) { animation-delay: 0.4s; }
+    .policy-section:nth-child(5) { animation-delay: 0.5s; }
+    .policy-section:nth-child(6) { animation-delay: 0.6s; }
+    .policy-section:nth-child(7) { animation-delay: 0.7s; }
+  </style>
+</head>
+<body>
+ 
+   <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="imgs/Antosc.png" loading="lazy" alt="Logo Antosc">
+      </a>
+
+      <button class="custom-toggler navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Inicio</a>
+          </li>
+              <li class="nav-item">
+            <a class="nav-link" href="sobre.html">Sobre</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="industriais.html">Industriais</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="solucao.html">Soluções</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="sucesso.html">Casos de sucesso</a>
+          </li>
+      
+          <li class="nav-item">
+            <a class="nav-link" href="contacto.html">contacto</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="container">
+      <h1><i class="bi bi-shield-lock me-3"></i>Política de Privacidade</h1>
+      <p>Comprometemo-nos com a transparência e proteção dos seus dados pessoais</p>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="container policy-container">
+    <section class="policy-section">
+      <div class="policy-header">
+        <h3><i class="bi bi-collection me-2"></i>1. Coleta de Informações</h3>
+      </div>
+      <div class="policy-content">
+        <p>Coletamos dados fornecidos diretamente por você, como nome, email e telefone, quando você preenche formulários ou entra em contato conosco. Também podemos coletar informações de navegação, cookies e dados de dispositivos para melhorar sua experiência em nosso site.</p>
+      </div>
+    </section>
+
+    <section class="policy-section">
+      <div class="policy-header">
+        <h3><i class="bi bi-gear me-2"></i>2. Uso de Informações</h3>
+      </div>
+      <div class="policy-content">
+        <p>As informações coletadas são usadas para: melhorar nossos serviços, personalizar a experiência do usuário, fornecer suporte técnico e enviar comunicações relevantes sobre nossos produtos e serviços. Garantimos que nunca venderemos seus dados a terceiros sem consentimento explícito.</p>
+      </div>
+    </section>
+
+    <section class="policy-section">
+      <div class="policy-header">
+        <h3><i class="bi bi-people me-2"></i>3. Compartilhamento de Dados</h3>
+      </div>
+      <div class="policy-content">
+        <p>Podemos compartilhar dados com parceiros confiáveis que auxiliam na prestação de serviços ou na análise de dados. Todos os parceiros são rigorosamente selecionados e obrigados a manter a confidencialidade e segurança das informações conforme padrões regulatórios aplicáveis.</p>
+      </div>
+    </section>
+
+    <section class="policy-section">
+      <div class="policy-header">
+        <h3><i class="bi bi-shield-check me-2"></i>4. Segurança dos Dados</h3>
+      </div>
+      <div class="policy-content">
+        <p>Implementamos medidas técnicas e administrativas avançadas para proteger suas informações contra acessos não autorizados, alterações ou vazamentos. Nossos sistemas são regularmente auditados e atualizados para garantir a máxima segurança dos dados pessoais.</p>
+      </div>
+    </section>
+
+    <section class="policy-section">
+      <div class="policy-header">
+        <h3><i class="bi bi-person-circle me-2"></i>5. Direitos do Usuário</h3>
+      </div>
+      <div class="policy-content">
+        <p>Você tem o direito de solicitar acesso, correção, portabilidade ou exclusão dos seus dados pessoais a qualquer momento. Para exercer seus direitos ou esclarecer dúvidas sobre nossa política de privacidade, entre em contato com nossa equipe através do email <a href="mailto:privacidade@antosc.com">privacidade@antosc.com</a>.</p>
+      </div>
+    </section>
+
+    <section class="policy-section">
+      <div class="policy-header">
+        <h3><i class="bi bi-cookie me-2"></i>6. Cookies e Tecnologias Semelhantes</h3>
+      </div>
+      <div class="policy-content">
+        <p>Utilizamos cookies e tecnologias semelhantes para melhorar a experiência do usuário, analisar o desempenho do site e personalizar conteúdos relevantes. Você pode gerenciar suas preferências de cookies diretamente nas configurações do seu navegador a qualquer momento.</p>
+      </div>
+    </section>
+
+    <section class="policy-section">
+      <div class="policy-header">
+        <h3><i class="bi bi-pencil-square me-2"></i>7. Alterações nesta Política</h3>
+      </div>
+      <div class="policy-content">
+        <p>Esta política pode ser atualizada periodicamente para refletir mudanças em nossas práticas ou requisitos legais. Recomendamos revisar esta página regularmente para estar informado sobre quaisquer alterações importantes em nossa abordagem à privacidade de dados.</p>
+      </div>
+    </section>
+
+   
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light pt-5">
+    <div class="container">
+      <div class="row gy-4">
+        <!-- Coluna: Marca + Descrição -->
+        <div class="col-md-4">
+          <a href="index.html" class="d-inline-flex align-items-center mb-3 text-decoration-none">
+            <img src="imgs/Antosc.png" loading="lazy" alt="ANTOSC logo" style="height:48px;" class="me-2">
+          </a>
+          <p class="small text-muted">
+            Infraestrutura crítica que sustenta a conectividade de Angola — partilha de torres, energia e serviços com SLAs rigorosos.
+          </p>
+
+          <ul class="list-unstyled small">
+            <li><strong>Endereço:</strong> Smart Village Talatona, Zona CS1, Rota Al 19ª Talatona - Luanda Angola</li>
+            <li><strong>Tel:</strong> +244 924 408 039</li>
+            <li><strong>Email:</strong> <a href="mailto:geral@antosc.co.ao" class="text-muted text-decoration-underline">info@antosc.co.ao</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna: Links rápidos (sitemap) -->
+        <div class="col-md-2">
+          <h6 class="text-white fw-bold">Explorar</h6>
+          <ul class="list-unstyled">
+            <li><a href="index.html" class="text-muted text-decoration-none">Início</a></li>
+            <li><a href="solucao.html" class="text-muted text-decoration-none">Soluções</a></li>
+            <li><a href="sucesso.html" class="text-muted text-decoration-none">Casos de Sucesso</a></li>
+            <li><a href="sobre.html" class="text-muted text-decoration-none">Sobre</a></li>
+            <li><a href="contacto.html" class="text-muted text-decoration-none">Contacto</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna: Serviços / Indústrias -->
+        <div class="col-md-2">
+          <h6 class="text-white fw-bold">Serviços</h6>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-muted text-decoration-none">Tower Sharing</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">Energia & Serviços</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">RAN Sharing</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">Soluções para ISPs</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna: Newsletter + Redes Sociais -->
+        <div class="col-md-4">
+          <h6 class="text-white fw-bold">Newsletter</h6>
+          <p class="small text-muted">Receba atualizações sobre projetos, parcerias e inovações. Sem spam — apenas informação relevante.</p>
+
+          <form action="/subscribe" method="post" class="d-flex" aria-label="Formulário de subscrição da newsletter">
+            <label for="footer-email" class="visually-hidden">Email</label>
+            <input id="footer-email" name="email" type="email" required class="form-control me-2" placeholder="seu.email@exemplo.com" aria-required="true">
+            <button type="submit" class="btn btn-primary">Subscrever</button>
+          </form>
+
+          <div class="mt-3">
+            <h6 class="text-white fw-bold mb-2">Siga-nos</h6>
+            <nav aria-label="Redes sociais">
+              <a href="https://www.linkedin.com/company/antosc/posts/?feedView=all" class="me-2 text-muted text-decoration-none" aria-label="LinkedIn ANTOSC" target="_blank" rel="noopener">
+                <i class="fab fa-linkedin fa-lg"></i>
+              </a>
+              <a href="https://www.youtube.com/" class="me-2 text-muted text-decoration-none" aria-label="YouTube ANTOSC" target="_blank" rel="noopener">
+                <i class="fab fa-youtube fa-lg"></i>
+              </a>
+              <a href="#" class="me-2 text-muted text-decoration-none" aria-label="Twitter ANTOSC" target="_blank" rel="noopener">
+                <i class="fab fa-x-twitter fa-lg"></i>
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-secondary my-4">
+
+      <div class="row align-items-center">
+        <div class="col-md-6 small text-muted">
+          © <span id="year">2025</span> ANTOSC S.A. — Todos os direitos reservados. 
+        </div>
+        
+        <div class="col-md-6 text-md-end">
+          <a href="privacy.html" class="text-muted text-decoration-none small me-3">Política de Privacidade</a>
+          <a href="/terms.html" class="text-muted text-decoration-none small me-3">Termos & Condições</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- BOOTSTRAP JS E DEPENDÊNCIAS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Smooth scroll para links internos
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Adicionar classe ativa ao menu durante scroll
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        navbar.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
+      } else {
+        navbar.style.boxShadow = 'var(--shadow-lg)';
+      }
+    });
+
+    // Atualizar ano no footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
