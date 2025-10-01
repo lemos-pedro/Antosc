@@ -1,0 +1,19 @@
+# IDE
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+
+# Node / Frontend
+node_modules/
+bootstrap-*/
+
+# Sistema
+.DS_Store
+Thumbs.db
