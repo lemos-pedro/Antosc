@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  build-test-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: towercore/go.mod
+          cache: true
+          cache-dependency-path: towercore/go.sum
+
+      - name: Unit Tests
+        working-directory: towercore
+        run: go test ./...
+
+      - name: Prepare Auth Env
+        run: |
+          AUTH_KEY="ci-key"
+          AUTH_HASH=$(printf "%s" "$AUTH_KEY" | sha256sum | awk '{print $1}')
+          sed -i "s|^AUTH_API_KEY_HASH=.*|AUTH_API_KEY_HASH=${AUTH_HASH}|" .env
+          sed -i "s|^AUTH_BEARER_TOKEN=.*|AUTH_BEARER_TOKEN=ci-token|" .env
+          sed -i "s|^SNMP_SECRET_KEY=.*|SNMP_SECRET_KEY=ci-super-secret-key|" .env
+
+      - name: Build API Image
+        run: docker compose -f docker-compose.yml build api
+
+      - name: Start Stack
+        run: docker compose -f docker-compose.yml up -d
+
+      - name: Smoke Test
+        run: |
+          set -e
+          sleep 8
+          curl -fsS http://localhost:8000/health
+          curl -fsS -X POST http://localhost:8000/api/v1/towers \
+            -H "X-API-Key: ci-key" \
+            -H "Authorization: Bearer ci-token" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"Tower-CI-01","status":"online","vendor":"eltek","snmp_enabled":false}'
+          curl -fsS http://localhost:8000/api/v1/towers
+          curl -fsS -X POST http://localhost:8000/api/v1/events \
+            -H "X-API-Key: ci-key" \
+            -H "Authorization: Bearer ci-token" \
+            -H "Content-Type: application/json" \
+            -d '{"tower_id":"00000000-0000-0000-0000-000000000001","type":"alarm","severity":"warning","message":"ci-event"}'
+          curl -fsS -X POST http://localhost:8000/api/v1/metrics \
+            -H "X-API-Key: ci-key" \
+            -H "Authorization: Bearer ci-token" \
+            -H "Content-Type: application/json" \
+            -d '{"tower_id":"00000000-0000-0000-0000-000000000001","metrics":{"voltage":48.1}}'
+          curl -fsS http://localhost:8000/api/v1/events
+          curl -fsS http://localhost:8000/api/v1/metrics
+          curl -fsS http://localhost:8000/api/v1/audit-logs \
+            -H "X-API-Key: ci-key" \
+            -H "Authorization: Bearer ci-token"
+
+      - name: Teardown
+        if: always()
+        run: docker compose -f docker-compose.yml down -v

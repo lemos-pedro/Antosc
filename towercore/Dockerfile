@@ -2,8 +2,10 @@ FROM golang:1.22-alpine AS builder
 WORKDIR /app
 
 COPY go.mod ./
+COPY go.sum ./
 COPY cmd ./cmd
 COPY internal ./internal
+COPY migrations ./migrations
 COPY pkg ./pkg
 
 RUN go build -o towercore ./cmd/api

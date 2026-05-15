@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     environment:
       POSTGRES_DB: antosc
       POSTGRES_USER: postgres
@@ -24,6 +24,11 @@ services:
       - ./.env
     environment:
       DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: antosc
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SSL_MODE: disable
     ports:
       - "8000:8000"
     depends_on:

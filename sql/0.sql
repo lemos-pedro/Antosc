@@ -17,11 +17,32 @@ CREATE TABLE IF NOT EXISTS operators (
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS users (
+    user_id        UUID PRIMARY KEY,
+    username       TEXT NOT NULL UNIQUE,
+    password_hash  TEXT NOT NULL,
+    role           TEXT NOT NULL DEFAULT 'viewer',
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+
 CREATE TABLE IF NOT EXISTS towers (
     tower_id         UUID PRIMARY KEY,
     name             TEXT NOT NULL,
     status           TEXT NOT NULL DEFAULT 'offline'
                         CHECK (status IN ('online','degraded','offline')),
+    vendor           TEXT NOT NULL DEFAULT '',
+    snmp_enabled     BOOLEAN NOT NULL DEFAULT FALSE,
+    snmp_version     TEXT NOT NULL DEFAULT 'v2c',
+    snmp_target      TEXT NOT NULL DEFAULT '',
+    snmp_community   TEXT NOT NULL DEFAULT '',
+    snmp_v3_user     TEXT NOT NULL DEFAULT '',
+    snmp_auth_protocol TEXT NOT NULL DEFAULT '',
+    snmp_auth_password TEXT NOT NULL DEFAULT '',
+    snmp_priv_protocol TEXT NOT NULL DEFAULT '',
+    snmp_priv_password TEXT NOT NULL DEFAULT '',
     operator_id      UUID REFERENCES operators(operator_id) ON DELETE SET NULL,
     region_id        UUID REFERENCES regions(region_id) ON DELETE SET NULL,
     availability_30d NUMERIC(5,2) NOT NULL DEFAULT 100.00,
@@ -67,12 +88,14 @@ CREATE TABLE IF NOT EXISTS metrics (
 
 CREATE INDEX IF NOT EXISTS idx_metrics_tower_collected ON metrics(tower_id, collected_at DESC);
 
--- +goose StatementEnd
+CREATE TABLE IF NOT EXISTS audit_logs (
+    audit_id      UUID PRIMARY KEY,
+    actor         TEXT NOT NULL,
+    action        TEXT NOT NULL,
+    resource      TEXT NOT NULL,
+    resource_id   TEXT NOT NULL,
+    details       TEXT NOT NULL DEFAULT '',
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
--- +goose Down
-DROP TABLE IF EXISTS metrics;
-DROP TABLE IF EXISTS tickets;
-DROP TABLE IF EXISTS events;
-DROP TABLE IF EXISTS towers;
-DROP TABLE IF EXISTS operators;
-DROP TABLE IF EXISTS regions;
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC);

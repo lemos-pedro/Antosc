@@ -2,9 +2,12 @@ package interfaces
 
 import (
 	"context"
+	"errors"
 
 	"towercore/internal/core/domain"
 )
+
+var ErrTowerNotFound = errors.New("tower not found")
 
 // TowerFilter define os filtros aceites na listagem de torres.
 type TowerFilter struct {

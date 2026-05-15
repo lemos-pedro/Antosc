@@ -15,6 +15,9 @@ Variaveis de ambiente previstas para a primeira versao do backend.
 - `DB_USER`
 - `DB_PASSWORD`
 - `DB_SSL_MODE` (default sugerido: `disable` em dev)
+- `DB_MAX_OPEN_CONNS` (default: `10`)
+- `DB_MAX_IDLE_CONNS` (default: `5`)
+- `DB_CONN_MAX_LIFETIME_MINUTES` (default: `30`)
 
 ## Cache (opcional na v1)
 - `REDIS_HOST`
@@ -29,6 +32,10 @@ Variaveis de ambiente previstas para a primeira versao do backend.
 ## Integracoes
 - `SNMP_TIMEOUT_SECONDS`
 - `SNMP_RETRIES`
+
+## Limites de escrita
+- `RATE_LIMIT_WRITE_PER_MINUTE`
+  - `0` desativa o rate limiting para ambientes de teste/carga.
 
 ## Boas praticas
 - Nunca versionar segredos em texto puro.

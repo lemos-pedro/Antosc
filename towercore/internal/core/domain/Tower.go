@@ -18,6 +18,16 @@ type Tower struct {
 	Status          TowerStatus `json:"status"`
 	OperatorID      string      `json:"operator_id"`
 	RegionID        string      `json:"region_id"`
+	Vendor          string      `json:"vendor,omitempty"`
+	SNMPEnabled     bool        `json:"snmp_enabled,omitempty"`
+	SNMPVersion     string      `json:"snmp_version,omitempty"`
+	SNMPTarget      string      `json:"snmp_target,omitempty"`
+	SNMPCommunity   string      `json:"-"`
+	SNMPV3User      string      `json:"snmp_v3_user,omitempty"`
+	SNMPAuthProto   string      `json:"snmp_auth_protocol,omitempty"`
+	SNMPAuthPass    string      `json:"-"`
+	SNMPPrivProto   string      `json:"snmp_priv_protocol,omitempty"`
+	SNMPPrivPass    string      `json:"-"`
 	Availability30d float64     `json:"availability_30d,omitempty"`
 	UpdatedAt       time.Time   `json:"updated_at"`
 	CreatedAt       time.Time   `json:"created_at"`

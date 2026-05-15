@@ -1,4 +1,4 @@
-.PHONY: build run test fmt migrate-up docker-up docker-down
+.PHONY: build run test fmt migrate-up migrate-snmp migrate-audit seed-dev docker-up docker-down
 
 BINARY=towercore
 CMD=./cmd/api
@@ -20,8 +20,17 @@ fmt:
 migrate-up:
 	psql "$(DB_URL)" -f ../sql/0.sql
 
+migrate-snmp:
+	psql "$(DB_URL)" -f ../sql/1_alter_towers_snmp.sql
+
+migrate-audit:
+	psql "$(DB_URL)" -f ../sql/2_audit_logs.sql
+
+seed-dev:
+	psql "$(DB_URL)" -f ../sql/seed_dev.sql
+
 docker-up:
-	docker compose -f ../DockerCompose.yml up -d --build
+	docker compose -f ../docker-compose.yml up -d --build
 
 docker-down:
-	docker compose -f ../DockerCompose.yml down
+	docker compose -f ../docker-compose.yml down
