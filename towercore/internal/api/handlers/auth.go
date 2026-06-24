@@ -19,6 +19,7 @@ func NewAuthHandler(service *services.AuthService) *AuthHandler {
 
 type loginRequest struct {
 	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -46,9 +47,14 @@ func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	identifier := strings.TrimSpace(req.Username)
+	if identifier == "" {
+		identifier = strings.TrimSpace(req.Email)
+	}
+
 	token, user, expiresAt, err := h.service.Login(
 		r.Context(),
-		strings.TrimSpace(req.Username),
+		identifier,
 		strings.TrimSpace(req.Password),
 	)
 	if err != nil {

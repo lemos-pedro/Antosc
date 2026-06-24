@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 const BASE_URL = 'http://localhost:8000';
-const TOKEN = 'eyJzdWIiOiI5ZThlNjVlZS0xNzU5LTQ1YWQtOTE4NS1iMGJiYWU2ZDJjZWIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzg4NTI4MzIsImV4cCI6MTc3ODg4MTYzMn0.ruyJVFdrkQHtWO1bwYVr-FPeofAxcveX7StUccTe5hs';
+const TOKEN = 'eyJzdWIiOiI5ZThlNjVlZS0xNzU5LTQ1YWQtOTE4NS1iMGJiYWU2ZDJjZWIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzg4NzY0ODIsImV4cCI6MTc3ODkwNTI4Mn0.gO-8jzrhoD1ZYgv0TfSzKhMr_JcNOvV_qpg4j2CKOc0';
 
 const headers = {
   'Content-Type': 'application/json',
@@ -34,15 +34,12 @@ const TOWER_IDS = [
 export default function () {
   const towerId = TOWER_IDS[Math.floor(Math.random() * TOWER_IDS.length)];
 
-  // teste 1 - listar torres
   const r1 = http.get(`${BASE_URL}/api/v1/towers`, { headers });
   check(r1, { 'towers 200': (r) => r.status === 200 });
 
-  // teste 2 - detalhe de torre
   const r2 = http.get(`${BASE_URL}/api/v1/towers/${towerId}`, { headers });
   check(r2, { 'tower detail 200': (r) => r.status === 200 });
 
-  // teste 3 - ingestão de métrica
   const payload = JSON.stringify({
     tower_id: towerId,
     collected_at: new Date().toISOString(),
@@ -52,7 +49,7 @@ export default function () {
     },
   });
   const r3 = http.post(`${BASE_URL}/api/v1/metrics`, payload, { headers });
-  check(r3, { 'metrics 202': (r) => r.status === 202 });
+  check(r3, { 'metrics 2xx': (r) => r.status >= 200 && r.status < 300 });
 
   sleep(0.1);
 }

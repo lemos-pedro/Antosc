@@ -24,17 +24,19 @@ func (r *UserRepository) GetByUsername(ctx context.Context, username string) (*d
 SELECT
 	user_id::text,
 	username,
+	COALESCE(email, ''),
 	password_hash,
 	role,
 	created_at,
 	updated_at
 FROM users
-WHERE username = $1`
+WHERE username = $1 OR email = $1`
 
 	var u domain.User
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
 		&u.ID,
 		&u.Username,
+		&u.Email,
 		&u.PasswordHash,
 		&u.Role,
 		&u.CreatedAt,
@@ -55,21 +57,46 @@ func (r *UserRepository) Upsert(ctx context.Context, user *domain.User) error {
 
 	const query = `
 INSERT INTO users (
-	user_id, username, password_hash, role, created_at, updated_at
+	user_id, username, email, password_hash, role, created_at, updated_at
 ) VALUES (
-	$1::uuid, $2, $3, $4, $5, $6
+	$1::uuid, $2, $3, $4, $5, $6, $7
 )
 ON CONFLICT (username) DO UPDATE
 SET
+	email         = EXCLUDED.email,
 	password_hash = EXCLUDED.password_hash,
-	role = EXCLUDED.role,
-	updated_at = EXCLUDED.updated_at`
+	role          = EXCLUDED.role,
+	updated_at    = EXCLUDED.updated_at`
 
 	_, err := r.db.ExecContext(
-		ctx,
-		query,
+		ctx, query,
 		user.ID,
 		user.Username,
+		user.Email,
+		user.PasswordHash,
+		user.Role,
+		user.CreatedAt,
+		user.UpdatedAt,
+	)
+	return err
+}
+
+func (r *UserRepository) Create(ctx context.Context, user *domain.User) error {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+INSERT INTO users (
+	user_id, username, email, password_hash, role, created_at, updated_at
+) VALUES (
+	$1::uuid, $2, $3, $4, $5, $6, $7
+)`
+
+	_, err := r.db.ExecContext(
+		ctx, query,
+		user.ID,
+		user.Username,
+		user.Email,
 		user.PasswordHash,
 		user.Role,
 		user.CreatedAt,

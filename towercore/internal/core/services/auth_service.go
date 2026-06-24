@@ -52,6 +52,7 @@ func (s *AuthService) EnsureBootstrapUser(ctx context.Context, username, passwor
 	return s.repo.Upsert(ctx, &domain.User{
 		ID:           id,
 		Username:     username,
+		Email:        username + "@antosc.ao",
 		PasswordHash: hash,
 		Role:         role,
 		CreatedAt:    now,

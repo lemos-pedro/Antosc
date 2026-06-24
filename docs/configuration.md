@@ -8,6 +8,10 @@ Variaveis de ambiente previstas para a primeira versao do backend.
 - `APP_PORT` (default: `8080`)
 - `LOG_LEVEL` (`debug`, `info`, `warn`, `error`)
 
+## Cache
+- `CACHE_TOWER_LIST_TTL_SECONDS` (default: `5`)
+- `CACHE_TOWER_DETAIL_TTL_SECONDS` (default: `10`)
+
 ## Base de dados
 - `DB_HOST`
 - `DB_PORT`
@@ -25,6 +29,7 @@ Variaveis de ambiente previstas para a primeira versao do backend.
 - `REDIS_PASSWORD`
 
 ## Scheduler
+- `SCHEDULER_ENABLED` (default: `true`)
 - `POLL_INTERVAL_SECONDS` (ex.: `60`)
 - `POLL_BATCH_SIZE` (ex.: `100`)
 - `POLL_TIMEOUT_SECONDS` (ex.: `10`)

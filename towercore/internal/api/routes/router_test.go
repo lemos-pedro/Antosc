@@ -17,6 +17,7 @@ import (
 	"towercore/internal/core/services"
 	"towercore/internal/infrastructure/config"
 	"towercore/internal/infrastructure/logger"
+	"towercore/internal/observability"
 )
 
 const (
@@ -71,7 +72,11 @@ func newRouterForTest() http.Handler {
 	authSvc := services.NewAuthService(authRepo, cfg.Auth.UserTokenSecret, time.Hour)
 	_ = authSvc.EnsureBootstrapUser(context.Background(), "admin", "admin123", "admin")
 	authHandler := handlers.NewAuthHandler(authSvc)
-	return NewRouter(cfg, log, towerHandler, eventHandler, metricHandler, snmpCollectHandler, auditHandler, authHandler)
+	metrics, err := observability.New(cfg.AppName, nil)
+	if err != nil {
+		panic(err)
+	}
+	return NewRouter(cfg, log, metrics, towerHandler, eventHandler, metricHandler, snmpCollectHandler, auditHandler, authHandler)
 }
 
 func TestRouter_HealthRoutes(t *testing.T) {
@@ -94,6 +99,16 @@ func TestRouter_HealthRoutes(t *testing.T) {
 				t.Fatalf("expected status %d for %s, got %d", http.StatusOK, tt.path, rec.Code)
 			}
 		})
+	}
+}
+
+func TestRouter_PrometheusMetricsRoute(t *testing.T) {
+	router := newRouterForTest()
+	req := httptest.NewRequest(http.MethodGet, "/metrics", nil)
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, rec.Code)
 	}
 }
 

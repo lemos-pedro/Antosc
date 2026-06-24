@@ -18,6 +18,15 @@ type TowerFilter struct {
 	Offset     int
 }
 
+type TowerCache interface {
+	GetList(filter TowerFilter) ([]domain.Tower, int, bool)
+	SetList(filter TowerFilter, towers []domain.Tower, total int)
+	GetByID(id string) (*domain.Tower, bool)
+	SetByID(tower *domain.Tower)
+	InvalidateTower(id string)
+	InvalidateList()
+}
+
 // TowerRepository define o contrato de persistência para torres.
 type TowerRepository interface {
 	List(ctx context.Context, filter TowerFilter) ([]domain.Tower, int, error)

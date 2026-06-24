@@ -28,3 +28,10 @@ Guia operacional minimo para ambientes de desenvolvimento e pre-producao.
 - Logs estruturados com nivel e contexto.
 - Metricas de disponibilidade, falha e latencia.
 - Painel de saude por torre e por adapter.
+
+## Observabilidade local
+- Prometheus disponivel em `http://localhost:9090`.
+- Grafana disponivel em `http://localhost:3000`.
+- Endpoint de scrape da API em `GET /metrics`.
+- A API expoe metricas HTTP por rota/metodo/status e metricas do pool do Postgres.
+- Dashboard provisionado: `Antosc Load Overview`.

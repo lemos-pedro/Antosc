@@ -3,6 +3,9 @@ package services
 import (
 	"context"
 	"errors"
+	"net"
+	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -12,15 +15,20 @@ import (
 
 type TowerService struct {
 	repo      interfaces.TowerRepository
+	cache     interfaces.TowerCache
 	auditRepo interfaces.AuditRepository
 }
 
 func NewTowerService(repo interfaces.TowerRepository, auditRepo ...interfaces.AuditRepository) *TowerService {
+	return NewTowerServiceWithCache(repo, nil, auditRepo...)
+}
+
+func NewTowerServiceWithCache(repo interfaces.TowerRepository, cache interfaces.TowerCache, auditRepo ...interfaces.AuditRepository) *TowerService {
 	var ar interfaces.AuditRepository
 	if len(auditRepo) > 0 {
 		ar = auditRepo[0]
 	}
-	return &TowerService{repo: repo, auditRepo: ar}
+	return &TowerService{repo: repo, cache: cache, auditRepo: ar}
 }
 
 func (s *TowerService) List(ctx context.Context, filter interfaces.TowerFilter) ([]domain.Tower, int, error) {
@@ -30,7 +38,24 @@ func (s *TowerService) List(ctx context.Context, filter interfaces.TowerFilter) 
 	if filter.Offset < 0 {
 		filter.Offset = 0
 	}
-	return s.repo.List(ctx, filter)
+	if s.cache != nil {
+		if towers, total, ok := s.cache.GetList(filter); ok {
+			return towers, total, nil
+		}
+	}
+
+	towers, total, err := s.repo.List(ctx, filter)
+	if err != nil {
+		return nil, 0, err
+	}
+	if s.cache != nil {
+		s.cache.SetList(filter, towers, total)
+		for i := range towers {
+			tower := towers[i]
+			s.cache.SetByID(&tower)
+		}
+	}
+	return towers, total, nil
 }
 
 func (s *TowerService) GetByID(ctx context.Context, id string) (*domain.Tower, error) {
@@ -38,7 +63,20 @@ func (s *TowerService) GetByID(ctx context.Context, id string) (*domain.Tower, e
 	if id == "" {
 		return nil, errors.New("tower_id is required")
 	}
-	return s.repo.GetByID(ctx, id)
+	if s.cache != nil {
+		if tower, ok := s.cache.GetByID(id); ok {
+			return tower, nil
+		}
+	}
+
+	tower, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if s.cache != nil {
+		s.cache.SetByID(tower)
+	}
+	return tower, nil
 }
 
 func (s *TowerService) Save(ctx context.Context, tower *domain.Tower) error {
@@ -67,6 +105,9 @@ func (s *TowerService) Save(ctx context.Context, tower *domain.Tower) error {
 		return errors.New("vendor is required when snmp_enabled=true")
 	}
 	if tower.SNMPEnabled {
+		if err := validateSNMPTarget(tower.SNMPTarget); err != nil {
+			return err
+		}
 		if err := validateSNMPCredentials(tower); err != nil {
 			return err
 		}
@@ -86,7 +127,11 @@ func (s *TowerService) Save(ctx context.Context, tower *domain.Tower) error {
 	}
 	tower.UpdatedAt = now
 
-	return s.repo.Upsert(ctx, tower)
+	if err := s.repo.Upsert(ctx, tower); err != nil {
+		return err
+	}
+	s.invalidateTowerCache(tower.ID)
+	return nil
 }
 
 func (s *TowerService) ConfigureSNMP(
@@ -121,6 +166,9 @@ func (s *TowerService) ConfigureSNMP(
 		if tower.SNMPTarget == "" {
 			return nil, errors.New("snmp_target is required when snmp_enabled=true")
 		}
+		if err := validateSNMPTarget(tower.SNMPTarget); err != nil {
+			return nil, err
+		}
 		if err := validateSNMPCredentials(tower); err != nil {
 			return nil, err
 		}
@@ -130,6 +178,7 @@ func (s *TowerService) ConfigureSNMP(
 	if err := s.repo.Upsert(ctx, tower); err != nil {
 		return nil, err
 	}
+	s.invalidateTowerCache(tower.ID)
 	if s.auditRepo != nil {
 		entry := &domain.AuditLog{
 			Actor:      safeActor(actor),
@@ -146,6 +195,14 @@ func (s *TowerService) ConfigureSNMP(
 		}
 	}
 	return tower, nil
+}
+
+func (s *TowerService) invalidateTowerCache(towerID string) {
+	if s.cache == nil {
+		return
+	}
+	s.cache.InvalidateTower(towerID)
+	s.cache.InvalidateList()
 }
 
 func safeActor(actor string) string {
@@ -182,6 +239,55 @@ func validateSNMPCredentials(tower *domain.Tower) error {
 		}
 	default:
 		return errors.New("snmp_version must be v2c or v3")
+	}
+	return nil
+}
+
+func validateSNMPTarget(target string) error {
+	hostPort := strings.TrimSpace(target)
+	if hostPort == "" {
+		return errors.New("snmp_target is required when snmp_enabled=true")
+	}
+
+	if strings.Contains(hostPort, "://") {
+		parsed, err := url.Parse(hostPort)
+		if err != nil {
+			return errors.New("snmp_target must be a valid IP, hostname, or udp://host[:port]")
+		}
+		switch strings.ToLower(parsed.Scheme) {
+		case "udp", "snmp":
+		default:
+			return errors.New("snmp_target scheme must be udp or snmp")
+		}
+		hostPort = parsed.Host
+	}
+
+	host := hostPort
+	if h, p, err := net.SplitHostPort(hostPort); err == nil {
+		host = h
+		if err := validateSNMPPort(p); err != nil {
+			return err
+		}
+	} else if strings.Contains(err.Error(), "too many colons") {
+		if net.ParseIP(hostPort) == nil {
+			return errors.New("snmp_target must be a valid IP, hostname, or host:port")
+		}
+	}
+
+	host = strings.Trim(host, "[]")
+	if host == "" {
+		return errors.New("snmp_target host is required")
+	}
+	if strings.ContainsAny(host, "/ \t\r\n") {
+		return errors.New("snmp_target must be a valid IP, hostname, or host:port")
+	}
+	return nil
+}
+
+func validateSNMPPort(raw string) error {
+	port, err := strconv.Atoi(strings.TrimSpace(raw))
+	if err != nil || port < 1 || port > 65535 {
+		return errors.New("snmp_target port must be between 1 and 65535")
 	}
 	return nil
 }

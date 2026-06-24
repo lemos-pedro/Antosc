@@ -17,6 +17,7 @@ import (
 	"towercore/internal/api/handlers"
 	"towercore/internal/core/services"
 	"towercore/internal/infrastructure/logger"
+	"towercore/internal/observability"
 )
 
 func TestSmoke_Flow(t *testing.T) {
@@ -41,10 +42,15 @@ func TestSmoke_Flow(t *testing.T) {
 	authSvc := services.NewAuthService(authRepo, cfg.Auth.UserTokenSecret, time.Hour)
 	_ = authSvc.EnsureBootstrapUser(context.Background(), "admin", "admin123", "admin")
 	authHandler := handlers.NewAuthHandler(authSvc)
+	metrics, err := observability.New(cfg.AppName, nil)
+	if err != nil {
+		t.Fatalf("failed to initialize observability: %v", err)
+	}
 
-	router := NewRouter(cfg, log, towerHandler, eventHandler, metricHandler, snmpCollectHandler, auditHandler, authHandler)
+	router := NewRouter(cfg, log, metrics, towerHandler, eventHandler, metricHandler, snmpCollectHandler, auditHandler, authHandler)
 
 	assertStatus(t, router, http.MethodGet, "/health", nil, http.StatusOK)
+	assertStatus(t, router, http.MethodGet, "/metrics", nil, http.StatusOK)
 	assertStatus(t, router, http.MethodPost, "/api/v1/auth/login", []byte(`{"username":"admin","password":"admin123"}`), http.StatusOK)
 	assertStatus(t, router, http.MethodPost, "/api/v1/towers", []byte(`{"name":"Tower-SMOKE-01","status":"online"}`), http.StatusCreated)
 	assertStatus(t, router, http.MethodGet, "/api/v1/towers?status=online&limit=10&offset=0", nil, http.StatusOK)

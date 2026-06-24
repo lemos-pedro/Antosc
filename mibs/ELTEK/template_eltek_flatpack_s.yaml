@@ -616,7 +616,7 @@ zabbix_export:
           value: '0'
         -
           macro: '{$SNMP_COMMUNITY}'
-          value: public
+          value: Antosc-noc
           description: 'SNMPv2 read only community'
       valuemaps:
         -

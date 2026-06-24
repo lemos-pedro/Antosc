@@ -15,10 +15,12 @@ import (
 	"towercore/internal/api/handlers"
 	"towercore/internal/api/routes"
 	"towercore/internal/core/services"
+	"towercore/internal/infrastructure/cache"
 	"towercore/internal/infrastructure/config"
 	"towercore/internal/infrastructure/database"
 	"towercore/internal/infrastructure/logger"
 	"towercore/internal/infrastructure/security"
+	"towercore/internal/observability"
 	"towercore/internal/scheduler"
 )
 
@@ -36,6 +38,11 @@ func main() {
 		log.Fatalf("failed to apply database migrations: %v", err)
 	}
 
+	metrics, err := observability.New(cfg.AppName, db)
+	if err != nil {
+		log.Fatalf("failed to initialize observability: %v", err)
+	}
+
 	secretBox, err := security.NewSecretBox(cfg.SNMP.SecretKey)
 	if err != nil {
 		log.Fatalf("failed to initialize secret box: %v", err)
@@ -46,11 +53,18 @@ func main() {
 	eventRepo := database.NewEventRepository(db)
 	metricRepo := database.NewMetricRepository(db)
 	userRepo := database.NewUserRepository(db)
+	ticketRepo := database.NewTicketRepository(db) 
+	discoveredDeviceRepo := database.NewDiscoveredDeviceRepository(db, secretBox)
+	towerCache := cache.NewTowerCache(
+		time.Duration(cfg.Cache.TowerListTTLSeconds)*time.Second,
+		time.Duration(cfg.Cache.TowerDetailTTLSeconds)*time.Second,
+	)
 
-	towerSvc := services.NewTowerService(towerRepo, auditRepo)
+	towerSvc := services.NewTowerServiceWithCache(towerRepo, towerCache, auditRepo)
 	eventSvc := services.NewEventService(eventRepo)
 	metricSvc := services.NewMetricService(metricRepo)
 	auditSvc := services.NewAuditService(auditRepo)
+	ticketSvc := services.NewTicketService(ticketRepo, auditRepo)
 	authSvc := services.NewAuthService(
 		userRepo,
 		cfg.Auth.UserTokenSecret,
@@ -77,15 +91,16 @@ func main() {
 	snmpCollectHandler := handlers.NewSNMPCollectHandler(snmpIngestSvc)
 	auditHandler := handlers.NewAuditHandler(auditSvc)
 	authHandler := handlers.NewAuthHandler(authSvc)
+	userHandler := handlers.NewUserHandler(userRepo)
+	ticketHandler := handlers.NewTicketHandler(ticketSvc)   
+	promotionSvc := services.NewDiscoveredDevicePromotionService(discoveredDeviceRepo, towerSvc)
+	discoveredDeviceHandler := handlers.NewDiscoveredDeviceHandler(discoveredDeviceRepo, promotionSvc)
 	snmpScheduler := scheduler.NewSNMPScheduler(
 		towerRepo,
 		snmpIngestSvc,
-		snmp.NewFallbackCollector(
-			snmp.NewGoSNMPCollector(
-				time.Duration(cfg.SNMP.TimeoutSeconds)*time.Second,
-				cfg.SNMP.Retries,
-			),
-			snmp.NewSyntheticCollector(),
+		snmp.NewGoSNMPCollector(
+			time.Duration(cfg.SNMP.TimeoutSeconds)*time.Second,
+			cfg.SNMP.Retries,
 		),
 		snmpProfiles,
 		log,
@@ -93,8 +108,22 @@ func main() {
 		cfg.Scheduler.BatchSize,
 	)
 
-	router := routes.NewRouter(cfg, log, towerHandler, eventHandler, metricHandler, snmpCollectHandler, auditHandler, authHandler)
+	discoverySvc := services.NewDiscoveryService(
+		snmp.NewGoSNMPProber(time.Duration(cfg.Discovery.TimeoutMillis)*time.Millisecond, cfg.SNMP.Retries),
+		discoveredDeviceRepo,
+		snmp.NewEnterpriseVendorResolver(),
+		cfg.Discovery.Community,
+		cfg.Discovery.Concurrency,
+		log,
+	)
+	discoveryScheduler := scheduler.NewDiscoveryScheduler(
+		discoverySvc,
+		cfg.Discovery.CIDR,
+		log,
+		time.Duration(cfg.Discovery.IntervalSeconds)*time.Second,
+	)
 
+	router := routes.NewRouter(cfg, log, metrics, towerHandler, eventHandler, metricHandler, snmpCollectHandler, auditHandler, authHandler, userHandler, ticketHandler, discoveredDeviceHandler)
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
 		Handler: router,
@@ -110,12 +139,28 @@ func main() {
 		}
 	}()
 
-	schedCtx, schedCancel := context.WithCancel(context.Background())
-	go snmpScheduler.Start(schedCtx)
+	var schedCancel context.CancelFunc = func() {}
+	if cfg.Scheduler.Enabled {
+		schedCtx, cancel := context.WithCancel(context.Background())
+		schedCancel = cancel
+		go snmpScheduler.Start(schedCtx)
+	} else {
+		log.Info("snmp scheduler disabled by configuration")
+	}
+
+	var discoveryCancel context.CancelFunc = func() {}
+	if cfg.Discovery.Enabled {
+		discCtx, cancel := context.WithCancel(context.Background())
+		discoveryCancel = cancel
+		go discoveryScheduler.Start(discCtx)
+	} else {
+		log.Info("discovery scheduler disabled by configuration")
+	}
 
 	<-ctx.Done()
 	log.Info("shutdown signal received")
 	schedCancel()
+	discoveryCancel()
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 	defer cancel()
