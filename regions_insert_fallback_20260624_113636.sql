@@ -1,0 +1,21 @@
+-- Execução manual alternativa, caso o docker exec falhe:
+INSERT INTO regions (name) VALUES ('Belas') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Bengo') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Benguela') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Bié') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Cabinda') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Cacuaco') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Cuando Cubango') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Cunene') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Huambo') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Huíla') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Kilamba Kiaxi') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Luanda Central') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Lunda Norte') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Lunda Sul') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Malanje') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Moxico') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Namibe') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Talatona') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Uíge') RETURNING region_id, name;
+INSERT INTO regions (name) VALUES ('Zaire') RETURNING region_id, name;
