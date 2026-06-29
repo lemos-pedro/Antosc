@@ -32,6 +32,7 @@ type Config struct {
 	Discovery       DiscoveryConfig
 	Auth            AuthConfig
 	RateLimit       RateLimitConfig
+	Nagios NagiosConfig
 }
 
 type CacheConfig struct {
@@ -91,6 +92,14 @@ type RateLimitConfig struct {
 	WritePerMinute int
 }
 
+type NagiosConfig struct {
+	BaseURL             string
+	Username            string
+	Password            string
+	TimeoutSeconds      int
+	PollIntervalSeconds int
+}
+
 func Load() Config {
 	loadEnvFile()
 
@@ -146,6 +155,13 @@ func Load() Config {
 		},
 		RateLimit: RateLimitConfig{
 			WritePerMinute: getEnvIntAllowZero("RATE_LIMIT_WRITE_PER_MINUTE", 120),
+		},
+		Nagios: NagiosConfig{
+			BaseURL:             getEnv("NAGIOS_BASE_URL", "http://172.17.0.31"),
+			Username:            getEnv("NAGIOS_USER", ""),
+			Password:            getEnv("NAGIOS_PASSWORD", ""),
+			TimeoutSeconds:      getEnvInt("NAGIOS_TIMEOUT_SECONDS", 10),
+			PollIntervalSeconds: getEnvInt("NAGIOS_POLL_INTERVAL_SECONDS", 60),
 		},
 	}
 }
@@ -228,3 +244,4 @@ func getEnvBool(key string, fallback bool) bool {
 		return fallback
 	}
 }
+
