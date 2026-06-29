@@ -205,6 +205,37 @@ func (s *TowerService) invalidateTowerCache(towerID string) {
 	s.cache.InvalidateList()
 }
 
+func (s *TowerService) UpdateStatus(ctx context.Context, towerID string, status domain.TowerStatus) error {
+	towerID = strings.TrimSpace(towerID)
+	if towerID == "" {
+		return errors.New("tower_id is required")
+	}
+
+	switch status {
+	case domain.TowerStatusOnline, domain.TowerStatusDegraded, domain.TowerStatusOffline:
+	default:
+		return errors.New("invalid status")
+	}
+
+	tower, err := s.repo.GetByID(ctx, towerID)
+	if err != nil {
+		return err
+	}
+
+	if tower.Status == status {
+		return nil
+	}
+
+	tower.Status = status
+	tower.UpdatedAt = time.Now().UTC()
+
+	if err := s.repo.Upsert(ctx, tower); err != nil {
+		return err
+	}
+	s.invalidateTowerCache(tower.ID)
+	return nil
+}
+
 func safeActor(actor string) string {
 	actor = strings.TrimSpace(actor)
 	if actor == "" {
