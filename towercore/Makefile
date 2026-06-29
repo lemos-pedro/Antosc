@@ -3,7 +3,7 @@
 BINARY=towercore
 CMD=./cmd/api
 GOCACHE?=/tmp/go-build
-DB_URL?=postgres://postgres:postgres@localhost:5432/antosc?sslmode=disable
+DB_URL?=postgres://A.lemos:A.lemos13:7002@localhost:5432/towercore?sslmode=disable
 
 build:
 	GOCACHE=$(GOCACHE) go build -o bin/$(BINARY) $(CMD)

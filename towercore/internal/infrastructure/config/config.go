@@ -101,9 +101,9 @@ func Load() Config {
 		DB: DBConfig{
 			Host:                   getEnv("DB_HOST", "localhost"),
 			Port:                   getEnv("DB_PORT", "5432"),
-			Name:                   getEnv("DB_NAME", "antosc"),
-			User:                   getEnv("DB_USER", "postgres"),
-			Password:               getEnv("DB_PASSWORD", "postgres"),
+			Name:                   getEnv("DB_NAME", "towercore"),
+			User:                   getEnv("DB_USER", "A.lemos"),
+			Password:               getEnv("DB_PASSWORD", "A.lemos13:7002"),
 			SSLMode:                getEnv("DB_SSL_MODE", "disable"),
 			MaxOpenConns:           getEnvInt("DB_MAX_OPEN_CONNS", 10),
 			MaxIdleConns:           getEnvInt("DB_MAX_IDLE_CONNS", 5),
