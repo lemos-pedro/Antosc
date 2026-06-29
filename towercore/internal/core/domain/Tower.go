@@ -28,6 +28,8 @@ type Tower struct {
 	SNMPAuthPass    string      `json:"-"`
 	SNMPPrivProto   string      `json:"snmp_priv_protocol,omitempty"`
 	SNMPPrivPass    string      `json:"-"`
+	NagiosEnabled   bool        `json:"nagios_enabled,omitempty"`
+	NagiosHostname  string      `json:"nagios_hostname,omitempty"`
 	Availability30d float64     `json:"availability_30d,omitempty"`
 	UpdatedAt       time.Time   `json:"updated_at"`
 	CreatedAt       time.Time   `json:"created_at"`

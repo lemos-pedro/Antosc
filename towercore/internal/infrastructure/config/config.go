@@ -1,10 +1,13 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -13,6 +16,7 @@ const (
 	defaultAppName         = "towercore-api"
 	defaultLogLevel        = "info"
 	defaultShutdownSeconds = 10
+	defaultEnvFile         = ".env"
 )
 
 type Config struct {
@@ -28,6 +32,7 @@ type Config struct {
 	Discovery       DiscoveryConfig
 	Auth            AuthConfig
 	RateLimit       RateLimitConfig
+	Nagios NagiosConfig
 }
 
 type CacheConfig struct {
@@ -87,7 +92,17 @@ type RateLimitConfig struct {
 	WritePerMinute int
 }
 
+type NagiosConfig struct {
+	BaseURL             string
+	Username            string
+	Password            string
+	TimeoutSeconds      int
+	PollIntervalSeconds int
+}
+
 func Load() Config {
+	loadEnvFile()
+
 	return Config{
 		AppName:         getEnv("APP_NAME", defaultAppName),
 		Env:             getEnv("APP_ENV", defaultEnv),
@@ -141,7 +156,44 @@ func Load() Config {
 		RateLimit: RateLimitConfig{
 			WritePerMinute: getEnvIntAllowZero("RATE_LIMIT_WRITE_PER_MINUTE", 120),
 		},
+		Nagios: NagiosConfig{
+			BaseURL:             getEnv("NAGIOS_BASE_URL", "http://172.17.0.31"),
+			Username:            getEnv("NAGIOS_USER", ""),
+			Password:            getEnv("NAGIOS_PASSWORD", ""),
+			TimeoutSeconds:      getEnvInt("NAGIOS_TIMEOUT_SECONDS", 10),
+			PollIntervalSeconds: getEnvInt("NAGIOS_POLL_INTERVAL_SECONDS", 60),
+		},
 	}
+}
+
+// loadEnvFile tenta carregar variáveis de um ficheiro .env para o
+// ambiente do processo, ANTES de qualquer getEnv ser chamado.
+//
+// Comportamento:
+//   - Não sobrepõe variáveis já definidas no ambiente do processo
+//     (ex.: via export/$env:, ou injetadas a sério em produção/CI).
+//   - Caminho configurável via ENV_FILE (útil se o .env não estiver
+//     no diretório de onde corres `go run`/o binário).
+//   - Se o ficheiro não existir, não é erro fatal — assume-se que o
+//     ambiente já tem as variáveis necessárias (caso de produção).
+//   - Regista sempre no log o que aconteceu, para nunca mais isto
+//     falhar em silêncio.
+func loadEnvFile() {
+	path := os.Getenv("ENV_FILE")
+	if path == "" {
+		path = defaultEnvFile
+	}
+
+	if err := godotenv.Load(path); err != nil {
+		if os.IsNotExist(err) {
+			log.Printf("CONFIG: %s não encontrado (cwd atual) — a usar apenas variáveis já presentes no ambiente", path)
+			return
+		}
+		log.Printf("CONFIG: falha ao ler %s: %v", path, err)
+		return
+	}
+
+	log.Printf("CONFIG: variáveis carregadas de %s", path)
 }
 
 func getEnv(key, fallback string) string {
@@ -192,3 +244,4 @@ func getEnvBool(key string, fallback bool) bool {
 		return fallback
 	}
 }
+

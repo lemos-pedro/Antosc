@@ -1,0 +1,109 @@
+=== Início da importação: qua 24 jun 2026 11:36:36 WAT ===
+[*] Autenticando...
+[OK] Token obtido.
+[*] A verificar operador 'ANTOSC'...
+[OK] operator_id = 7e7f5ca9-3d53-4f60-a63c-e30e474ed8f9
+[*] A obter regiões existentes via GET /regions...
+[AVISO] GET /regions devolveu HTTP 404 — a assumir 0 regiões pré-existentes via API.
+[AVISO] POST /regions não existe (HTTP 404). A mudar para fallback via psql.
+[*] 20 região(ões) sem cobertura pela API. A tentar via 'docker exec antosc-system-postgres-1 psql'...
+[*] SQL de apoio escrito em: regions_insert_fallback_20260624_113636.sql
+[OK] Região criada via psql: Belas -> 48deaf86-80f9-4b9a-b4ce-d3e20491c1d6INSERT01
+[OK] Região criada via psql: Bengo -> 38457cbb-803a-474a-9ee1-76489c84554fINSERT01
+[OK] Região criada via psql: Benguela -> c30d5b96-ea44-4aa6-8e89-61a6de791bbeINSERT01
+[OK] Região criada via psql: Bié -> 9f1332cb-26fc-4759-8d23-55dc1c8b0584INSERT01
+[OK] Região criada via psql: Cabinda -> e3e6243f-4d0c-4eaf-a537-1eba9ebdb8c7INSERT01
+[OK] Região criada via psql: Cacuaco -> 5b2c0e58-e0bc-46ec-a181-85d7f5f1f264INSERT01
+[OK] Região criada via psql: Cuando Cubango -> 842001d0-6eec-422a-ab08-c6c1727ae59cINSERT01
+[OK] Região criada via psql: Cunene -> 4d2c5e68-c10e-40d2-b80f-e7f0a88eee3eINSERT01
+[OK] Região criada via psql: Huambo -> 4c1cefda-297f-48de-933f-9943a0660b65INSERT01
+[OK] Região criada via psql: Huíla -> e4e6665f-734a-4eef-b143-4eb6443509c1INSERT01
+[OK] Região criada via psql: Kilamba Kiaxi -> 3f5f8d12-a7b1-4225-abd2-60cdf25b3b6fINSERT01
+[OK] Região criada via psql: Luanda Central -> da38bbbc-6d7e-4421-840e-4b1ac2da1b0aINSERT01
+[OK] Região criada via psql: Lunda Norte -> 2753b4d7-3964-4f20-8344-556454dcac08INSERT01
+[OK] Região criada via psql: Lunda Sul -> 52abdf0c-ceb5-4a03-b8f7-e7f2cb4fde93INSERT01
+[OK] Região criada via psql: Malanje -> 525f64de-9c89-415e-b075-42f284408b59INSERT01
+[OK] Região criada via psql: Moxico -> f9cf0bab-abe1-4098-8d3b-666c40250bdbINSERT01
+[OK] Região criada via psql: Namibe -> 47eebe6a-c187-4b32-82ca-0f396cdf7d9dINSERT01
+[OK] Região criada via psql: Talatona -> 3348873d-8119-4084-8f36-5eef9feacb69INSERT01
+[OK] Região criada via psql: Uíge -> 7568440e-4cdd-4172-a098-0b17fee65dc3INSERT01
+[OK] Região criada via psql: Zaire -> c5ecc798-1ada-43a2-a2a9-476b2dfddbd9INSERT01
+[*] Mapa de regiões final (20 entradas):
+    Huambo -> 4c1cefda-297f-48de-933f-9943a0660b65INSERT01
+    Bengo -> 38457cbb-803a-474a-9ee1-76489c84554fINSERT01
+    Moxico -> f9cf0bab-abe1-4098-8d3b-666c40250bdbINSERT01
+    Lunda Norte -> 2753b4d7-3964-4f20-8344-556454dcac08INSERT01
+    Luanda Central -> da38bbbc-6d7e-4421-840e-4b1ac2da1b0aINSERT01
+    Malanje -> 525f64de-9c89-415e-b075-42f284408b59INSERT01
+    Zaire -> c5ecc798-1ada-43a2-a2a9-476b2dfddbd9INSERT01
+    Huíla -> e4e6665f-734a-4eef-b143-4eb6443509c1INSERT01
+    Cuando Cubango -> 842001d0-6eec-422a-ab08-c6c1727ae59cINSERT01
+    Lunda Sul -> 52abdf0c-ceb5-4a03-b8f7-e7f2cb4fde93INSERT01
+    Bié -> 9f1332cb-26fc-4759-8d23-55dc1c8b0584INSERT01
+    Uíge -> 7568440e-4cdd-4172-a098-0b17fee65dc3INSERT01
+    Namibe -> 47eebe6a-c187-4b32-82ca-0f396cdf7d9dINSERT01
+    Cacuaco -> 5b2c0e58-e0bc-46ec-a181-85d7f5f1f264INSERT01
+    Belas -> 48deaf86-80f9-4b9a-b4ce-d3e20491c1d6INSERT01
+    Benguela -> c30d5b96-ea44-4aa6-8e89-61a6de791bbeINSERT01
+    Cunene -> 4d2c5e68-c10e-40d2-b80f-e7f0a88eee3eINSERT01
+    Cabinda -> e3e6243f-4d0c-4eaf-a537-1eba9ebdb8c7INSERT01
+    Talatona -> 3348873d-8119-4084-8f36-5eef9feacb69INSERT01
+    Kilamba Kiaxi -> 3f5f8d12-a7b1-4225-abd2-60cdf25b3b6fINSERT01
+
+[*] A criar 50 torres (snmp_target=127.0.0.1:161, community=Antosc-noc, version=v2c)...
+[FAIL] SITE-001 (TWR-SITE-001): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"2753b4d7-3964-4f20-8344-556454dcac08INSERT01\""}
+[FAIL] SITE-002 (TWR-SITE-002): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"525f64de-9c89-415e-b075-42f284408b59INSERT01\""}
+[FAIL] SITE-003 (TWR-SITE-003): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"525f64de-9c89-415e-b075-42f284408b59INSERT01\""}
+[FAIL] SITE-004 (TWR-SITE-004): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"c30d5b96-ea44-4aa6-8e89-61a6de791bbeINSERT01\""}
+[FAIL] SITE-005 (TWR-SITE-005): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"c30d5b96-ea44-4aa6-8e89-61a6de791bbeINSERT01\""}
+[FAIL] SITE-006 (TWR-SITE-006): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"3f5f8d12-a7b1-4225-abd2-60cdf25b3b6fINSERT01\""}
+[FAIL] SITE-007 (TWR-SITE-007): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"e4e6665f-734a-4eef-b143-4eb6443509c1INSERT01\""}
+[FAIL] SITE-008 (TWR-SITE-008): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"3f5f8d12-a7b1-4225-abd2-60cdf25b3b6fINSERT01\""}
+[FAIL] SITE-009 (TWR-SITE-009): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"e4e6665f-734a-4eef-b143-4eb6443509c1INSERT01\""}
+[FAIL] SITE-010 (TWR-SITE-010): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"2753b4d7-3964-4f20-8344-556454dcac08INSERT01\""}
+[FAIL] SITE-011 (TWR-SITE-011): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"47eebe6a-c187-4b32-82ca-0f396cdf7d9dINSERT01\""}
+[FAIL] SITE-012 (TWR-SITE-012): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"f9cf0bab-abe1-4098-8d3b-666c40250bdbINSERT01\""}
+[FAIL] SITE-013 (TWR-SITE-013): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"7568440e-4cdd-4172-a098-0b17fee65dc3INSERT01\""}
+[FAIL] SITE-014 (TWR-SITE-014): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"3f5f8d12-a7b1-4225-abd2-60cdf25b3b6fINSERT01\""}
+[FAIL] SITE-015 (TWR-SITE-015): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"da38bbbc-6d7e-4421-840e-4b1ac2da1b0aINSERT01\""}
+[FAIL] SITE-016 (TWR-SITE-016): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"4c1cefda-297f-48de-933f-9943a0660b65INSERT01\""}
+[FAIL] SITE-017 (TWR-SITE-017): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"da38bbbc-6d7e-4421-840e-4b1ac2da1b0aINSERT01\""}
+[FAIL] SITE-018 (TWR-SITE-018): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"9f1332cb-26fc-4759-8d23-55dc1c8b0584INSERT01\""}
+[FAIL] SITE-019 (TWR-SITE-019): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"e4e6665f-734a-4eef-b143-4eb6443509c1INSERT01\""}
+[FAIL] SITE-020 (TWR-SITE-020): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"c30d5b96-ea44-4aa6-8e89-61a6de791bbeINSERT01\""}
+[FAIL] SITE-021 (TWR-SITE-021): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"4d2c5e68-c10e-40d2-b80f-e7f0a88eee3eINSERT01\""}
+[FAIL] SITE-022 (TWR-SITE-022): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"5b2c0e58-e0bc-46ec-a181-85d7f5f1f264INSERT01\""}
+[FAIL] SITE-023 (TWR-SITE-023): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"e4e6665f-734a-4eef-b143-4eb6443509c1INSERT01\""}
+[FAIL] SITE-024 (TWR-SITE-024): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"da38bbbc-6d7e-4421-840e-4b1ac2da1b0aINSERT01\""}
+[FAIL] SITE-025 (TWR-SITE-025): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"47eebe6a-c187-4b32-82ca-0f396cdf7d9dINSERT01\""}
+[FAIL] SITE-026 (TWR-SITE-026): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"842001d0-6eec-422a-ab08-c6c1727ae59cINSERT01\""}
+[FAIL] SITE-027 (TWR-SITE-027): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"f9cf0bab-abe1-4098-8d3b-666c40250bdbINSERT01\""}
+[FAIL] SITE-028 (TWR-SITE-028): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"e3e6243f-4d0c-4eaf-a537-1eba9ebdb8c7INSERT01\""}
+[FAIL] SITE-029 (TWR-SITE-029): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"3f5f8d12-a7b1-4225-abd2-60cdf25b3b6fINSERT01\""}
+[FAIL] SITE-030 (TWR-SITE-030): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"9f1332cb-26fc-4759-8d23-55dc1c8b0584INSERT01\""}
+[FAIL] SITE-031 (TWR-SITE-031): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"525f64de-9c89-415e-b075-42f284408b59INSERT01\""}
+[FAIL] SITE-032 (TWR-SITE-032): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"47eebe6a-c187-4b32-82ca-0f396cdf7d9dINSERT01\""}
+[FAIL] SITE-033 (TWR-SITE-033): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"c5ecc798-1ada-43a2-a2a9-476b2dfddbd9INSERT01\""}
+[FAIL] SITE-034 (TWR-SITE-034): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"3f5f8d12-a7b1-4225-abd2-60cdf25b3b6fINSERT01\""}
+[FAIL] SITE-035 (TWR-SITE-035): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"842001d0-6eec-422a-ab08-c6c1727ae59cINSERT01\""}
+[FAIL] SITE-036 (TWR-SITE-036): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"7568440e-4cdd-4172-a098-0b17fee65dc3INSERT01\""}
+[FAIL] SITE-037 (TWR-SITE-037): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"48deaf86-80f9-4b9a-b4ce-d3e20491c1d6INSERT01\""}
+[FAIL] SITE-038 (TWR-SITE-038): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"52abdf0c-ceb5-4a03-b8f7-e7f2cb4fde93INSERT01\""}
+[FAIL] SITE-039 (TWR-SITE-039): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"525f64de-9c89-415e-b075-42f284408b59INSERT01\""}
+[FAIL] SITE-040 (TWR-SITE-040): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"47eebe6a-c187-4b32-82ca-0f396cdf7d9dINSERT01\""}
+[FAIL] SITE-041 (TWR-SITE-041): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"c30d5b96-ea44-4aa6-8e89-61a6de791bbeINSERT01\""}
+[FAIL] SITE-042 (TWR-SITE-042): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"2753b4d7-3964-4f20-8344-556454dcac08INSERT01\""}
+[FAIL] SITE-043 (TWR-SITE-043): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"4c1cefda-297f-48de-933f-9943a0660b65INSERT01\""}
+[FAIL] SITE-044 (TWR-SITE-044): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"38457cbb-803a-474a-9ee1-76489c84554fINSERT01\""}
+[FAIL] SITE-045 (TWR-SITE-045): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"e3e6243f-4d0c-4eaf-a537-1eba9ebdb8c7INSERT01\""}
+[FAIL] SITE-046 (TWR-SITE-046): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"38457cbb-803a-474a-9ee1-76489c84554fINSERT01\""}
+[FAIL] SITE-047 (TWR-SITE-047): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"4d2c5e68-c10e-40d2-b80f-e7f0a88eee3eINSERT01\""}
+[FAIL] SITE-048 (TWR-SITE-048): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"e3e6243f-4d0c-4eaf-a537-1eba9ebdb8c7INSERT01\""}
+[FAIL] SITE-049 (TWR-SITE-049): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"3348873d-8119-4084-8f36-5eef9feacb69INSERT01\""}
+[FAIL] SITE-050 (TWR-SITE-050): POST /towers HTTP 400 -> {"code":"bad_request","message":"pq: invalid input syntax for type uuid: \"9f1332cb-26fc-4759-8d23-55dc1c8b0584INSERT01\""}
+
+=== Resumo ===
+Sucesso: 0 / 50
+Falhas:  50 / 50
+Log completo: towers_import_20260624_113636.log
+SQL de apoio (regiões): regions_insert_fallback_20260624_113636.sql
