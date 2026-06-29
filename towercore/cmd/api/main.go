@@ -11,6 +11,7 @@ import (
 	"towercore/internal/adapters/eltek"
 	"towercore/internal/adapters/enetek"
 	"towercore/internal/adapters/huawei"
+	"towercore/internal/adapters/nagios"
 	"towercore/internal/adapters/snmp"
 	"towercore/internal/api/handlers"
 	"towercore/internal/api/routes"
@@ -53,7 +54,7 @@ func main() {
 	eventRepo := database.NewEventRepository(db)
 	metricRepo := database.NewMetricRepository(db)
 	userRepo := database.NewUserRepository(db)
-	ticketRepo := database.NewTicketRepository(db) 
+	ticketRepo := database.NewTicketRepository(db)
 	discoveredDeviceRepo := database.NewDiscoveredDeviceRepository(db, secretBox)
 	towerCache := cache.NewTowerCache(
 		time.Duration(cfg.Cache.TowerListTTLSeconds)*time.Second,
@@ -85,6 +86,25 @@ func main() {
 	}
 	snmpIngestSvc := services.NewSNMPIngestService(metricSvc, eventSvc, snmpProfiles)
 
+	// Nagios: ingest service e scheduler. towerSvc já implementa
+	// UpdateStatus(ctx, towerID, status), por isso serve diretamente
+	// como TowerStatusUpdater sem adapter extra.
+	nagiosClient := nagios.NewClient(
+		cfg.Nagios.BaseURL,
+		cfg.Nagios.Username,
+		cfg.Nagios.Password,
+		time.Duration(cfg.Nagios.TimeoutSeconds)*time.Second,
+	)
+	nagiosIngestSvc := services.NewNagiosIngestService(eventSvc, towerSvc)
+	nagiosScheduler := scheduler.NewNagiosScheduler(
+		towerRepo,
+		nagiosIngestSvc,
+		nagiosClient,
+		log,
+		time.Duration(cfg.Nagios.PollIntervalSeconds)*time.Second,
+		cfg.Scheduler.BatchSize,
+	)
+
 	towerHandler := handlers.NewTowerHandler(towerSvc)
 	eventHandler := handlers.NewEventHandler(eventSvc)
 	metricHandler := handlers.NewMetricHandler(metricSvc)
@@ -92,7 +112,7 @@ func main() {
 	auditHandler := handlers.NewAuditHandler(auditSvc)
 	authHandler := handlers.NewAuthHandler(authSvc)
 	userHandler := handlers.NewUserHandler(userRepo)
-	ticketHandler := handlers.NewTicketHandler(ticketSvc)   
+	ticketHandler := handlers.NewTicketHandler(ticketSvc)
 	promotionSvc := services.NewDiscoveredDevicePromotionService(discoveredDeviceRepo, towerSvc)
 	discoveredDeviceHandler := handlers.NewDiscoveredDeviceHandler(discoveredDeviceRepo, promotionSvc)
 	snmpScheduler := scheduler.NewSNMPScheduler(
@@ -157,10 +177,15 @@ func main() {
 		log.Info("discovery scheduler disabled by configuration")
 	}
 
+	// Nagios scheduler: sem flag de enable, corre sempre que a app arranca.
+	nagiosCtx, nagiosCancel := context.WithCancel(context.Background())
+	go nagiosScheduler.Start(nagiosCtx)
+
 	<-ctx.Done()
 	log.Info("shutdown signal received")
 	schedCancel()
 	discoveryCancel()
+	nagiosCancel()
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 	defer cancel()
