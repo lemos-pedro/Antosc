@@ -72,6 +72,20 @@ type configureSNMPRequest struct {
 	SNMPPrivPass  string `json:"snmp_priv_password"`
 }
 
+// listMeta segue o formato definido em api.md para paginacao.
+type listMeta struct {
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+	Total  int `json:"total"`
+}
+
+// towersListResponse envolve a lista de torres no envelope {data, meta}
+// esperado pelo antosc-front e documentado em api.md.
+type towersListResponse struct {
+	Data []domain.Tower `json:"data"`
+	Meta listMeta       `json:"meta"`
+}
+
 func (h *TowerHandler) list(w http.ResponseWriter, r *http.Request) {
 	filter := interfaces.TowerFilter{
 		Status:     r.URL.Query().Get("status"),
@@ -87,10 +101,26 @@ func (h *TowerHandler) list(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Garante que "data" e sempre um array JSON, nunca null, mesmo sem resultados.
+	if towers == nil {
+		towers = []domain.Tower{}
+	}
+
+	resp := towersListResponse{
+		Data: towers,
+		Meta: listMeta{
+			Limit:  filter.Limit,
+			Offset: filter.Offset,
+			Total:  total,
+		},
+	}
+
 	w.Header().Set("Content-Type", "application/json")
+	// Mantido por compatibilidade com clientes que ainda leem o header,
+	// mas a fonte de verdade passa a ser meta.total no corpo.
 	w.Header().Set("X-Total-Count", strconv.Itoa(total))
 	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(towers)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func (h *TowerHandler) getByID(w http.ResponseWriter, r *http.Request) {
