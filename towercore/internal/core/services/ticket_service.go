@@ -23,6 +23,41 @@ func NewTicketService(repo interfaces.TicketRepository, auditRepo ...interfaces.
 	return &TicketService{repo: repo, auditRepo: ar}
 }
 
+// Create abre um novo ticket a partir de um evento. Chamado pelo
+// SNMPIngestService apenas quando EventService.CreateOrTouch devolve
+// criouNovo=true (transição OK→alarme), nunca em cada ciclo de poll.
+func (s *TicketService) Create(ctx context.Context, towerID, eventID string) (*domain.Ticket, error) {
+	towerID = strings.TrimSpace(towerID)
+	if towerID == "" {
+		return nil, errors.New("tower_id is required")
+	}
+
+	id, err := newUUIDv4()
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now().UTC()
+	ticket := &domain.Ticket{
+		ID:        id,
+		TowerID:   towerID,
+		EventID:   eventID,
+		Status:    domain.TicketStatusOpen, // ASSUNÇÃO: domain.TicketStatusOpen já existe (visto em UpdateStatus)
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+
+	// ASSUNÇÃO: interfaces.TicketRepository precisa de um método Create.
+	// Ver interface abaixo — segue o mesmo padrão de List/GetByID/UpdateStatus
+	// já existentes no teu TicketRepository (adapters/database).
+	if err := s.repo.Create(ctx, ticket); err != nil {
+		return nil, err
+	}
+
+	s.audit(ctx, "system:snmp_ingest", "ticket.create", ticket.ID)
+	return ticket, nil
+}
+
 func (s *TicketService) List(ctx context.Context, filter interfaces.TicketFilter) ([]domain.Ticket, int, error) {
 	if filter.Limit <= 0 || filter.Limit > 200 {
 		filter.Limit = 50
@@ -67,7 +102,6 @@ func (s *TicketService) Close(ctx context.Context, actor, ticketID string) (*dom
 		return nil, err
 	}
 	if current.Status == domain.TicketStatusClosed {
-		// idempotente: fechar um ticket já fechado não é erro.
 		return current, nil
 	}
 

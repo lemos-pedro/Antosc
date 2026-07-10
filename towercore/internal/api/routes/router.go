@@ -16,6 +16,7 @@ func NewRouter(
 	log *logger.Logger,
 	metrics *observability.Metrics,
 	towerHandler *handlers.TowerHandler,
+	towerOperatorHandler *handlers.TowerOperatorHandler, 
 	eventHandler *handlers.EventHandler,
 	metricHandler *handlers.MetricHandler,
 	snmpCollectHandler *handlers.SNMPCollectHandler,
@@ -24,6 +25,11 @@ func NewRouter(
 	userHandler *handlers.UserHandler,
 	ticketHandler *handlers.TicketHandler,
 	discoveredDeviceHandler *handlers.DiscoveredDeviceHandler,
+	regionHandler *handlers.RegionHandler,
+	operatorHandler *handlers.OperatorHandler,
+	slaHandler *handlers.SLAHandler,
+	comapReadingHandler *handlers.ComapReadingHandler,
+	
 ) http.Handler {
 
 	mux := http.NewServeMux()
@@ -52,15 +58,16 @@ func NewRouter(
 
 	mux.Handle("GET /api/v1/events", metrics.Instrument("/api/v1/events", eventHandler))
 	mux.Handle("POST /api/v1/events", metrics.Instrument("/api/v1/events", writeChain(eventHandler)))
+	mux.Handle("GET /api/v1/towers/{id}/events", metrics.Instrument("/api/v1/towers/{id}/events", http.HandlerFunc(eventHandler.ListByTower)))
 
 	mux.Handle("GET /api/v1/metrics", metrics.Instrument("/api/v1/metrics", metricHandler))
 	mux.Handle("POST /api/v1/metrics", metrics.Instrument("/api/v1/metrics", writeChain(metricHandler)))
 
 	mux.Handle("POST /api/v1/collect/snmp", metrics.Instrument("/api/v1/collect/snmp", writeChain(snmpCollectHandler)))
 
-	mux.Handle("GET /api/v1/tickets", metrics.Instrument("/api/v1/tickets", writeChain(ticketHandler)))
-	mux.Handle("POST /api/v1/tickets/{ticket_id}/ack", metrics.Instrument("/api/v1/tickets/{ticket_id}/ack", writeChain(ticketHandler)))
-	mux.Handle("POST /api/v1/tickets/{ticket_id}/close", metrics.Instrument("/api/v1/tickets/{ticket_id}/close", writeChain(ticketHandler)))
+	mux.Handle("GET /api/v1/tickets", metrics.Instrument("/api/v1/tickets", ticketHandler))
+	mux.Handle("POST /api/v1/tickets/{ticket_id}/ack", metrics.Instrument("/api/v1/tickets/{ticket_id}/ack",ticketHandler))
+	mux.Handle("POST /api/v1/tickets/{ticket_id}/close", metrics.Instrument("/api/v1/tickets/{ticket_id}/close",ticketHandler))
 
 	mux.Handle("GET /api/v1/audit-logs", metrics.Instrument("/api/v1/audit-logs", writeChain(auditHandler)))
 	mux.Handle("GET /api/v1/audit-logs/{id}", metrics.Instrument("/api/v1/audit-logs/{id}", writeChain(auditHandler)))
@@ -70,16 +77,31 @@ func NewRouter(
 	mux.Handle("POST /api/v1/discovered-devices/{id}/promote", metrics.Instrument("/api/v1/discovered-devices/{id}/promote", writeChain(http.HandlerFunc(discoveredDeviceHandler.Promote))))
 	mux.Handle("POST /api/v1/discovered-devices/{id}/ignore", metrics.Instrument("/api/v1/discovered-devices/{id}/ignore", writeChain(http.HandlerFunc(discoveredDeviceHandler.Ignore))))
 
+	mux.Handle("GET /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler)) 
+	mux.Handle("POST /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler)) 
+	mux.Handle("POST /api/v1/towers/{id}/operators", metrics.Instrument("/api/v1/towers/{id}/operators", towerOperatorHandler)) 
+	mux.Handle("DELETE /api/v1/towers/{id}/operators/{operator_id}", metrics.Instrument("/api/v1/towers/{id}/operators/{operator_id}", towerOperatorHandler))
+
+	mux.Handle("GET /api/v1/regions", metrics.Instrument("/api/v1/regions", regionHandler))
+	mux.Handle("POST /api/v1/regions", metrics.Instrument("/api/v1/regions", writeChain(regionHandler)))
+
+	mux.Handle("GET /api/v1/towers/{tower_id}/energy/generator", metrics.Instrument("/api/v1/towers/{tower_id}/energy/generator", http.HandlerFunc(comapReadingHandler.GetByTowerID)))
+	
+	mux.Handle("GET /api/v1/sla/global",
+	metrics.Instrument("/api/v1/sla/global", slaHandler))
+	
+
 	mux.Handle("/", metrics.Instrument("not_found", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Errorf("route not found: method=%s path=%s", r.Method, r.URL.Path)
 		apierror.Write(w, http.StatusNotFound, "not_found", "route not found")
 	})))
 
-	// 🔥 PIPELINE FINAL (CORS primeiro na cadeia)
+	//  PIPELINE FINAL (CORS primeiro na cadeia)
 	return middleware.Chain(
 		mux,
 		middleware.CORS([]string{
 			"http://localhost:8080",
+			"http://localhost:8081",
 			"http://localhost:3000",
 			"http://localhost:9090",
 		}),

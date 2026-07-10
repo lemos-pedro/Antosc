@@ -67,10 +67,9 @@ func (s *SNMPScheduler) Start(ctx context.Context) {
 
 func (s *SNMPScheduler) CollectOnce(ctx context.Context) {
 	towers, _, err := s.towersRepo.List(ctx, interfaces.TowerFilter{
-		Status: "online",
-		Limit:  s.batchSize,
-		Offset: 0,
-	})
+			Limit:  s.batchSize,
+			Offset: 0,
+		})
 	if err != nil {
 		s.log.Errorf("snmp scheduler list towers failed: %v", err)
 		return

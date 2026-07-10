@@ -29,6 +29,7 @@ func main() {
 	cfg := config.Load()
 	log := logger.New(cfg.LogLevel)
 
+	// Database
 	db, err := database.Open(cfg.DB)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
@@ -39,16 +40,19 @@ func main() {
 		log.Fatalf("failed to apply database migrations: %v", err)
 	}
 
+	// Observability
 	metrics, err := observability.New(cfg.AppName, db)
 	if err != nil {
 		log.Fatalf("failed to initialize observability: %v", err)
 	}
 
+	// Security
 	secretBox, err := security.NewSecretBox(cfg.SNMP.SecretKey)
 	if err != nil {
 		log.Fatalf("failed to initialize secret box: %v", err)
 	}
 
+	// Repositories
 	towerRepo := database.NewTowerRepository(db, secretBox)
 	auditRepo := database.NewAuditRepository(db)
 	eventRepo := database.NewEventRepository(db)
@@ -56,21 +60,37 @@ func main() {
 	userRepo := database.NewUserRepository(db)
 	ticketRepo := database.NewTicketRepository(db)
 	discoveredDeviceRepo := database.NewDiscoveredDeviceRepository(db, secretBox)
+	towerEndpointRepo := database.NewTowerEndpointRepository(db, secretBox)
+	comapReadingRepo := database.NewComapReadingRepository(db)
+
+	regionRepo := database.NewRegionRepository(db)
+	operatorRepo := database.NewOperatorRepository(db)
+	slaRepo := database.NewSLARepository(db)
+
+	// Cache
 	towerCache := cache.NewTowerCache(
 		time.Duration(cfg.Cache.TowerListTTLSeconds)*time.Second,
 		time.Duration(cfg.Cache.TowerDetailTTLSeconds)*time.Second,
 	)
 
+	// Core services
 	towerSvc := services.NewTowerServiceWithCache(towerRepo, towerCache, auditRepo)
 	eventSvc := services.NewEventService(eventRepo)
 	metricSvc := services.NewMetricService(metricRepo)
 	auditSvc := services.NewAuditService(auditRepo)
 	ticketSvc := services.NewTicketService(ticketRepo, auditRepo)
+
 	authSvc := services.NewAuthService(
 		userRepo,
 		cfg.Auth.UserTokenSecret,
 		time.Duration(cfg.Auth.UserTokenTTLMin)*time.Minute,
 	)
+
+	regionSvc := services.NewRegionService(regionRepo)
+	operatorSvc := services.NewOperatorService(operatorRepo)
+	slaSvc := services.NewSLAService(slaRepo)
+
+	// Bootstrap user
 	if err := authSvc.EnsureBootstrapUser(
 		context.Background(),
 		cfg.Auth.BootstrapUsername,
@@ -79,23 +99,27 @@ func main() {
 	); err != nil {
 		log.Fatalf("failed to ensure bootstrap user: %v", err)
 	}
+
+	// SNMP profiles
 	snmpProfiles := map[string]snmp.Profile{
 		"eltek":  eltek.Profile(),
 		"huawei": huawei.Profile(),
 		"enetek": enetek.Profile(),
 	}
-	snmpIngestSvc := services.NewSNMPIngestService(metricSvc, eventSvc, snmpProfiles)
 
-	// Nagios: ingest service e scheduler. towerSvc já implementa
-	// UpdateStatus(ctx, towerID, status), por isso serve diretamente
-	// como TowerStatusUpdater sem adapter extra.
+	// SNMP services
+	snmpIngestSvc := services.NewSNMPIngestService(metricSvc, eventSvc, snmpProfiles, towerSvc, ticketSvc)
+
+	// Nagios
 	nagiosClient := nagios.NewClient(
 		cfg.Nagios.BaseURL,
 		cfg.Nagios.Username,
 		cfg.Nagios.Password,
 		time.Duration(cfg.Nagios.TimeoutSeconds)*time.Second,
 	)
+
 	nagiosIngestSvc := services.NewNagiosIngestService(eventSvc, towerSvc)
+
 	nagiosScheduler := scheduler.NewNagiosScheduler(
 		towerRepo,
 		nagiosIngestSvc,
@@ -105,16 +129,33 @@ func main() {
 		cfg.Scheduler.BatchSize,
 	)
 
-	towerHandler := handlers.NewTowerHandler(towerSvc)
-	eventHandler := handlers.NewEventHandler(eventSvc)
-	metricHandler := handlers.NewMetricHandler(metricSvc)
-	snmpCollectHandler := handlers.NewSNMPCollectHandler(snmpIngestSvc)
-	auditHandler := handlers.NewAuditHandler(auditSvc)
-	authHandler := handlers.NewAuthHandler(authSvc)
-	userHandler := handlers.NewUserHandler(userRepo)
-	ticketHandler := handlers.NewTicketHandler(ticketSvc)
-	promotionSvc := services.NewDiscoveredDevicePromotionService(discoveredDeviceRepo, towerSvc)
-	discoveredDeviceHandler := handlers.NewDiscoveredDeviceHandler(discoveredDeviceRepo, promotionSvc)
+	// Promotion
+	promotionSvc := services.NewDiscoveredDevicePromotionService(
+		discoveredDeviceRepo,
+		towerSvc,
+	)
+
+	// Discovery
+	discoverySvc := services.NewDiscoveryService(
+		snmp.NewGoSNMPProber(
+			time.Duration(cfg.Discovery.TimeoutMillis)*time.Millisecond,
+			cfg.SNMP.Retries,
+		),
+		discoveredDeviceRepo,
+		snmp.NewEnterpriseVendorResolver(),
+		cfg.Discovery.Community,
+		cfg.Discovery.Concurrency,
+		log,
+	)
+
+	discoveryScheduler := scheduler.NewDiscoveryScheduler(
+		discoverySvc,
+		cfg.Discovery.CIDR,
+		log,
+		time.Duration(cfg.Discovery.IntervalSeconds)*time.Second,
+	)
+
+	// SNMP scheduler
 	snmpScheduler := scheduler.NewSNMPScheduler(
 		towerRepo,
 		snmpIngestSvc,
@@ -128,66 +169,126 @@ func main() {
 		cfg.Scheduler.BatchSize,
 	)
 
-	discoverySvc := services.NewDiscoveryService(
-		snmp.NewGoSNMPProber(time.Duration(cfg.Discovery.TimeoutMillis)*time.Millisecond, cfg.SNMP.Retries),
-		discoveredDeviceRepo,
-		snmp.NewEnterpriseVendorResolver(),
-		cfg.Discovery.Community,
-		cfg.Discovery.Concurrency,
+	// ComAp (Modbus) — telemetria de energia do grupo gerador.
+	// Enabled=false por default (COMAP_ENABLED) até validação de campo
+	// confirmar fatores de escala de fuel_percent/battery_voltage.
+	comapIngestSvc := services.NewComapIngestService(comapReadingRepo, eventSvc, ticketSvc)
+	comapScheduler := scheduler.NewComapScheduler(
+		towerEndpointRepo,
+		comapIngestSvc,
 		log,
-	)
-	discoveryScheduler := scheduler.NewDiscoveryScheduler(
-		discoverySvc,
-		cfg.Discovery.CIDR,
-		log,
-		time.Duration(cfg.Discovery.IntervalSeconds)*time.Second,
+		time.Duration(cfg.Comap.IntervalSeconds)*time.Second,
+		cfg.Scheduler.BatchSize,
+		time.Duration(cfg.Comap.TimeoutSeconds)*time.Second,
 	)
 
-	router := routes.NewRouter(cfg, log, metrics, towerHandler, eventHandler, metricHandler, snmpCollectHandler, auditHandler, authHandler, userHandler, ticketHandler, discoveredDeviceHandler)
+	// Handlers
+	towerHandler := handlers.NewTowerHandler(towerSvc)
+	towerOperatorHandler := handlers.NewTowerOperatorHandler(towerSvc)
+	eventHandler := handlers.NewEventHandler(eventSvc)
+	metricHandler := handlers.NewMetricHandler(metricSvc)
+	snmpCollectHandler := handlers.NewSNMPCollectHandler(snmpIngestSvc)
+	auditHandler := handlers.NewAuditHandler(auditSvc)
+	authHandler := handlers.NewAuthHandler(authSvc)
+	userHandler := handlers.NewUserHandler(userRepo)
+	ticketHandler := handlers.NewTicketHandler(ticketSvc)
+	comapReadingHandler := handlers.NewComapReadingHandler(comapReadingRepo)
+
+	discoveredDeviceHandler := handlers.NewDiscoveredDeviceHandler(
+		discoveredDeviceRepo,
+		promotionSvc,
+	)
+
+	regionHandler := handlers.NewRegionHandler(regionSvc)
+	operatorHandler := handlers.NewOperatorHandler(operatorSvc)
+	slaHandler := handlers.NewSLAHandler(slaSvc)
+
+	// Router
+	router := routes.NewRouter(
+		cfg,
+		log,
+		metrics,
+		towerHandler,
+		towerOperatorHandler,
+		eventHandler,
+		metricHandler,
+		snmpCollectHandler,
+		auditHandler,
+		authHandler,
+		userHandler,
+		ticketHandler,
+		discoveredDeviceHandler,
+		regionHandler,
+		operatorHandler,
+		slaHandler,
+		comapReadingHandler, // NOVO — routes.go precisa aceitar este parâmetro e registar a rota
+	)
+
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
 		Handler: router,
 	}
 
-	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	// Graceful shutdown
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		syscall.SIGINT,
+		syscall.SIGTERM,
+	)
 	defer stop()
 
 	go func() {
 		log.Infof("starting http server on :%s", cfg.Port)
-		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+
+		if err := server.ListenAndServe(); err != nil &&
+			!errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("http server failed: %v", err)
 		}
 	}()
 
-	var schedCancel context.CancelFunc = func() {}
+	// Start schedulers
+	var snmpCancel context.CancelFunc = func() {}
 	if cfg.Scheduler.Enabled {
-		schedCtx, cancel := context.WithCancel(context.Background())
-		schedCancel = cancel
-		go snmpScheduler.Start(schedCtx)
+		snmpCtx, cancel := context.WithCancel(context.Background())
+		snmpCancel = cancel
+		go snmpScheduler.Start(snmpCtx)
 	} else {
 		log.Info("snmp scheduler disabled by configuration")
 	}
 
 	var discoveryCancel context.CancelFunc = func() {}
 	if cfg.Discovery.Enabled {
-		discCtx, cancel := context.WithCancel(context.Background())
+		discoveryCtx, cancel := context.WithCancel(context.Background())
 		discoveryCancel = cancel
-		go discoveryScheduler.Start(discCtx)
+		go discoveryScheduler.Start(discoveryCtx)
 	} else {
 		log.Info("discovery scheduler disabled by configuration")
 	}
 
-	// Nagios scheduler: sem flag de enable, corre sempre que a app arranca.
+	var comapCancel context.CancelFunc = func() {}
+	if cfg.Comap.Enabled { // ou a flag correspondente à COMAP_ENABLED
+		go comapScheduler.Start(ctx)
+		log.Info("comap scheduler worker successfully started in background")
+	} else {
+		log.Info("comap scheduler skipped from startup context")
+	}
+
 	nagiosCtx, nagiosCancel := context.WithCancel(context.Background())
 	go nagiosScheduler.Start(nagiosCtx)
 
+	// Wait shutdown
 	<-ctx.Done()
 	log.Info("shutdown signal received")
-	schedCancel()
+
+	snmpCancel()
 	discoveryCancel()
+	comapCancel()
 	nagiosCancel()
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
+	shutdownCtx, cancel := context.WithTimeout(
+		context.Background(),
+		cfg.ShutdownTimeout,
+	)
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {

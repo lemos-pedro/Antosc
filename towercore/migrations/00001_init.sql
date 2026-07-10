@@ -16,6 +16,16 @@ CREATE TABLE IF NOT EXISTS operators (
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+ 
+CREATE TABLE IF NOT EXISTS sla_snapshots (
+    sla_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    availability   NUMERIC(5,2) NOT NULL,
+    total_sites    INT NOT NULL,
+    up_sites       INT NOT NULL,
+    down_sites     INT NOT NULL,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS users (
     user_id        UUID PRIMARY KEY,
     username       TEXT NOT NULL UNIQUE,
@@ -109,3 +119,8 @@ DROP TABLE IF EXISTS towers;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS operators;
 DROP TABLE IF EXISTS regions;
+INSERT INTO site_operators (tower_id, operator_id)
+SELECT tower_id, operator_id
+FROM towers
+WHERE operator_id IS NOT NULL
+ON CONFLICT (tower_id, operator_id) DO NOTHING;

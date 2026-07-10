@@ -50,7 +50,7 @@ func (s *NagiosIngestService) Ingest(ctx context.Context, towerID string, status
 	event := &domain.Event{
 		TowerID:    towerID,
 		Type:       domain.EventTypeFailure,
-		Severity:   severity,
+		Severity:   domain.EventSeverity(severity),
 		Message:    fmt.Sprintf("nagios: host %s state=%s output=%s", status.Hostname, status.State, status.PluginOutput),
 		OccurredAt: status.LastStateChange,
 	}

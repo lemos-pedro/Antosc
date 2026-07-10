@@ -322,3 +322,52 @@ func validateSNMPPort(raw string) error {
 	}
 	return nil
 }
+
+// ListOperators devolve os operadores associados a uma torre.
+func (s *TowerService) ListOperators(ctx context.Context, towerID string) ([]domain.Operator, error) {
+	towerID = strings.TrimSpace(towerID)
+	if towerID == "" {
+		return nil, errors.New("tower_id is required")
+	}
+	return s.repo.ListOperators(ctx, towerID)
+}
+
+// AddOperator associa um operador a uma torre (relação N:N via site_operators).
+func (s *TowerService) AddOperator(ctx context.Context, towerID, operatorID string) error {
+	towerID = strings.TrimSpace(towerID)
+	operatorID = strings.TrimSpace(operatorID)
+	if towerID == "" {
+		return errors.New("tower_id is required")
+	}
+	if operatorID == "" {
+		return errors.New("operator_id is required")
+	}
+
+	if _, err := s.repo.GetByID(ctx, towerID); err != nil {
+		return err
+	}
+
+	if err := s.repo.AddOperator(ctx, towerID, operatorID); err != nil {
+		return err
+	}
+	s.invalidateTowerCache(towerID)
+	return nil
+}
+
+// RemoveOperator remove a associação entre torre e operador.
+func (s *TowerService) RemoveOperator(ctx context.Context, towerID, operatorID string) error {
+	towerID = strings.TrimSpace(towerID)
+	operatorID = strings.TrimSpace(operatorID)
+	if towerID == "" {
+		return errors.New("tower_id is required")
+	}
+	if operatorID == "" {
+		return errors.New("operator_id is required")
+	}
+
+	if err := s.repo.RemoveOperator(ctx, towerID, operatorID); err != nil {
+		return err
+	}
+	s.invalidateTowerCache(towerID)
+	return nil
+}

@@ -75,11 +75,41 @@ func (h *EventHandler) create(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(event)
 }
 
+func (h *EventHandler) ListByTower(w http.ResponseWriter, r *http.Request) {
+	towerID := r.PathValue("id")
+
+	filter := interfaces.EventFilter{
+		TowerID:  towerID,
+		Type:     r.URL.Query().Get("type"),
+		Severity: r.URL.Query().Get("severity"),
+		Status:   r.URL.Query().Get("status"),
+		Limit:    parseIntDefault(r.URL.Query().Get("limit"), 50),
+		Offset:   parseIntDefault(r.URL.Query().Get("offset"), 0),
+	}
+
+	events, total, err := h.service.List(r.Context(), filter)
+	if err != nil {
+		apierror.Internal(w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", strconv.Itoa(total))
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(events)
+}
+
 func (h *EventHandler) list(w http.ResponseWriter, r *http.Request) {
+	// CORRIGIDO (ponto 3): faltava repassar "status" da query string aqui.
+	// Já existia no ListByTower, mas este list() genérico (GET /events)
+	// continuava a ignorar o filtro, devolvendo sempre eventos resolvidos
+	// e abertos misturados a quem chamasse este endpoint sem passar por
+	// /towers/{id}/events.
 	filter := interfaces.EventFilter{
 		TowerID:  r.URL.Query().Get("tower_id"),
 		Type:     r.URL.Query().Get("type"),
 		Severity: r.URL.Query().Get("severity"),
+		Status:   r.URL.Query().Get("status"),
 		Limit:    parseIntDefault(r.URL.Query().Get("limit"), 50),
 		Offset:   parseIntDefault(r.URL.Query().Get("offset"), 0),
 	}

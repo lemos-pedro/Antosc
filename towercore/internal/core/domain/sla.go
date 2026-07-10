@@ -1,11 +1,9 @@
 package domain
 
-// SLAReport representa o relatório consolidado de disponibilidade.
-type SLAReport struct {
-	WindowDays          int     `json:"window_days"`
-	AvailabilityPercent float64 `json:"availability_percent"`
-	AffectedTowers      int     `json:"affected_towers"`
+type SLA struct {
+	Availability float64 `json:"availability"`
+	TotalSites   int     `json:"total_sites"`
+	OnlineSites  int     `json:"online_sites"`
+	OfflineSites int     `json:"offline_sites"`
+	DegradedSites int    `json:"degraded_sites"`
 }
-
-// SLAThreshold define o limiar abaixo do qual uma torre está em violação de SLA.
-const SLAThreshold = 99.5

@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lib/pq"
+
 	"towercore/internal/core/domain"
 	"towercore/internal/core/interfaces"
 	"towercore/internal/infrastructure/security"
@@ -38,7 +40,11 @@ func (r *TowerRepository) List(ctx context.Context, filter interfaces.TowerFilte
 		next++
 	}
 	if filter.OperatorID != "" {
-		clauses = append(clauses, fmt.Sprintf("operator_id = $%d", next))
+		// N:N via site_operators — uma torre pode ter mais de um operador
+		// (cada um com armário/equipamento próprio no mesmo mastro).
+		clauses = append(clauses, fmt.Sprintf(
+			"tower_id::text IN (SELECT tower_id::text FROM site_operators WHERE operator_id::text = $%d)", next,
+		))
 		args = append(args, filter.OperatorID)
 		next++
 	}
@@ -125,6 +131,21 @@ FROM towers` + where + fmt.Sprintf(" ORDER BY created_at ASC LIMIT $%d OFFSET $%
 	if err := rows.Err(); err != nil {
 		return nil, 0, err
 	}
+
+	// Popula Operators (N:N) para todas as torres da página numa única
+	// query adicional, evitando N+1.
+	towerIDs := make([]string, len(towers))
+	for i, t := range towers {
+		towerIDs[i] = t.ID
+	}
+	opsByTower, err := r.listOperatorsForTowers(ctx, towerIDs)
+	if err != nil {
+		return nil, 0, err
+	}
+	for i := range towers {
+		towers[i].Operators = opsByTower[towers[i].ID]
+	}
+
 	return towers, total, nil
 }
 
@@ -187,6 +208,13 @@ WHERE tower_id::text = $1`
 	if err := r.decryptSecrets(&t); err != nil {
 		return nil, err
 	}
+
+	ops, err := r.ListOperators(ctx, t.ID)
+	if err != nil {
+		return nil, err
+	}
+	t.Operators = ops
+
 	return &t, nil
 }
 
@@ -254,6 +282,87 @@ ON CONFLICT (tower_id) DO UPDATE SET
 		tower.CreatedAt,
 	)
 	return err
+}
+
+// listOperatorsForTowers popula os operadores (N:N via site_operators) para
+// um conjunto de torres numa única query, evitando N+1 em List().
+func (r *TowerRepository) listOperatorsForTowers(ctx context.Context, towerIDs []string) (map[string][]domain.Operator, error) {
+	result := make(map[string][]domain.Operator)
+	if len(towerIDs) == 0 {
+		return result, nil
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+SELECT so.tower_id::text, o.operator_id::text, o.name, o.code
+FROM site_operators so
+JOIN operators o ON o.operator_id = so.operator_id
+WHERE so.tower_id::text = ANY($1)
+ORDER BY o.name`
+
+	rows, err := r.db.QueryContext(ctx, query, pq.Array(towerIDs))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var towerID string
+		var op domain.Operator
+		if err := rows.Scan(&towerID, &op.OperatorID, &op.Name, &op.Code); err != nil {
+			return nil, err
+		}
+		result[towerID] = append(result[towerID], op)
+	}
+	return result, rows.Err()
+}
+
+// ListOperators devolve os operadores associados a uma única torre.
+func (r *TowerRepository) ListOperators(ctx context.Context, towerID string) ([]domain.Operator, error) {
+	m, err := r.listOperatorsForTowers(ctx, []string{towerID})
+	if err != nil {
+		return nil, err
+	}
+	return m[towerID], nil
+}
+
+// AddOperator associa um operador à torre. Idempotente (ON CONFLICT DO NOTHING).
+func (r *TowerRepository) AddOperator(ctx context.Context, towerID, operatorID string) error {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+INSERT INTO site_operators (tower_id, operator_id)
+VALUES ($1::uuid, $2::uuid)
+ON CONFLICT (tower_id, operator_id) DO NOTHING`
+
+	_, err := r.db.ExecContext(ctx, query, towerID, operatorID)
+	return err
+}
+
+// RemoveOperator remove a associação torre/operador (não apaga o operador).
+func (r *TowerRepository) RemoveOperator(ctx context.Context, towerID, operatorID string) error {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+DELETE FROM site_operators
+WHERE tower_id::text = $1 AND operator_id::text = $2`
+
+	res, err := r.db.ExecContext(ctx, query, towerID, operatorID)
+	if err != nil {
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return interfaces.ErrOperatorNotFound
+	}
+	return nil
 }
 
 func (r *TowerRepository) encryptSecret(value string) (string, error) {

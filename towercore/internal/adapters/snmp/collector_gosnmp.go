@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -116,8 +117,14 @@ func (c *GoSNMPCollector) Collect(ctx context.Context, tower domain.Tower, profi
 		}
 		values := make(map[string]float64)
 		for _, v := range packet.Variables {
+			// DEBUG: loga o tipo/valor devolvido para cada OID pedido, incluindo
+			// respostas de erro SNMP (NoSuchInstance/NoSuchObject/Null), que antes
+			// eram descartadas em silêncio por toFloat() sem deixar rasto.
+			log.Printf("DEBUG snmp target=%s oid=%s type=%v value=%v", tower.SNMPTarget, v.Name, v.Type, v.Value)
+
 			n, err := toFloat(v)
 			if err != nil {
+				log.Printf("DEBUG snmp target=%s oid=%s skipped: %v", tower.SNMPTarget, v.Name, err)
 				continue
 			}
 			values[v.Name] = n

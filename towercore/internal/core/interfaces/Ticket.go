@@ -20,6 +20,7 @@ type TicketFilter struct {
 
 // TicketRepository define o contrato de persistência para tickets.
 type TicketRepository interface {
+	Create(ctx context.Context, t *domain.Ticket) error
 	List(ctx context.Context, filter TicketFilter) ([]domain.Ticket, int, error)
 	GetByID(ctx context.Context, id string) (*domain.Ticket, error)
 	UpdateStatus(

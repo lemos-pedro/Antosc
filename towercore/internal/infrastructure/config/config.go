@@ -32,7 +32,8 @@ type Config struct {
 	Discovery       DiscoveryConfig
 	Auth            AuthConfig
 	RateLimit       RateLimitConfig
-	Nagios NagiosConfig
+	Nagios          NagiosConfig
+	Comap           ComapConfig
 }
 
 type CacheConfig struct {
@@ -100,6 +101,17 @@ type NagiosConfig struct {
 	PollIntervalSeconds int
 }
 
+// ComapConfig controla o polling Modbus dos controladores de grupo gerador
+// ComAp. Registos ainda não validados em campo (fuel_percent,
+// battery_voltage — ver adapters/comap/profile.go) continuam a ser lidos e
+// persistidos, mas não geram eventos/tickets enquanto StatusUnconfirmed.
+type ComapConfig struct {
+	Enabled         bool
+	IntervalSeconds int
+	TimeoutSeconds  int
+	Retries         int
+}
+
 func Load() Config {
 	loadEnvFile()
 
@@ -162,6 +174,12 @@ func Load() Config {
 			Password:            getEnv("NAGIOS_PASSWORD", ""),
 			TimeoutSeconds:      getEnvInt("NAGIOS_TIMEOUT_SECONDS", 10),
 			PollIntervalSeconds: getEnvInt("NAGIOS_POLL_INTERVAL_SECONDS", 60),
+		},
+		Comap: ComapConfig{
+			Enabled:         getEnvBool("COMAP_ENABLED", true), // false por default até teste de campo confirmar
+			IntervalSeconds: getEnvInt("COMAP_POLL_INTERVAL_SECONDS", 60),
+			TimeoutSeconds:  getEnvInt("MODBUS_TIMEOUT_SECONDS", 2),
+			Retries:         getEnvInt("MODBUS_RETRIES", 1),
 		},
 	}
 }
@@ -244,4 +262,3 @@ func getEnvBool(key string, fallback bool) bool {
 		return fallback
 	}
 }
-

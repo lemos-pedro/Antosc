@@ -20,6 +20,67 @@ func NewTicketRepository(db *sql.DB) *TicketRepository {
 	return &TicketRepository{db: db}
 }
 
+
+
+
+func (r *TicketRepository) Create(ctx context.Context, t *domain.Ticket) error {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+ 
+	const query = `
+INSERT INTO tickets (ticket_id, tower_id, event_id, status, created_at, updated_at)
+VALUES ($1::uuid, $2::uuid, NULLIF($3, '')::uuid, $4, $5, $6)`
+ 
+	_, err := r.db.ExecContext(ctx, query,
+		t.ID,
+		t.TowerID,
+		t.EventID,
+		string(t.Status),
+		t.CreatedAt,
+		t.UpdatedAt,
+	)
+	return err
+}
+
+func (r *TicketRepository) GetByID(ctx context.Context, id string) (*domain.Ticket, error) {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+SELECT
+	ticket_id::text,
+	tower_id::text,
+	COALESCE(event_id::text, ''),
+	status,
+	acknowledged_at,
+	closed_at,
+	created_at,
+	updated_at
+FROM tickets
+WHERE ticket_id::text = $1`
+
+	var t domain.Ticket
+	var status string
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
+		&t.ID,
+		&t.TowerID,
+		&t.EventID,
+		&status,
+		&t.AcknowledgedAt,
+		&t.ClosedAt,
+		&t.CreatedAt,
+		&t.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, interfaces.ErrTicketNotFound
+		}
+		return nil, err
+	}
+	t.Status = domain.TicketStatus(status)
+	return &t, nil
+}
+
 func (r *TicketRepository) List(ctx context.Context, filter interfaces.TicketFilter) ([]domain.Ticket, int, error) {
 	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
 	defer cancel()
@@ -94,45 +155,6 @@ FROM tickets` + where + fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d OFFSET 
 		return nil, 0, err
 	}
 	return tickets, total, nil
-}
-
-func (r *TicketRepository) GetByID(ctx context.Context, id string) (*domain.Ticket, error) {
-	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
-	defer cancel()
-
-	const query = `
-SELECT
-	ticket_id::text,
-	tower_id::text,
-	COALESCE(event_id::text, ''),
-	status,
-	acknowledged_at,
-	closed_at,
-	created_at,
-	updated_at
-FROM tickets
-WHERE ticket_id::text = $1`
-
-	var t domain.Ticket
-	var status string
-	err := r.db.QueryRowContext(ctx, query, id).Scan(
-		&t.ID,
-		&t.TowerID,
-		&t.EventID,
-		&status,
-		&t.AcknowledgedAt,
-		&t.ClosedAt,
-		&t.CreatedAt,
-		&t.UpdatedAt,
-	)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, interfaces.ErrTicketNotFound
-		}
-		return nil, err
-	}
-	t.Status = domain.TicketStatus(status)
-	return &t, nil
 }
 
 func (r *TicketRepository) UpdateStatus(

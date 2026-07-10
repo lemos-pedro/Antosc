@@ -28,3 +28,45 @@ Construir um backend para monitorizacao operacional de torres, com coleta period
 - Estrategia de fila/eventos: sincrono no inicio ou broker desde a primeira versao.
 - Modelo de autenticacao da API.
 - Nivel de multi-tenant (por cliente/operador).
+
+
+
+
+
+
+
+Power
+├── System Status
+├── Mains Status
+├── Load Status
+├── Battery Status
+
+Battery
+├── Voltage
+├── Current
+├── Remaining Ah
+├── Temperature
+
+Rectifiers
+├── R1 Status
+├── R1 Current
+├── R1 Voltage
+├── R2 Status
+├── R2 Current
+├── R2 Voltage
+
+AC Input
+├── L1 Voltage
+├── L2 Voltage
+├── L3 Voltage
+
+Temperature
+├── Battery
+├── Controller
+├── Rectifiers
+
+History
+├── Graph Battery Voltage
+├── Graph Load Current
+├── Graph Temperature
+├── Graph Mains Voltage

@@ -3,8 +3,10 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"towercore/internal/core/domain"
 	"towercore/internal/core/interfaces"
@@ -18,16 +20,28 @@ func NewEventRepository(db *sql.DB) *EventRepository {
 	return &EventRepository{db: db}
 }
 
+// Create grava um evento novo. Usado tanto pelo fluxo legado (Nagios, sem
+// alarm_key) como pelo CreateOrTouch do EventService (SNMP, com alarm_key).
 func (r *EventRepository) Create(ctx context.Context, event *domain.Event) error {
 	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
 	defer cancel()
 
 	const query = `
 INSERT INTO events (
-	event_id, tower_id, type, severity, message, occurred_at, created_at
+	event_id, tower_id, type, severity, message, occurred_at, created_at,
+	status, alarm_key, last_seen_at
 ) VALUES (
-	$1::uuid, $2::uuid, $3, $4, $5, $6, $7
+	$1::uuid, $2::uuid, $3, $4, $5, $6, $7, $8, NULLIF($9, ''), $10
 )`
+
+	status := string(event.Status)
+	if status == "" {
+		status = "open"
+	}
+	lastSeen := event.LastSeenAt
+	if lastSeen.IsZero() {
+		lastSeen = event.CreatedAt
+	}
 
 	_, err := r.db.ExecContext(
 		ctx,
@@ -39,15 +53,24 @@ INSERT INTO events (
 		event.Message,
 		event.OccurredAt,
 		event.CreatedAt,
+		status,
+		event.AlarmKey,
+		lastSeen,
 	)
 	return err
 }
 
+// List agora filtra por status quando pedido, e devolve status/resolved_at
+// para que o consumidor (API/frontend) possa distinguir alarmes ativos de
+// histórico. ANTES: não filtrava por status nem selecionava a coluna,
+// devolvendo eventos resolvidos misturados com abertos — é por isso que a
+// UI de "Alarmes" continuava a mostrar eventos já resolvidos pelo
+// EventService.Resolve().
 func (r *EventRepository) List(ctx context.Context, filter interfaces.EventFilter) ([]domain.Event, int, error) {
 	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
 	defer cancel()
 
-	clauses := make([]string, 0, 3)
+	clauses := make([]string, 0, 4)
 	args := make([]any, 0, 8)
 	next := 1
 
@@ -64,6 +87,11 @@ func (r *EventRepository) List(ctx context.Context, filter interfaces.EventFilte
 	if filter.Severity != "" {
 		clauses = append(clauses, fmt.Sprintf("severity = $%d", next))
 		args = append(args, filter.Severity)
+		next++
+	}
+	if filter.Status != "" {
+		clauses = append(clauses, fmt.Sprintf("status = $%d", next))
+		args = append(args, filter.Status)
 		next++
 	}
 
@@ -86,7 +114,10 @@ SELECT
 	severity,
 	message,
 	occurred_at,
-	created_at
+	created_at,
+	status,
+	COALESCE(alarm_key, ''),
+	resolved_at
 FROM events` + where + fmt.Sprintf(" ORDER BY occurred_at DESC LIMIT $%d OFFSET $%d", next, next+1)
 
 	args = append(args, filter.Limit, filter.Offset)
@@ -100,7 +131,8 @@ FROM events` + where + fmt.Sprintf(" ORDER BY occurred_at DESC LIMIT $%d OFFSET 
 	out := make([]domain.Event, 0)
 	for rows.Next() {
 		var ev domain.Event
-		var t, sev string
+		var t, sev, status string
+		var resolvedAt sql.NullTime
 		if err := rows.Scan(
 			&ev.ID,
 			&ev.TowerID,
@@ -109,11 +141,18 @@ FROM events` + where + fmt.Sprintf(" ORDER BY occurred_at DESC LIMIT $%d OFFSET 
 			&ev.Message,
 			&ev.OccurredAt,
 			&ev.CreatedAt,
+			&status,
+			&ev.AlarmKey,
+			&resolvedAt,
 		); err != nil {
 			return nil, 0, err
 		}
 		ev.Type = domain.EventType(t)
 		ev.Severity = domain.EventSeverity(sev)
+		ev.Status = domain.EventStatus(status)
+		if resolvedAt.Valid {
+			ev.ResolvedAt = &resolvedAt.Time
+		}
 		out = append(out, ev)
 	}
 	if err := rows.Err(); err != nil {
@@ -121,4 +160,56 @@ FROM events` + where + fmt.Sprintf(" ORDER BY occurred_at DESC LIMIT $%d OFFSET 
 	}
 
 	return out, total, nil
+}
+
+func (r *EventRepository) FindOpenByTowerAndAlarmKey(ctx context.Context, towerID, alarmKey string) (*domain.Event, error) {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+SELECT event_id::text, tower_id::text, type, severity, message, occurred_at,
+       created_at, status, alarm_key, resolved_at, last_seen_at
+FROM events
+WHERE tower_id::text = $1 AND alarm_key = $2 AND status = 'open'
+LIMIT 1`
+
+	var e domain.Event
+	var alarmKeyVal sql.NullString
+	var resolvedAt sql.NullTime
+	err := r.db.QueryRowContext(ctx, query, towerID, alarmKey).Scan(
+		&e.ID, &e.TowerID, &e.Type, &e.Severity, &e.Message, &e.OccurredAt,
+		&e.CreatedAt, &e.Status, &alarmKeyVal, &resolvedAt, &e.LastSeenAt,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, interfaces.ErrEventNotFound
+		}
+		return nil, err
+	}
+	e.AlarmKey = alarmKeyVal.String
+	if resolvedAt.Valid {
+		e.ResolvedAt = &resolvedAt.Time
+	}
+	return &e, nil
+}
+
+func (r *EventRepository) TouchLastSeen(ctx context.Context, eventID string, ts time.Time) error {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `UPDATE events SET last_seen_at = $1 WHERE event_id::text = $2`
+	_, err := r.db.ExecContext(ctx, query, ts, eventID)
+	return err
+}
+
+func (r *EventRepository) ResolveOpenByTowerAndAlarmKey(ctx context.Context, towerID, alarmKey string, resolvedAt time.Time) error {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+UPDATE events
+SET status = 'resolved', resolved_at = $1
+WHERE tower_id::text = $2 AND alarm_key = $3 AND status = 'open'`
+	_, err := r.db.ExecContext(ctx, query, resolvedAt, towerID, alarmKey)
+	return err // não é erro se 0 linhas afetadas — idempotente
 }

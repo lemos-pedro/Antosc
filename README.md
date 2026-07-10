@@ -19,3 +19,6 @@ Repositorio do projeto Antosc System, atualmente em fase de planeamento.
 
 ## Documentacao
 Indice principal em [docs/README.md](/home/lemos/Documentos/Antosc-system/docs/README.md).
+
+
+"C:\Users\joaquim.pedro\Documents\pgsql\bin\psql.exe" -U A.lemos -d towercore
