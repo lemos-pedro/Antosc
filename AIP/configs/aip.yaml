@@ -1,0 +1,16 @@
+app:
+  env: dev
+  log_level: info
+  api_port: 8090
+
+towercore:
+  base_url: http://localhost:8080
+
+prediction_service:
+  base_url: http://localhost:9000
+
+database:
+  host: localhost
+  port: 5432
+  name: aip
+  sslmode: disable
