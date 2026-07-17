@@ -43,9 +43,10 @@ type Tower struct {
 	NetecoEnabled   bool
 	NetecoNEID      string
 	NetecoSiteName  string
-	Availability30d float64   `json:"availability_30d,omitempty"`
-	UpdatedAt       time.Time `json:"updated_at"`
-	CreatedAt       time.Time `json:"created_at"`
+	Availability30d float64    `json:"availability_30d,omitempty"`
+	Availability7d  *float64   `json:"availability_7d,omitempty"`
+	UpdatedAt       time.Time  `json:"updated_at"`
+	CreatedAt       time.Time  `json:"created_at"`
 }
 
 // IsOperational retorna true se a torre está online ou degradada.

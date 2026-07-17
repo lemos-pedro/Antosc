@@ -213,3 +213,34 @@ WHERE tower_id::text = $2 AND alarm_key = $3 AND status = 'open'`
 	_, err := r.db.ExecContext(ctx, query, resolvedAt, towerID, alarmKey)
 	return err // não é erro se 0 linhas afetadas — idempotente
 }
+
+// SumFailureDowntime soma a duração (em segundos) de todos os eventos
+// type=failure cuja janela [occurred_at, resolved_at ou windowEnd se
+// ainda aberto] se sobrepõe a [windowStart, windowEnd]. Usa
+// GREATEST/LEAST para recortar cada evento aos limites da janela pedida
+// — um evento que começou antes de windowStart ou que ainda está aberto
+// (resolved_at NULL) é contabilizado apenas na parte que cai dentro da
+// janela.
+func (r *EventRepository) SumFailureDowntime(ctx context.Context, towerID string, windowStart, windowEnd time.Time) (float64, error) {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+SELECT COALESCE(SUM(
+	EXTRACT(EPOCH FROM (
+		LEAST(COALESCE(resolved_at, $3), $3) - GREATEST(occurred_at, $2)
+	))
+), 0)
+FROM events
+WHERE tower_id::text = $1
+  AND type = 'failure'
+  AND occurred_at < $3
+  AND COALESCE(resolved_at, $3) > $2`
+
+	var seconds float64
+	err := r.db.QueryRowContext(ctx, query, towerID, windowStart, windowEnd).Scan(&seconds)
+	if err != nil {
+		return 0, err
+	}
+	return seconds, nil
+}

@@ -16,11 +16,12 @@ import (
 )
 
 type TowerHandler struct {
-	service *services.TowerService
+	service      *services.TowerService
+	availability *services.AvailabilityService
 }
 
-func NewTowerHandler(service *services.TowerService) *TowerHandler {
-	return &TowerHandler{service: service}
+func NewTowerHandler(service *services.TowerService, availability *services.AvailabilityService) *TowerHandler {
+	return &TowerHandler{service: service, availability: availability}
 }
 
 func (h *TowerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +92,7 @@ func (h *TowerHandler) list(w http.ResponseWriter, r *http.Request) {
 		Status:     r.URL.Query().Get("status"),
 		OperatorID: r.URL.Query().Get("operator_id"),
 		RegionID:   r.URL.Query().Get("region_id"),
-		Limit:      parseIntDefault(r.URL.Query().Get("limit"), 50),
+		Limit:      parseIntDefault(r.URL.Query().Get("limit"), 500),
 		Offset:     parseIntDefault(r.URL.Query().Get("offset"), 0),
 	}
 
@@ -134,6 +135,18 @@ func (h *TowerHandler) getByID(w http.ResponseWriter, r *http.Request) {
 			apierror.BadRequest(w, err.Error())
 		}
 		return
+	}
+
+	// Disponibilidade é calculada em tempo real a partir de downtime
+	// real (eventos type=failure), não um valor gravado estaticamente
+	// na tabela towers — ver AvailabilityService.
+	if h.availability != nil {
+		if avail30, err := h.availability.Calculate(r.Context(), towerID, 30); err == nil {
+			tower.Availability30d = avail30
+		}
+		if avail7, err := h.availability.Calculate(r.Context(), towerID, 7); err == nil {
+			tower.Availability7d = &avail7
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")

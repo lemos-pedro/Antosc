@@ -32,8 +32,8 @@ func NewTowerServiceWithCache(repo interfaces.TowerRepository, cache interfaces.
 }
 
 func (s *TowerService) List(ctx context.Context, filter interfaces.TowerFilter) ([]domain.Tower, int, error) {
-	if filter.Limit <= 0 || filter.Limit > 200 {
-		filter.Limit = 50
+	if filter.Limit <= 0 || filter.Limit > 2000 {
+		filter.Limit = 500
 	}
 	if filter.Offset < 0 {
 		filter.Offset = 0

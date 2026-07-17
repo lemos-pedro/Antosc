@@ -28,4 +28,5 @@ type EventRepository interface {
 	FindOpenByTowerAndAlarmKey(ctx context.Context, towerID, alarmKey string) (*domain.Event, error)
 	TouchLastSeen(ctx context.Context, eventID string, ts time.Time) error
 	ResolveOpenByTowerAndAlarmKey(ctx context.Context, towerID, alarmKey string, resolvedAt time.Time) error
+	SumFailureDowntime(ctx context.Context, towerID string, windowStart, windowEnd time.Time) (float64, error)
 }

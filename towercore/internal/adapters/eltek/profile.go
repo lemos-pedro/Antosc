@@ -40,12 +40,12 @@ func Profile() snmp.Profile {
 			},
 			{
 				OID:   ".1.3.6.1.4.1.12148.10.10.9.5.0",
-				Key:   "battery_remaining_ah",
+				Key:   "battery_remaining_",
 				Scale: 1,
 			},
 			{
 				OID:   ".1.3.6.1.4.1.12148.10.10.11.5.0",
-				Key:   "battery_total_ah",
+				Key:   "battery_total_",
 				Scale: 1,
 			},
 			{
@@ -60,7 +60,7 @@ func Profile() snmp.Profile {
 			{
 				OID:   ".1.3.6.1.4.1.12148.10.9.2.5.0",
 				Key:   "load_current_a",
-				Scale: 0.1, // confirmado: MULTIPLIER 0.1 no template
+				Scale: 1, // confirmado: MULTIPLIER 0.1 no template
 			},
 			{
 				OID:   ".1.3.6.1.4.1.12148.10.9.9.1.6.1.1",
@@ -243,26 +243,26 @@ func Profile() snmp.Profile {
 
 			// ======================
 			// Battery capacity
-			// CORRIGIDO: o warning absoluto de 20 Ah fixo é o que está a
+			// CORRIGIDO: o warning absoluto de 20  fixo é o que está a
 			// inundar a frota de "degradada" — bancos de bateria pequenos
-			// passam a maior parte da vida útil normal abaixo de 20 Ah
+			// passam a maior parte da vida útil normal abaixo de 20 
 			// restantes, sem que isso signifique falha real.
-			// battery_total_ah já é coletado — o correto é avaliar como
-			// percentagem (battery_remaining_ah / battery_total_ah), não
+			// battery_total_ já é coletado — o correto é avaliar como
+			// percentagem (battery_remaining_ / battery_total_), não
 			// como valor absoluto. Requer suporte a regra derivada no
 			// motor de avaliação (matchCondition); até lá, manter apenas
-			// o crítico absoluto de 5 Ah (bateria quase esgotada em
-			// qualquer capacidade de banco) e remover o warning de 20 Ah.
+			// o crítico absoluto de 5  (bateria quase esgotada em
+			// qualquer capacidade de banco) e remover o warning de 20 .
 			// ======================
 			{
-				Key:       "battery_remaining_ah",
+				Key:       "battery_remaining_",
 				Severity:  domain.EventSeverityCritical,
 				Threshold: 5,
 				Condition: "lt",
 				Message:   "battery critically low",
 			},
 			// TODO: reintroduzir warning como regra percentual, ex.:
-			// (battery_remaining_ah / battery_total_ah) < 0.20
+			// (battery_remaining_ / battery_total_) < 0.20
 			// assim que o motor de alarmes suportar métricas derivadas.
 
 			// ======================
@@ -315,10 +315,11 @@ func Profile() snmp.Profile {
 			{
 				Key:       "load_current_a",
 				Severity:  domain.EventSeverityWarning,
-				Threshold: 80,
+				Threshold: 180,
 				Condition: "gt",
 				Message:   "load current high",
 			},
 		},
 	}
 }
+

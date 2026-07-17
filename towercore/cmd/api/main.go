@@ -79,6 +79,7 @@ func main() {
 	metricSvc := services.NewMetricService(metricRepo)
 	auditSvc := services.NewAuditService(auditRepo)
 	ticketSvc := services.NewTicketService(ticketRepo, auditRepo)
+	availabilitySvc := services.NewAvailabilityService(eventRepo, towerRepo)
 
 	authSvc := services.NewAuthService(
 		userRepo,
@@ -183,7 +184,7 @@ func main() {
 	)
 
 	// Handlers
-	towerHandler := handlers.NewTowerHandler(towerSvc)
+	towerHandler := handlers.NewTowerHandler(towerSvc, availabilitySvc)
 	towerOperatorHandler := handlers.NewTowerOperatorHandler(towerSvc)
 	eventHandler := handlers.NewEventHandler(eventSvc)
 	metricHandler := handlers.NewMetricHandler(metricSvc)

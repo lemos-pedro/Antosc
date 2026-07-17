@@ -53,7 +53,7 @@ func NewRouter(
 
 	mux.Handle("GET /api/v1/towers", metrics.Instrument("/api/v1/towers", towerHandler))
 	mux.Handle("GET /api/v1/towers/{id}", metrics.Instrument("/api/v1/towers/{id}", towerHandler))
-	mux.Handle("POST /api/v1/towers", metrics.Instrument("/api/v1/towers", writeChain(towerHandler)))
+	mux.Handle("POST /api/v1/towers", metrics.Instrument("/api/v1/towers", writeChain(towerHandler))) 
 	mux.Handle("PATCH /api/v1/towers/{id}/snmp", metrics.Instrument("/api/v1/towers/{id}/snmp", writeChain(towerHandler)))
 
 	mux.Handle("GET /api/v1/events", metrics.Instrument("/api/v1/events", eventHandler))

@@ -98,21 +98,23 @@ func (s *SNMPIngestService) Ingest(ctx context.Context, snap SNMPSnapshot) error
 	hasWarning := false
 
 	for _, ar := range profile.Alarms {
-		v, ok := normalized[ar.Key]
-		if !ok {
-			continue
-		}
-		if ar.IgnoreZero && v == 0 {
-			toResolve = append(toResolve, ar.Key) // garante que resolve se estava aberto
-			continue
-		}
-		if !matchCondition(v, ar.Condition, ar.Threshold) {
-			toResolve = append(toResolve, ar.Key)
-			continue
-		} else if ar.Severity == domain.EventSeverityWarning {
-			hasWarning = true
-		}
-		triggered = append(triggered, triggeredAlarm{rule: ar, value: v})
+			v, ok := normalized[ar.Key]
+			if !ok {
+				continue
+			}
+			if ar.IgnoreZero && v == 0 {
+				toResolve = append(toResolve, ar.Key) // garante que resolve se estava aberto
+				continue
+			}
+			if !matchCondition(v, ar.Condition, ar.Threshold) {
+				toResolve = append(toResolve, ar.Key)
+				continue
+			} else if ar.Severity == domain.EventSeverityCritical {
+				hasCritical = true
+			} else if ar.Severity == domain.EventSeverityWarning {
+				hasWarning = true
+			}
+			triggered = append(triggered, triggeredAlarm{rule: ar, value: v})
 	}
 
 	// Segundo passo: status da torre é atualizado já aqui, ANTES de

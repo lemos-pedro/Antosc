@@ -43,8 +43,11 @@ func (s *NagiosIngestService) Ingest(ctx context.Context, towerID string, status
 		return err
 	}
 
+	alarmKey := "nagios_host_status"
+
 	if !eventNeeded {
-		return nil
+		// Estado saudável ou neutro: resolve qualquer evento nagios aberto.
+		return s.eventService.Resolve(ctx, towerID, alarmKey)
 	}
 
 	event := &domain.Event{
@@ -54,7 +57,8 @@ func (s *NagiosIngestService) Ingest(ctx context.Context, towerID string, status
 		Message:    fmt.Sprintf("nagios: host %s state=%s output=%s", status.Hostname, status.State, status.PluginOutput),
 		OccurredAt: status.LastStateChange,
 	}
-	return s.eventService.Create(ctx, event)
+	_, _, err := s.eventService.CreateOrTouch(ctx, event, alarmKey)
+	return err
 }
 
 func mapNagiosState(state interfaces.HostState) (domain.TowerStatus, bool, string) {
@@ -64,7 +68,7 @@ func mapNagiosState(state interfaces.HostState) (domain.TowerStatus, bool, strin
 	case interfaces.HostStateDown, interfaces.HostStateUnreachable:
 		return domain.TowerStatusOffline, true, "critical"
 	case interfaces.HostStatePending:
-		return domain.TowerStatusDegraded, false, ""
+		return domain.TowerStatusDegraded, true, "warning"
 	default:
 		return domain.TowerStatusDegraded, true, "warning"
 	}
