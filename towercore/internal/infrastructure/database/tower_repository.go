@@ -30,13 +30,18 @@ func (r *TowerRepository) List(ctx context.Context, filter interfaces.TowerFilte
 	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
 	defer cancel()
 
-	clauses := make([]string, 0, 3)
+	clauses := make([]string, 0, 5)
 	args := make([]any, 0, 8)
 	next := 1
 
 	if filter.Status != "" {
 		clauses = append(clauses, fmt.Sprintf("status = $%d", next))
 		args = append(args, filter.Status)
+		next++
+	}
+	if filter.CollectionStatus != "" {
+		clauses = append(clauses, fmt.Sprintf("collection_status = $%d", next))
+		args = append(args, filter.CollectionStatus)
 		next++
 	}
 	if filter.OperatorID != "" {
@@ -51,6 +56,11 @@ func (r *TowerRepository) List(ctx context.Context, filter interfaces.TowerFilte
 	if filter.RegionID != "" {
 		clauses = append(clauses, fmt.Sprintf("region_id = $%d", next))
 		args = append(args, filter.RegionID)
+		next++
+	}
+	if filter.NetecoEnabled != nil {
+		clauses = append(clauses, fmt.Sprintf("neteco_enabled = $%d", next))
+		args = append(args, *filter.NetecoEnabled)
 		next++
 	}
 
@@ -82,6 +92,20 @@ SELECT
 	snmp_priv_password,
 	COALESCE(operator_id::text, ''),
 	COALESCE(region_id::text, ''),
+	neteco_enabled,
+	neteco_neid,
+	neteco_site_name,
+	battery_soc,
+	battery_soh,
+	battery_backup_time_h,
+	battery_updated_at,
+	dc_output_voltage,
+	dc_load_current,
+	rectifier_current,
+	collection_status,
+	last_collected_at,
+	last_successful_at,
+	last_collection_error,
 	availability_30d::float8,
 	updated_at,
 	created_at
@@ -115,6 +139,20 @@ FROM towers` + where + fmt.Sprintf(" ORDER BY created_at ASC LIMIT $%d OFFSET $%
 			&t.SNMPPrivPass,
 			&t.OperatorID,
 			&t.RegionID,
+			&t.NetecoEnabled,
+			&t.NetecoNEID,
+			&t.NetecoSiteName,
+			&t.BatterySOC,
+			&t.BatterySOH,
+			&t.BatteryBackupTimeH,
+			&t.BatteryUpdatedAt,
+			&t.DCOutputVoltage,
+			&t.DCLoadCurrent,
+			&t.RectifierCurrent,
+			&t.CollectionStatus,
+			&t.LastCollectedAt,
+			&t.LastSuccessfulAt,
+			&t.LastCollectionError,
 			&t.Availability30d,
 			&t.UpdatedAt,
 			&t.CreatedAt,
@@ -170,6 +208,20 @@ SELECT
 	snmp_priv_password,
 	COALESCE(operator_id::text, ''),
 	COALESCE(region_id::text, ''),
+	neteco_enabled,
+	neteco_neid,
+	neteco_site_name,
+	battery_soc,
+	battery_soh,
+	battery_backup_time_h,
+	battery_updated_at,
+	dc_output_voltage,
+	dc_load_current,
+	rectifier_current,
+	collection_status,
+	last_collected_at,
+	last_successful_at,
+	last_collection_error,
 	availability_30d::float8,
 	updated_at,
 	created_at
@@ -194,6 +246,20 @@ WHERE tower_id::text = $1`
 		&t.SNMPPrivPass,
 		&t.OperatorID,
 		&t.RegionID,
+		&t.NetecoEnabled,
+		&t.NetecoNEID,
+		&t.NetecoSiteName,
+		&t.BatterySOC,
+		&t.BatterySOH,
+		&t.BatteryBackupTimeH,
+		&t.BatteryUpdatedAt,
+		&t.DCOutputVoltage,
+		&t.DCLoadCurrent,
+		&t.RectifierCurrent,
+		&t.CollectionStatus,
+		&t.LastCollectedAt,
+		&t.LastSuccessfulAt,
+		&t.LastCollectionError,
 		&t.Availability30d,
 		&t.UpdatedAt,
 		&t.CreatedAt,
@@ -224,9 +290,19 @@ func (r *TowerRepository) Upsert(ctx context.Context, tower *domain.Tower) error
 
 	const query = `
 INSERT INTO towers (
-	tower_id, name, status, vendor, snmp_enabled, snmp_version, snmp_target, snmp_community, snmp_v3_user, snmp_auth_protocol, snmp_auth_password, snmp_priv_protocol, snmp_priv_password, operator_id, region_id, availability_30d, updated_at, created_at
+	tower_id, name, status, vendor, snmp_enabled, snmp_version, snmp_target, snmp_community, snmp_v3_user, snmp_auth_protocol, snmp_auth_password, snmp_priv_protocol, snmp_priv_password, operator_id, region_id,
+	neteco_enabled, neteco_neid, neteco_site_name,
+	battery_soc, battery_soh, battery_backup_time_h, battery_updated_at,
+	dc_output_voltage, dc_load_current, rectifier_current,
+	collection_status, last_collected_at, last_successful_at, last_collection_error,
+	availability_30d, updated_at, created_at
 ) VALUES (
-	$1::uuid, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NULLIF($14, '')::uuid, NULLIF($15, '')::uuid, $16, $17, $18
+	$1::uuid, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NULLIF($14, '')::uuid, NULLIF($15, '')::uuid,
+	$16, $17, $18,
+	$19, $20, $21, $22,
+	$23, $24, $25,
+	$26, $27, $28, $29,
+	$30, $31, $32
 )
 ON CONFLICT (tower_id) DO UPDATE SET
 	name = EXCLUDED.name,
@@ -243,6 +319,20 @@ ON CONFLICT (tower_id) DO UPDATE SET
 	snmp_priv_password = EXCLUDED.snmp_priv_password,
 	operator_id = EXCLUDED.operator_id,
 	region_id = EXCLUDED.region_id,
+	neteco_enabled = EXCLUDED.neteco_enabled,
+	neteco_neid = EXCLUDED.neteco_neid,
+	neteco_site_name = EXCLUDED.neteco_site_name,
+	battery_soc = EXCLUDED.battery_soc,
+	battery_soh = EXCLUDED.battery_soh,
+	battery_backup_time_h = EXCLUDED.battery_backup_time_h,
+	battery_updated_at = EXCLUDED.battery_updated_at,
+	dc_output_voltage = EXCLUDED.dc_output_voltage,
+	dc_load_current = EXCLUDED.dc_load_current,
+	rectifier_current = EXCLUDED.rectifier_current,
+	collection_status = EXCLUDED.collection_status,
+	last_collected_at = EXCLUDED.last_collected_at,
+	last_successful_at = EXCLUDED.last_successful_at,
+	last_collection_error = EXCLUDED.last_collection_error,
 	availability_30d = EXCLUDED.availability_30d,
 	updated_at = EXCLUDED.updated_at`
 
@@ -277,6 +367,20 @@ ON CONFLICT (tower_id) DO UPDATE SET
 		encPrivPass,
 		tower.OperatorID,
 		tower.RegionID,
+		tower.NetecoEnabled,
+		tower.NetecoNEID,
+		tower.NetecoSiteName,
+		tower.BatterySOC,
+		tower.BatterySOH,
+		tower.BatteryBackupTimeH,
+		tower.BatteryUpdatedAt,
+		tower.DCOutputVoltage,
+		tower.DCLoadCurrent,
+		tower.RectifierCurrent,
+		tower.CollectionStatus,
+		tower.LastCollectedAt,
+		tower.LastSuccessfulAt,
+		tower.LastCollectionError,
 		tower.Availability30d,
 		tower.UpdatedAt,
 		tower.CreatedAt,

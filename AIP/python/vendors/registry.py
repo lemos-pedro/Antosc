@@ -6,16 +6,12 @@ from .base import BaseVendor
 from .eltek import EltekVendor
 from .enetek import EnetekVendor
 from .huawei import HuaweiVendor
-from .comap import ComApVendor
-from .netsure import NetsureVendor
 
 
 VENDORS: dict[str, BaseVendor] = {
     "eltek": EltekVendor(),
     "enetek": EnetekVendor(),
     "huawei": HuaweiVendor(),
-    "comap": ComApVendor(),
-    "netsure": NetsureVendor(),
 }
 
 

@@ -8,9 +8,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/antosc/aip/internal/alerts"
 	"github.com/antosc/aip/internal/analytics/ingestion"
 	"github.com/antosc/aip/internal/config"
 	"github.com/antosc/aip/internal/logger"
+	"github.com/antosc/aip/internal/notification"
+	"github.com/antosc/aip/internal/repository/generator"
 	"github.com/antosc/aip/internal/repository/postgres"
 	"github.com/antosc/aip/internal/repository/towercore"
 )
@@ -27,10 +30,24 @@ func main() {
 	defer db.Close()
 
 	client := towercore.NewHTTPClient(cfg.TowerCoreURL)
+	generatorClient := generator.NewHTTPClient(cfg.GeneratorAPIURL)
 	featureRepo := postgres.NewFeatureRepository(db)
 	eventRepo := postgres.NewEventRepository(db)
+	incidentRepo := postgres.NewIncidentCauseRepository(db)
+	towerRepo := postgres.NewTowerRepository(db)
 
-	service := ingestion.NewService(client, featureRepo, eventRepo, log)
+	// Alertas de limiar para o Teams (bateria, combustível) -- só ativa se
+	// TEAMS_WEBHOOK_URL estiver configurado; sem isso, alertEngine fica nil
+	// e a avaliação de alertas é ignorada sem erro.
+	var alertEngine *alerts.Engine
+	if cfg.TeamsWebhookURL != "" {
+		teamsNotifier := notification.NewTeamsNotifier(cfg.TeamsWebhookURL)
+		alertEngine = alerts.NewEngine(alerts.DefaultRules(), teamsNotifier, log)
+	} else {
+		log.Warn("TEAMS_WEBHOOK_URL não definido -- alertas de limiar desligados")
+	}
+
+	service := ingestion.NewService(client, generatorClient, featureRepo, eventRepo, incidentRepo, towerRepo, alertEngine, log)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()

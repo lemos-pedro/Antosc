@@ -1,99 +1,113 @@
-package services
+package service
 
 import (
 	"context"
-	"fmt"
+	"time"
 
 	"towercore/internal/adapters/comap"
-	"towercore/internal/core/domain"
 	"towercore/internal/core/interfaces"
+	"towercore/internal/core/services"
+	"towercore/internal/infrastructure/logger"
 )
- 
-// Threshold de negócio para telemetria ComAp. Combustível é o único campo
-// com threshold definido nesta primeira versão — fuel_percent e
-// battery_voltage estão marcados StatusUnconfirmed no comap.Profile e não
-// geram eventos/tickets até validação em campo, para não repetir o problema
-// de falsos "Degradada" já visto no profile Eltek (threshold mal calibrado).
-const fuelLowLiters = 50.0 // TODO: ajustar por site após validação de campo (depende do tamanho do tanque)
 
-// ComapModbusReader é o contrato mínimo que o serviço precisa do adapter
-// comap (permite mock em testes sem depender do driver Modbus real).
-type ComapModbusReader interface {
-	Read(ctx context.Context) (*comap.Metrics, error)
+// ComapScheduler faz polling periódico dos endpoints ComAp (gerador) por
+// torre, seguindo exatamente o mesmo esqueleto do SNMPScheduler. A
+// diferença principal: em vez de resolver o profile por vendor, resolve o
+// endpoint (IP/porta/slave_id) via TowerEndpointRepository, filtrando por
+// equipment_type="generator" e enabled=true.
+type ComapScheduler struct {
+	endpointsRepo interfaces.TowerEndpointRepository
+	ingestService *services.ComapIngestService
+	log           *logger.Logger
+	interval      time.Duration
+	batchSize     int
+	modbusTimeout time.Duration
 }
 
-// ComapIngestService orquestra a leitura de telemetria ComAp para uma torre:
-// persiste sempre a última leitura (via ComapReadingRepository, para o
-// frontend), e aplica o padrão de dedup de eventos apenas para os campos
-// já validados (fuel_liters).
-type ComapIngestService struct {
-	readings interfaces.ComapReadingRepository
-	events   *EventService
-	tickets  *TicketService
-}
-
-// NewComapIngestService cria o serviço de ingestão ComAp.
-func NewComapIngestService(readings interfaces.ComapReadingRepository, events *EventService, tickets *TicketService) *ComapIngestService {
-	return &ComapIngestService{readings: readings, events: events, tickets: tickets}
-}
-
-// Ingest lê a telemetria de um endpoint ComAp (via reader já configurado
-// para a torre/IP correto — ver tower_endpoints), persiste a leitura para
-// consumo do frontend, e avalia thresholds. Campos nil (registo inativo,
-// não configurado, ou não confirmado em campo) são ignorados na avaliação
-// de threshold — nunca tratados como zero — mas ainda assim persistidos
-// como nil, para o frontend mostrar "—" corretamente.
-func (s *ComapIngestService) Ingest(ctx context.Context, towerID string, reader ComapModbusReader) error {
-	metrics, readErr := reader.Read(ctx)
-	if metrics == nil {
-		return fmt.Errorf("comap ingest: leitura falhou completamente para torre %s: %w", towerID, readErr)
+func NewComapScheduler(
+	endpointsRepo interfaces.TowerEndpointRepository,
+	ingestService *services.ComapIngestService,
+	log *logger.Logger,
+	interval time.Duration,
+	batchSize int,
+	modbusTimeout time.Duration,
+) *ComapScheduler {
+	if interval <= 0 {
+		interval = 60 * time.Second
 	}
-
-	// Persiste sempre a última leitura conhecida (mesmo que parcial),
-	// para o separador Energia no frontend nunca depender do threshold.
-	if err := s.readings.Upsert(ctx, &interfaces.ComapReading{
-		TowerID:         towerID,
-		FuelLiters:      metrics.FuelLiters,
-		FuelPercent:     metrics.FuelPercent,
-		BatteryVoltageV: metrics.BatteryVoltageV,
-		RunHoursTotal:   metrics.RunHoursTotal,
-		CollectedAt:     &metrics.CollectedAt,
-	}); err != nil {
-		return fmt.Errorf("comap ingest: upsert reading tower %s: %w", towerID, err)
+	if batchSize <= 0 {
+		batchSize = 100
 	}
+	if modbusTimeout <= 0 {
+		modbusTimeout = 2 * time.Second
+	}
+	return &ComapScheduler{
+		endpointsRepo: endpointsRepo,
+		ingestService: ingestService,
+		log:           log,
+		interval:      interval,
+		batchSize:     batchSize,
+		modbusTimeout: modbusTimeout,
+	}
+}
 
-	alarmKey := fmt.Sprintf("comap:%s:fuel_low", towerID)
+func (s *ComapScheduler) Start(ctx context.Context) {
+	s.log.Infof("comap scheduler started interval=%s batch=%d", s.interval.String(), s.batchSize)
+	t := time.NewTicker(s.interval)
+	defer t.Stop()
 
-	switch {
-	case metrics.FuelLiters != nil && *metrics.FuelLiters < fuelLowLiters:
-		event := &domain.Event{
-			TowerID:  towerID,
-			Type:     domain.EventTypeAlarm,
-			Severity: domain.EventSeverityWarning,
-			Message:  fmt.Sprintf("Combustível baixo: %.1f L", *metrics.FuelLiters),
+	s.CollectOnce(ctx)
+
+	for {
+		select {
+		case <-ctx.Done():
+			s.log.Info("comap scheduler stopped")
+			return
+		case <-t.C:
+			s.CollectOnce(ctx)
 		}
-		created, isNew, err := s.events.CreateOrTouch(ctx, event, alarmKey)
+	}
+}
+
+func (s *ComapScheduler) CollectOnce(ctx context.Context) {
+	endpoints, _, err := s.endpointsRepo.List(ctx, interfaces.TowerEndpointFilter{
+		EquipmentType: "generator",
+		Enabled:       boolPtr(true),
+		Limit:         s.batchSize,
+		Offset:        0,
+	})
+	if err != nil {
+		s.log.Errorf("comap scheduler list endpoints failed: %v", err)
+		return
+	}
+
+	for _, ep := range endpoints {
+		if ep.IPAddress == "" {
+			s.log.Errorf("comap scheduler skipped tower=%s reason=missing_ip", ep.TowerID)
+			continue
+		}
+
+		client, err := comap.NewTCPClient(ep.IPAddress, ep.Port, uint8(ep.SlaveID), s.modbusTimeout)
 		if err != nil {
-			return fmt.Errorf("comap ingest: CreateOrTouch fuel_low: %w", err)
-		}
-		if isNew {
-			if _, err := s.tickets.Create(ctx, towerID, created.ID); err != nil {
-				return fmt.Errorf("comap ingest: TicketService.Create fuel_low: %w", err)
+			s.log.Errorf("comap scheduler connect failed tower=%s ip=%s err=%v", ep.TowerID, ep.IPAddress, err)
+			if markErr := s.ingestService.MarkUnreachable(ctx, ep.TowerID); markErr != nil {
+				s.log.Errorf("comap scheduler mark unreachable failed tower=%s err=%v", ep.TowerID, markErr)
 			}
+			continue
 		}
 
-	case metrics.FuelLiters != nil:
-		if err := s.events.Resolve(ctx, towerID, alarmKey); err != nil {
-			return fmt.Errorf("comap ingest: Resolve fuel_low: %w", err)
+		reader := comap.NewReader(client, uint8(ep.SlaveID))
+		if err := s.ingestService.Ingest(ctx, ep.TowerID, reader); err != nil {
+			s.log.Errorf("comap scheduler ingest failed tower=%s err=%v", ep.TowerID, err)
+			if markErr := s.ingestService.MarkUnreachable(ctx, ep.TowerID); markErr != nil {
+				s.log.Errorf("comap scheduler mark unreachable failed tower=%s err=%v", ep.TowerID, markErr)
+			}
+		} else {
+			s.log.Infof("comap scheduler collected tower=%s ip=%s", ep.TowerID, ep.IPAddress)
 		}
-	}
 
-	// fuel_percent e battery_voltage: StatusUnconfirmed no Profile.
-	// Persistidos acima para o frontend, mas sem avaliação de
-	// threshold/evento até confirmação em campo — ver docs/definições.md.
-
-	if readErr != nil {
-		return fmt.Errorf("comap ingest: leitura parcial para torre %s: %w", towerID, readErr)
+		_ = client.Close()
 	}
-	return nil
 }
+
+func boolPtr(b bool) *bool { return &b }

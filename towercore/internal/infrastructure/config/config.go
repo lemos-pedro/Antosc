@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	defaultPort            = "8080"
+	defaultPort            = "8000"
 	defaultEnv             = "dev"
 	defaultAppName         = "towercore-api"
 	defaultLogLevel        = "info"
@@ -34,6 +34,7 @@ type Config struct {
 	RateLimit       RateLimitConfig
 	Nagios          NagiosConfig
 	Comap           ComapConfig
+	NetEco          NetEco
 }
 
 type CacheConfig struct {
@@ -99,6 +100,22 @@ type NagiosConfig struct {
 	Password            string
 	TimeoutSeconds      int
 	PollIntervalSeconds int
+}
+
+// NetEco controla a integração com o Huawei iManager NetEco: polling de
+// bateria/energia via API interna (login por sessão) e receção de alarmes
+// via SNMP trap. Enabled=false por default — depende de credenciais de
+// sessão válidas, não é NBI oficial licenciado.
+type NetEco struct {
+	Enabled               bool
+	BaseURL               string
+	Username              string
+	Password              string
+	IntervalSeconds       int
+	TimeoutSeconds        int
+	TLSInsecureSkipVerify bool
+	TrapPort              int
+	TrapCommunity         string
 }
 
 // ComapConfig controla o polling Modbus dos controladores de grupo gerador
@@ -176,10 +193,21 @@ func Load() Config {
 			PollIntervalSeconds: getEnvInt("NAGIOS_POLL_INTERVAL_SECONDS", 60),
 		},
 		Comap: ComapConfig{
-			Enabled:         getEnvBool("COMAP_ENABLED", true), // false por default até teste de campo confirmar
+			Enabled:         getEnvBool("COMAP_ENABLED", true),
 			IntervalSeconds: getEnvInt("COMAP_POLL_INTERVAL_SECONDS", 60),
 			TimeoutSeconds:  getEnvInt("MODBUS_TIMEOUT_SECONDS", 2),
 			Retries:         getEnvInt("MODBUS_RETRIES", 1),
+		},
+		NetEco: NetEco{
+			Enabled:               getEnvBool("NETECO_ENABLED", false),
+			BaseURL:               getEnv("NETECO_BASE_URL", "https://192.168.9.11:31943"),
+			Username:              getEnv("NETECO_USERNAME", ""),
+			Password:              getEnv("NETECO_PASSWORD", ""),
+			IntervalSeconds:       getEnvInt("NETECO_POLL_INTERVAL_SECONDS", 60),
+			TimeoutSeconds:        getEnvInt("NETECO_TIMEOUT_SECONDS", 10),
+			TLSInsecureSkipVerify: getEnvBool("NETECO_TLS_INSECURE_SKIP_VERIFY", true),
+			TrapPort:              getEnvInt("NETECO_TRAP_PORT", 162),
+			TrapCommunity:         getEnv("NETECO_TRAP_COMMUNITY", "TowercoreRead1"),
 		},
 	}
 }

@@ -66,44 +66,54 @@ func (s *SNMPScheduler) Start(ctx context.Context) {
 }
 
 func (s *SNMPScheduler) CollectOnce(ctx context.Context) {
-	towers, _, err := s.towersRepo.List(ctx, interfaces.TowerFilter{
+	for offset := 0; ; {
+		towers, total, err := s.towersRepo.List(ctx, interfaces.TowerFilter{
 			Limit:  s.batchSize,
-			Offset: 0,
-		})
-	if err != nil {
-		s.log.Errorf("snmp scheduler list towers failed: %v", err)
-		return
-	}
-
-	for _, tw := range towers {
-		if !tw.SNMPEnabled {
-			continue
-		}
-
-		vendor := strings.ToLower(strings.TrimSpace(tw.Vendor))
-		profile, ok := s.profiles[vendor]
-		if !ok {
-			s.log.Errorf("snmp scheduler skipped tower=%s reason=unsupported vendor=%s", tw.ID, tw.Vendor)
-			continue
-		}
-
-		samples, err := s.collector.Collect(ctx, tw, profile)
-		if err != nil {
-			s.log.Errorf("snmp scheduler collect failed tower=%s vendor=%s err=%v", tw.ID, vendor, err)
-			continue
-		}
-
-		err = s.ingestService.Ingest(ctx, services.SNMPSnapshot{
-			TowerID:     tw.ID,
-			Vendor:      vendor,
-			CollectedAt: time.Now().UTC(),
-			Samples:     samples,
+			Offset: offset,
 		})
 		if err != nil {
-			s.log.Errorf("snmp scheduler ingest failed tower=%s vendor=%s err=%v", tw.ID, vendor, err)
-			continue
+			s.log.Errorf("snmp scheduler list towers failed: %v", err)
+			return
 		}
 
-		s.log.Infof("snmp scheduler collected tower=%s vendor=%s metrics=%d", tw.ID, vendor, len(samples))
+		for _, tw := range towers {
+			if !tw.SNMPEnabled {
+				continue
+			}
+
+			vendor := strings.ToLower(strings.TrimSpace(tw.Vendor))
+			profile, ok := s.profiles[vendor]
+			if !ok {
+				s.log.Errorf("snmp scheduler skipped tower=%s reason=unsupported vendor=%s", tw.ID, tw.Vendor)
+				continue
+			}
+
+			samples, err := s.collector.Collect(ctx, tw, profile)
+			if err != nil {
+				s.log.Errorf("snmp scheduler collect failed tower=%s vendor=%s err=%v", tw.ID, vendor, err)
+				if markErr := s.ingestService.MarkUnreachable(ctx, tw.ID); markErr != nil {
+					s.log.Errorf("snmp scheduler mark unreachable failed tower=%s err=%v", tw.ID, markErr)
+				}
+				continue
+			}
+
+			err = s.ingestService.Ingest(ctx, services.SNMPSnapshot{
+				TowerID:     tw.ID,
+				Vendor:      vendor,
+				CollectedAt: time.Now().UTC(),
+				Samples:     samples,
+			})
+			if err != nil {
+				s.log.Errorf("snmp scheduler ingest failed tower=%s vendor=%s err=%v", tw.ID, vendor, err)
+				continue
+			}
+
+			s.log.Infof("snmp scheduler collected tower=%s vendor=%s metrics=%d", tw.ID, vendor, len(samples))
+		}
+
+		offset += len(towers)
+		if len(towers) == 0 || offset >= total {
+			return
+		}
 	}
 }

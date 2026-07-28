@@ -1,21 +1,157 @@
 """
-Treino do Health Score -- V1.
+Treino do primeiro modelo de saúde da torre.
 
-A V1 é baseada em regras (sem parâmetros aprendidos) e a implementação
-vive em models/health_score.py -- não há "treino" nem artefacto joblib
-para esta versão (ver o docstring desse ficheiro para o porquê).
+Fase inicial:
+- modelo baseado em regras
+- sem ML
+- serve como baseline
 
-Este ficheiro fica como o ponto de entrada previsto pelo roadmap:
-"estatístico/EWMA/regressão antes de qualquer modelo ML" e, mais tarde,
-"XGBoost sobre for_Data.csv". Quando isso acontecer, é aqui que entra o
-treino real (fit + joblib.dump para models/health_score.joblib) e
-models/health_score.py passa a fazer joblib.load em vez de reimplementar
-as regras.
+Posteriormente será substituído por:
+- XGBoost
+- Random Forest
+- modelos temporais
 """
 
-if __name__ == "__main__":
-    print(
-        "Health Score V1 é baseado em regras (models/health_score.py); "
-        "não há treino nem artefacto a gerar nesta fase. Ver docstring "
-        "deste ficheiro para o plano de evolução para EWMA/XGBoost."
+
+import joblib
+from pathlib import Path
+
+
+MODEL_PATH = (
+    Path(__file__)
+    .parent
+    .parent
+    / "models"
+    / "health_score.joblib"
+)
+
+
+
+class HealthScoreModel:
+
+
+    def predict(self, features:dict)->dict:
+
+
+        score = 100
+
+
+        risks = []
+
+
+        # bateria
+
+        voltage = features.get(
+            "battery_voltage_avg",
+            0
+        )
+
+
+        if voltage < 48:
+
+            score -= 30
+
+            risks.append(
+                "battery voltage critical"
+            )
+
+
+        elif voltage < 50:
+
+            score -= 15
+
+            risks.append(
+                "battery voltage low"
+            )
+
+        drop = features.get(
+            "battery_voltage_drop",
+            0
+        )
+
+        if drop > 1:
+
+            score -= 20
+
+            risks.append(
+                "battery voltage decreasing"
+            )
+
+        # temperatura
+
+        temperature = features.get(
+            "temperature_max",
+            0
+        )
+
+        if temperature > 40:
+
+            score -= 20
+
+            risks.append(
+                "high temperature"
+            )
+
+        # disponibilidade
+
+        availability = features.get(
+            "availability_percent",
+            100
+        )
+
+        if availability < 95:
+
+            score -= 15
+
+            risks.append(
+                "low availability"
+            )
+
+        score=max(
+            0,
+            min(score,100)
+        )
+
+        if score >= 80:
+
+            status="healthy"
+
+        elif score >= 50:
+
+            status="warning"
+
+        else:
+
+            status="critical"
+
+        return {
+
+            "score":score,
+
+            "status":status,
+
+            "risks":risks,
+
+        }
+
+
+def train():
+
+    model=HealthScoreModel()
+
+    MODEL_PATH.parent.mkdir(
+        exist_ok=True
     )
+
+    joblib.dump(
+        model,
+        MODEL_PATH
+    )
+
+    print(
+        f"model saved: {MODEL_PATH}"
+    )
+
+if __name__=="__main__":
+
+    train()

@@ -69,37 +69,44 @@ func (s *NagiosScheduler) Start(ctx context.Context) {
 }
 
 func (s *NagiosScheduler) CollectOnce(ctx context.Context) {
-	towers, _, err := s.towersRepo.List(ctx, interfaces.TowerFilter{
-		Limit:  s.batchSize,
-		Offset: 0,
-	})
-	if err != nil {
-		s.log.Errorf("nagios scheduler list towers failed: %v", err)
-		return
-	}
-
-	for _, tw := range towers {
-		if !tw.NagiosEnabled {
-			continue
-		}
-
-		hostname := strings.TrimSpace(tw.NagiosHostname)
-		if hostname == "" {
-			s.log.Errorf("nagios scheduler skipped tower=%s reason=missing nagios_hostname", tw.ID)
-			continue
-		}
-
-		status, err := s.poller.FetchHostStatus(ctx, hostname)
+	for offset := 0; ; {
+		towers, total, err := s.towersRepo.List(ctx, interfaces.TowerFilter{
+			Limit:  s.batchSize,
+			Offset: offset,
+		})
 		if err != nil {
-			s.log.Errorf("nagios scheduler fetch failed tower=%s hostname=%s err=%v", tw.ID, hostname, err)
-			continue
+			s.log.Errorf("nagios scheduler list towers failed: %v", err)
+			return
 		}
 
-		if err := s.ingestService.Ingest(ctx, tw.ID, status); err != nil {
-			s.log.Errorf("nagios scheduler ingest failed tower=%s hostname=%s err=%v", tw.ID, hostname, err)
-			continue
+		for _, tw := range towers {
+			if !tw.NagiosEnabled {
+				continue
+			}
+
+			hostname := strings.TrimSpace(tw.NagiosHostname)
+			if hostname == "" {
+				s.log.Errorf("nagios scheduler skipped tower=%s reason=missing nagios_hostname", tw.ID)
+				continue
+			}
+
+			status, err := s.poller.FetchHostStatus(ctx, hostname)
+			if err != nil {
+				s.log.Errorf("nagios scheduler fetch failed tower=%s hostname=%s err=%v", tw.ID, hostname, err)
+				continue
+			}
+
+			if err := s.ingestService.Ingest(ctx, tw.ID, status); err != nil {
+				s.log.Errorf("nagios scheduler ingest failed tower=%s hostname=%s err=%v", tw.ID, hostname, err)
+				continue
+			}
+
+			s.log.Infof("nagios scheduler collected tower=%s hostname=%s state=%s", tw.ID, hostname, status.State)
 		}
 
-		s.log.Infof("nagios scheduler collected tower=%s hostname=%s state=%s", tw.ID, hostname, status.State)
+		offset += len(towers)
+		if len(towers) == 0 || offset >= total {
+			return
+		}
 	}
 }

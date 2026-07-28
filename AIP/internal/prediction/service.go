@@ -42,15 +42,7 @@ type Service interface {
 	// PredictAndStore pede uma previsão ao serviço Python e persiste o
 	// resultado em ai_predictions. Devolve ErrInsufficientHistory se o
 	// repositório de features não tiver pontos suficientes para a torre.
-	//
-	// vendor identifica o fabricante do equipamento da torre (eltek,
-	// enetek, huawei) e é obrigatório: o serviço de inferência usa-o para
-	// escolher o adaptador de normalização correto (vendors/registry.py).
-	// O AIP ainda não tem uma fonte própria de "vendor por torre" (nem o
-	// towercore expõe isso hoje em TowerDTO), por isso é o chamador que
-	// tem de o indicar explicitamente -- nunca assumimos um vendor por
-	// omissão.
-	PredictAndStore(ctx context.Context, towerID, vendor, model string, windowDays int) (*postgres.Prediction, error)
+	PredictAndStore(ctx context.Context, towerID, model string, windowDays int) (*postgres.Prediction, error)
 }
 
 type service struct {
@@ -58,6 +50,7 @@ type service struct {
 	client       *http.Client
 	features     postgres.FeatureRepository
 	predictions  postgres.PredictionRepository
+	towers       postgres.TowerRepository
 
 	// minHistoryPoints é o número mínimo de features históricas exigido
 	// antes de pedirmos uma previsão — evita prever com base em ruído.
@@ -68,17 +61,31 @@ func NewService(
 	inferenceURL string,
 	features postgres.FeatureRepository,
 	predictions postgres.PredictionRepository,
+	towers postgres.TowerRepository,
 ) Service {
 	return &service{
 		inferenceURL:     inferenceURL,
 		client:           &http.Client{Timeout: 30 * time.Second},
 		features:         features,
 		predictions:      predictions,
+		towers:           towers,
 		minHistoryPoints: 30,
 	}
 }
 
-func (s *service) PredictAndStore(ctx context.Context, towerID, vendor, model string, windowDays int) (*postgres.Prediction, error) {
+// ErrUnknownVendor sinaliza que não sabemos o fabricante desta torre --
+// sem isso o Python não sabe que adaptador usar para normalizar as métricas.
+var ErrUnknownVendor = fmt.Errorf("vendor desconhecido para esta torre -- aguarda o próximo ciclo de ingestão ou confirma o tower_id")
+
+func (s *service) PredictAndStore(ctx context.Context, towerID, model string, windowDays int) (*postgres.Prediction, error) {
+	vendor, err := s.towers.GetVendor(ctx, towerID)
+	if err != nil {
+		return nil, err
+	}
+	if vendor == "" {
+		return nil, ErrUnknownVendor
+	}
+
 	history, err := s.features.ListByTower(ctx, towerID, 500)
 	if err != nil {
 		return nil, err
@@ -99,10 +106,10 @@ func (s *service) PredictAndStore(ctx context.Context, towerID, vendor, model st
 
 	reqBody, err := json.Marshal(PredictRequest{
 		TowerID:              towerID,
-		Vendor:               vendor,
-		Model:                model,
-		PredictionWindowDays: windowDays,
-		Series:               series,
+		Vendor:                vendor,
+		Model:                 model,
+		PredictionWindowDays:  windowDays,
+		Series:                series,
 	})
 	if err != nil {
 		return nil, err

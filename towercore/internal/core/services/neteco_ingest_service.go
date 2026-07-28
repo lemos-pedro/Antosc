@@ -1,48 +1,137 @@
 package services
 
 import (
+	"context"
 	"log"
+	"time"
 
+	"towercore/internal/core/domain"
 	"towercore/internal/core/interfaces"
 )
 
 type NetEcoIngestService struct {
-	client      interfaces.NetEcoClient
-	towerRepo   interfaces.TowerRepository   // já deves ter isto no projeto
-	eventRepo   interfaces.EventRepository   // idem
+	client    interfaces.NetEcoClient
+	towerRepo interfaces.TowerRepository
+	metricSvc *MetricService
 }
 
-func NewNetEcoIngestService(client interfaces.NetEcoClient, towerRepo interfaces.TowerRepository, eventRepo interfaces.EventRepository) *NetEcoIngestService {
-	return &NetEcoIngestService{
-		client:    client,
-		towerRepo: towerRepo,
-		eventRepo: eventRepo,
+func NewNetEcoIngestService(client interfaces.NetEcoClient, towerRepo interfaces.TowerRepository, metricSvc *MetricService) *NetEcoIngestService {
+	return &NetEcoIngestService{client: client, towerRepo: towerRepo, metricSvc: metricSvc}
+}
+
+// PollEnergyStatus percorre todas as torres com NetecoEnabled=true e atualiza
+// bateria + energia DC/retificador a partir do NetEco.
+func (s *NetEcoIngestService) PollEnergyStatus(ctx context.Context) {
+	enabled := true
+	towers, _, err := s.towerRepo.List(ctx, interfaces.TowerFilter{
+		NetecoEnabled: &enabled,
+		Limit:         500,
+	})
+	if err != nil {
+		log.Printf("[NetEco] erro ao listar torres: %v", err)
+		return
+	}
+
+	for i := range towers {
+		tower := &towers[i]
+		if tower.NetecoNEID == "" {
+			continue
+		}
+		collectedAt := time.Now().UTC()
+		collected := false
+		var collectionErr error
+
+		battery, err := s.client.FetchBatteryStatus(tower.NetecoNEID)
+		if err != nil {
+			log.Printf("[NetEco] erro bateria %s (%s): %v", tower.Name, tower.NetecoNEID, err)
+			collectionErr = err
+		} else {
+			s.applyBatteryStatus(tower, battery)
+			collected = true
+		}
+
+		energy, err := s.client.FetchSiteCounterInfo(tower.NetecoNEID)
+		if err != nil {
+			log.Printf("[NetEco] erro energia %s (%s): %v", tower.Name, tower.NetecoNEID, err)
+			collectionErr = err
+		} else {
+			s.applyEnergyStatus(tower, energy)
+			collected = true
+		}
+
+	tower.LastCollectedAt = &collectedAt
+	if collected {
+		tower.CollectionStatus = domain.CollectionStatusActive
+		tower.LastSuccessfulAt = &collectedAt
+		tower.LastCollectionError = ""
+		// Antes só promovia de NoData->Online. Torres sem polling SNMP
+		// (ex.: sites Huawei recém-onboarded, monitorados só via NetEco REST)
+		// ficavam presas em Offline mesmo com coletas bem-sucedidas
+		// consecutivas, porque nada mais tinha autoridade para as tirar
+		// desse estado. NetEco não avalia alarmes/thresholds (isso vem por
+		// trap, canal separado), então uma coleta bem-sucedida aqui só
+		// significa "consigo falar com o equipamento" — status justo é
+		// Online, a menos que já esteja Degraded (aí um alarme já em
+		// curso decide isso, não mexemos).
+		if tower.Status == domain.TowerStatusNoData || tower.Status == domain.TowerStatusOffline {
+			tower.Status = domain.TowerStatusOnline
+		}
+	} else {
+		tower.CollectionStatus = domain.CollectionStatusFailed
+		if collectionErr != nil {
+			tower.LastCollectionError = collectionErr.Error()
+		}
+		// Falha de coleta real (equipamento inacessível) deve refletir-se
+		// no status, não só no CollectionStatus.
+		tower.Status = domain.TowerStatusOffline
+	}
+		tower.UpdatedAt = collectedAt
+		if err := s.towerRepo.Upsert(ctx, tower); err != nil {
+			log.Printf("[NetEco] erro ao gravar torre %s: %v", tower.Name, err)
+		}
+		s.recordMetricSnapshot(ctx, tower)
+	}
+
+}
+
+func (s *NetEcoIngestService) recordMetricSnapshot(ctx context.Context, tower *domain.Tower) {
+	values := map[string]float64{}
+	if tower.DCOutputVoltage != nil {
+		values["dc_output_voltage"] = *tower.DCOutputVoltage
+	}
+	if tower.DCLoadCurrent != nil {
+		values["dc_load_current"] = *tower.DCLoadCurrent
+	}
+	if tower.RectifierCurrent != nil {
+		values["rectifier_current"] = *tower.RectifierCurrent
+	}
+	if tower.BatterySOC != nil {
+		values["battery_soc"] = *tower.BatterySOC
+	}
+	if tower.BatterySOH != nil {
+		values["battery_soh"] = *tower.BatterySOH
+	}
+	if tower.BatteryBackupTimeH != nil {
+		values["battery_backup_time_h"] = *tower.BatteryBackupTimeH
+	}
+
+	if len(values) == 0 {
+		return
+	}
+
+	metric := &domain.Metric{
+		TowerID:     tower.ID,
+		CollectedAt: time.Now(),
+		Values:      values,
+	}
+	if err := s.metricSvc.Create(ctx, metric); err != nil {
+		log.Printf("[NetEco] erro ao gravar histórico de métricas %s: %v", tower.Name, err)
 	}
 }
 
-// siteDnByTowerName mapeia nome da torre no towercore -> siteDn no NetEco.
-// Idealmente isto vive numa coluna nova em `towers` (ex: neteco_site_dn),
-// não hardcoded — placeholder até termos essa migration.
-func (s *NetEcoIngestService) PollBatteryStatus(siteDnByTowerName map[string]string) {
-	for towerName, siteDn := range siteDnByTowerName {
-		status, err := s.client.FetchBatteryStatus(siteDn)
-		if err != nil {
-			log.Printf("[NetEco] erro ao consultar %s (%s): %v", towerName, siteDn, err)
-			continue
-		}
+func (s *NetEcoIngestService) applyBatteryStatus(tower *domain.Tower, status *interfaces.BatteryStatus) {
+	now := time.Now()
 
-		tower, err := s.towerRepo.FindByName(towerName)
-		if err != nil {
-			log.Printf("[NetEco] torre não encontrada: %s", towerName)
-			continue
-		}
-
-		s.applyBatteryStatus(tower, status)
-	}
-}
-
-func (s *NetEcoIngestService) applyBatteryStatus(tower interfaces.Tower, status *interfaces.BatteryStatus) {
-	// Nunca fabricar dados: -1 do NetEco vira nil no domínio
 	if status.SOC >= 0 {
 		soc := status.SOC
 		tower.BatterySOC = &soc
@@ -55,8 +144,17 @@ func (s *NetEcoIngestService) applyBatteryStatus(tower interfaces.Tower, status 
 	} else {
 		tower.BatterySOH = nil
 	}
-
-	if err := s.towerRepo.Update(tower); err != nil {
-		log.Printf("[NetEco] erro ao gravar torre %s: %v", tower.Name, err)
+	if status.BackupTimeH > 0 {
+		bt := status.BackupTimeH
+		tower.BatteryBackupTimeH = &bt
+	} else {
+		tower.BatteryBackupTimeH = nil
 	}
+	tower.BatteryUpdatedAt = &now
+}
+
+func (s *NetEcoIngestService) applyEnergyStatus(tower *domain.Tower, info *interfaces.SiteCounterInfo) {
+	tower.DCOutputVoltage = info.DCOutputVoltage
+	tower.DCLoadCurrent = info.DCLoadCurrent
+	tower.RectifierCurrent = info.RectifierCurrent
 }

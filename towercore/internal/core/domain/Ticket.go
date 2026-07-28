@@ -15,6 +15,7 @@ const (
 type Ticket struct {
 	ID             string       `json:"ticket_id"`
 	TowerID        string       `json:"tower_id"`
+	TowerName      string       `json:"tower_name"`
 	EventID        string       `json:"event_id"`
 	Status         TicketStatus `json:"status"`
 	AcknowledgedAt *time.Time   `json:"acknowledged_at,omitempty"`

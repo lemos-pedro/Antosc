@@ -86,8 +86,8 @@ func (s *TowerService) Save(ctx context.Context, tower *domain.Tower) error {
 
 	switch tower.Status {
 	case "":
-		tower.Status = domain.TowerStatusOffline
-	case domain.TowerStatusOnline, domain.TowerStatusDegraded, domain.TowerStatusOffline:
+		tower.Status = domain.TowerStatusNoData
+	case domain.TowerStatusOnline, domain.TowerStatusDegraded, domain.TowerStatusOffline, domain.TowerStatusNoData:
 	default:
 		return errors.New("invalid status")
 	}
@@ -110,6 +110,13 @@ func (s *TowerService) Save(ctx context.Context, tower *domain.Tower) error {
 		}
 		if err := validateSNMPCredentials(tower); err != nil {
 			return err
+		}
+	}
+	if tower.CollectionStatus == "" {
+		if tower.SNMPEnabled || (tower.NetecoEnabled && tower.NetecoNEID != "") {
+			tower.CollectionStatus = domain.CollectionStatusNeverCollected
+		} else {
+			tower.CollectionStatus = domain.CollectionStatusNotConfigured
 		}
 	}
 
@@ -229,6 +236,31 @@ func (s *TowerService) UpdateStatus(ctx context.Context, towerID string, status 
 	tower.Status = status
 	tower.UpdatedAt = time.Now().UTC()
 
+	if err := s.repo.Upsert(ctx, tower); err != nil {
+		return err
+	}
+	s.invalidateTowerCache(tower.ID)
+	return nil
+}
+
+// MarkCollectionSuccess atualiza o estado de coleta sem confundir uma torre
+// ainda não onboarded com uma torre realmente offline.
+func (s *TowerService) MarkCollectionSuccess(ctx context.Context, towerID string, collectedAt time.Time) error {
+	tower, err := s.repo.GetByID(ctx, strings.TrimSpace(towerID))
+	if err != nil {
+		return err
+	}
+	if collectedAt.IsZero() {
+		collectedAt = time.Now().UTC()
+	}
+	tower.CollectionStatus = domain.CollectionStatusActive
+	tower.LastCollectedAt = &collectedAt
+	tower.LastSuccessfulAt = &collectedAt
+	tower.LastCollectionError = ""
+	if tower.Status == domain.TowerStatusNoData {
+		tower.Status = domain.TowerStatusOnline
+	}
+	tower.UpdatedAt = time.Now().UTC()
 	if err := s.repo.Upsert(ctx, tower); err != nil {
 		return err
 	}

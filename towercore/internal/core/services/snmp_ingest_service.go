@@ -26,6 +26,10 @@ type SNMPSnapshot struct {
 	Samples     map[string]float64
 }
 
+type collectionStatusUpdater interface {
+	MarkCollectionSuccess(context.Context, string, time.Time) error
+}
+
 func NewSNMPIngestService(
 	metricService *MetricService,
 	eventService *EventService,
@@ -66,7 +70,18 @@ func (s *SNMPIngestService) Ingest(ctx context.Context, snap SNMPSnapshot) error
 		if scale == 0 {
 			scale = 1
 		}
-		normalized[md.Key] = raw * scale
+		value := raw * scale
+		if isIgnoredMetricValue(value, md.IgnoreValues) {
+			// Ex.: Eltek -100°C representa sensor/slot vazio. Não é uma
+			// leitura válida, por isso não entra no histórico nem nos alarmes.
+			continue
+		}
+		normalized[md.Key] = value
+		if md.ZeroMeansNotTested && value == 0 {
+			// Conserva o valor bruto e acrescenta um sinal explícito para a
+			// API/dashboard. Sem AlarmRule associada: não gera falha/ticket.
+			normalized[md.Key+"_not_tested"] = 1
+		}
 	}
 	if len(normalized) == 0 {
 		return errors.New("no mapped OIDs found for selected vendor profile")
@@ -98,23 +113,23 @@ func (s *SNMPIngestService) Ingest(ctx context.Context, snap SNMPSnapshot) error
 	hasWarning := false
 
 	for _, ar := range profile.Alarms {
-			v, ok := normalized[ar.Key]
-			if !ok {
-				continue
-			}
-			if ar.IgnoreZero && v == 0 {
-				toResolve = append(toResolve, ar.Key) // garante que resolve se estava aberto
-				continue
-			}
-			if !matchCondition(v, ar.Condition, ar.Threshold) {
-				toResolve = append(toResolve, ar.Key)
-				continue
-			} else if ar.Severity == domain.EventSeverityCritical {
-				hasCritical = true
-			} else if ar.Severity == domain.EventSeverityWarning {
-				hasWarning = true
-			}
-			triggered = append(triggered, triggeredAlarm{rule: ar, value: v})
+		v, ok := normalized[ar.Key]
+		if !ok {
+			continue
+		}
+		if ar.IgnoreZero && v == 0 {
+			toResolve = append(toResolve, ar.Key) // garante que resolve se estava aberto
+			continue
+		}
+		if !matchCondition(v, ar.Condition, ar.Threshold) {
+			toResolve = append(toResolve, ar.Key)
+			continue
+		} else if ar.Severity == domain.EventSeverityCritical {
+			hasCritical = true
+		} else if ar.Severity == domain.EventSeverityWarning {
+			hasWarning = true
+		}
+		triggered = append(triggered, triggeredAlarm{rule: ar, value: v})
 	}
 
 	// Segundo passo: status da torre é atualizado já aqui, ANTES de
@@ -127,6 +142,11 @@ func (s *SNMPIngestService) Ingest(ctx context.Context, snap SNMPSnapshot) error
 	if s.towerUpdater != nil {
 		if err := s.towerUpdater.UpdateStatus(ctx, snap.TowerID, newStatus); err != nil {
 			return err
+		}
+		if updater, ok := s.towerUpdater.(collectionStatusUpdater); ok {
+			if err := updater.MarkCollectionSuccess(ctx, snap.TowerID, metric.CollectedAt); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -147,6 +167,7 @@ func (s *SNMPIngestService) Ingest(ctx context.Context, snap SNMPSnapshot) error
 			Type:       domain.EventTypeAlarm,
 			Severity:   ta.rule.Severity,
 			Message:    fmt.Sprintf("%s: %s=%.2f threshold=%.2f", ta.rule.Message, ta.rule.Key, ta.value, ta.rule.Threshold),
+			DataSource: "direct_snmp",
 			OccurredAt: metric.CollectedAt,
 		}
 
@@ -163,6 +184,25 @@ func (s *SNMPIngestService) Ingest(ctx context.Context, snap SNMPSnapshot) error
 	}
 
 	return nil
+}
+
+func isIgnoredMetricValue(value float64, ignored []float64) bool {
+	for _, candidate := range ignored {
+		if value == candidate {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *SNMPIngestService) MarkUnreachable(ctx context.Context, towerID string) error {
+	if strings.TrimSpace(towerID) == "" {
+		return errors.New("tower_id is required")
+	}
+	if s.towerUpdater == nil {
+		return nil
+	}
+	return s.towerUpdater.UpdateStatus(ctx, towerID, domain.TowerStatusOffline)
 }
 
 func matchCondition(value float64, condition string, threshold float64) bool {

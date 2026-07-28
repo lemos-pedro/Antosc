@@ -102,8 +102,7 @@ func NewRouter(
 		middleware.CORS([]string{
 			"http://localhost:8080",
 			"http://localhost:8081",
-			"http://localhost:3000",
-			"http://localhost:9090",
+			"https://antosc-livid.vercel.app",
 		}),
 		middleware.RequestID(),
 		middleware.AccessLog(log),

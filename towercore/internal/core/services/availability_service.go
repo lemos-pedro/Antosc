@@ -10,29 +10,32 @@ import (
 )
 
 // AvailabilityService calcula a disponibilidade de uma torre num
-// período, conforme a fórmula em definições.md:
+// período, conforme a fórmula em definições.md.
 //
-//	Disponibilidade (%) = ((Tempo total - Downtime) / Tempo total) * 100
-//
-// Downtime é medido exclusivamente a partir de eventos type=failure
-// (interrupção real) — eventos type=alarm (risco/degradação) não
-// entram no cálculo, conforme a distinção Alarme vs Falha do domínio.
-// A maioria dos sites reporta falhas via Nagios (NagiosIngestService),
-// não via SNMP.
+// IMPORTANTE: downtime não é medido só por eventos type=failure
+// explícitos. Se o pipeline de coleta em si estiver interrompido
+// (snmp_enabled=false, hostname Nagios inválido, torre nunca
+// reportou dados), nenhum evento de falha chega a ser criado — e
+// sem isso, a fórmula original assumia silenciosamente 100%, o que
+// mascarava sites offline há semanas. Por isso cruzamos também com
+// a última métrica recebida (heartbeat) como segundo sinal de
+// downtime.
 type AvailabilityService struct {
-	events interfaces.EventRepository
-	towers interfaces.TowerRepository
+	events  interfaces.EventRepository
+	towers  interfaces.TowerRepository
+	metrics interfaces.MetricRepository
 }
 
-func NewAvailabilityService(events interfaces.EventRepository, towers interfaces.TowerRepository) *AvailabilityService {
-	return &AvailabilityService{events: events, towers: towers}
+func NewAvailabilityService(events interfaces.EventRepository, towers interfaces.TowerRepository, metrics interfaces.MetricRepository) *AvailabilityService {
+	return &AvailabilityService{events: events, towers: towers, metrics: metrics}
 }
 
-// Calculate devolve a disponibilidade (%) da torre nos últimos
-// windowDays. Se a torre foi criada há menos tempo que a janela pedida,
-// o cálculo usa created_at como início — para não penalizar uma torre
-// recém-onboarded com um denominador maior do que o tempo em que
-// esteve de facto monitorizada.
+// staleThreshold: se a última métrica recebida for mais antiga que isto
+// (ou nunca existiu), consideramos a torre sem sinal de vida — o pipeline
+// de coleta está interrompido, não o serviço da torre necessariamente,
+// mas do ponto de vista operacional isso é indistinguível de downtime.
+const staleThreshold = 2 * time.Hour
+
 func (s *AvailabilityService) Calculate(ctx context.Context, towerID string, windowDays int) (float64, error) {
 	towerID = strings.TrimSpace(towerID)
 	if towerID == "" {
@@ -55,7 +58,6 @@ func (s *AvailabilityService) Calculate(ctx context.Context, towerID string, win
 
 	totalSeconds := windowEnd.Sub(windowStart).Seconds()
 	if totalSeconds <= 0 {
-		// Torre criada agora mesmo: sem histórico ainda, assume 100%.
 		return 100, nil
 	}
 
@@ -64,8 +66,41 @@ func (s *AvailabilityService) Calculate(ctx context.Context, towerID string, win
 		return 0, err
 	}
 
-	// Clamp defensivo: sobreposição/arredondamento não deve produzir
-	// downtime > totalSeconds nem disponibilidade negativa.
+	// --- Downtime por ausência de heartbeat ---
+	// Última métrica real recebida desta torre, independentemente de
+	// eventos. Se nunca houve, ou a última é mais antiga que
+	// staleThreshold, tratamos o tempo desde então (ou a janela toda,
+	// se nunca houve dado) como downtime adicional.
+	lastSeen, err := s.metrics.LastCollectedAt(ctx, towerID)
+	if err != nil {
+		return 0, err
+	}
+
+	var silenceDowntime float64
+	switch {
+	case lastSeen == nil:
+		// Nunca recebemos nenhuma métrica desta torre: toda a janela
+		// conta como downtime por falta de sinal.
+		silenceDowntime = totalSeconds
+	case lastSeen.Before(windowEnd.Add(-staleThreshold)):
+		// Última métrica está mais antiga que o threshold: o tempo
+		// desde a última métrica até agora conta como downtime,
+		// recortado para dentro da janela.
+		since := *lastSeen
+		if since.Before(windowStart) {
+			since = windowStart
+		}
+		silenceDowntime = windowEnd.Sub(since).Seconds()
+	}
+
+	// Usa o maior dos dois — não soma, para não duplicar o mesmo
+	// intervalo caso um evento failure já cubra o mesmo período de
+	// silêncio (ex: SNMPIngestService que ainda consegue detetar e
+	// registar a falha corretamente).
+	if silenceDowntime > downtimeSeconds {
+		downtimeSeconds = silenceDowntime
+	}
+
 	if downtimeSeconds > totalSeconds {
 		downtimeSeconds = totalSeconds
 	}

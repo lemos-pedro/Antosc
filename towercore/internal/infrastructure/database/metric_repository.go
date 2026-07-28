@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"towercore/internal/core/domain"
 	"towercore/internal/core/interfaces"
@@ -45,6 +46,27 @@ INSERT INTO metrics (
 		metric.CreatedAt,
 	)
 	return err
+}
+
+// LastCollectedAt devolve o timestamp da métrica mais recente recebida
+// para a torre, ou nil se nunca houve nenhuma. Usado por
+// AvailabilityService para detetar downtime por ausência de sinal
+// (pipeline de coleta interrompido), não só por eventos type=failure
+// explícitos.
+func (r *MetricRepository) LastCollectedAt(ctx context.Context, towerID string) (*time.Time, error) {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `SELECT MAX(collected_at) FROM metrics WHERE tower_id::text = $1`
+
+	var t sql.NullTime
+	if err := r.db.QueryRowContext(ctx, query, towerID).Scan(&t); err != nil {
+		return nil, err
+	}
+	if !t.Valid {
+		return nil, nil
+	}
+	return &t.Time, nil
 }
 
 func (r *MetricRepository) List(ctx context.Context, filter interfaces.MetricFilter) ([]domain.Metric, int, error) {

@@ -12,6 +12,7 @@ import (
 	"towercore/internal/adapters/enetek"
 	"towercore/internal/adapters/huawei"
 	"towercore/internal/adapters/nagios"
+	"towercore/internal/adapters/neteco"
 	"towercore/internal/adapters/snmp"
 	"towercore/internal/api/handlers"
 	"towercore/internal/api/routes"
@@ -79,7 +80,21 @@ func main() {
 	metricSvc := services.NewMetricService(metricRepo)
 	auditSvc := services.NewAuditService(auditRepo)
 	ticketSvc := services.NewTicketService(ticketRepo, auditRepo)
-	availabilitySvc := services.NewAvailabilityService(eventRepo, towerRepo)
+	availabilitySvc := services.NewAvailabilityService(eventRepo, towerRepo, metricRepo)
+
+	// NetEco (Huawei) — bateria e energia DC via API interna do NetEco +
+	// alarmes via SNMP trap. Enabled=false por default (NETECO_ENABLED) —
+	// depende de credenciais de sessão válidas (login/authenticate.action),
+	// não NBI oficial.
+	netEcoClient := neteco.NewClient(
+		cfg.NetEco.BaseURL,
+		cfg.NetEco.Username,
+		cfg.NetEco.Password,
+		cfg.NetEco.TLSInsecureSkipVerify,
+		time.Duration(cfg.NetEco.TimeoutSeconds)*time.Second,
+	)
+	netEcoIngestSvc := services.NewNetEcoIngestService(netEcoClient, towerRepo, metricSvc)
+	netEcoAlarmSvc := services.NewNetEcoAlarmService(eventSvc, towerRepo, ticketSvc)
 
 	authSvc := services.NewAuthService(
 		userRepo,
@@ -177,6 +192,7 @@ func main() {
 	comapScheduler := scheduler.NewComapScheduler(
 		towerEndpointRepo,
 		comapIngestSvc,
+		towerService,
 		log,
 		time.Duration(cfg.Comap.IntervalSeconds)*time.Second,
 		cfg.Scheduler.BatchSize,
@@ -222,7 +238,7 @@ func main() {
 		regionHandler,
 		operatorHandler,
 		slaHandler,
-		comapReadingHandler, // NOVO — routes.go precisa aceitar este parâmetro e registar a rota
+		comapReadingHandler,
 	)
 
 	server := &http.Server{
@@ -267,11 +283,51 @@ func main() {
 	}
 
 	var comapCancel context.CancelFunc = func() {}
-	if cfg.Comap.Enabled { // ou a flag correspondente à COMAP_ENABLED
+	if cfg.Comap.Enabled {
 		go comapScheduler.Start(ctx)
 		log.Info("comap scheduler worker successfully started in background")
 	} else {
 		log.Info("comap scheduler skipped from startup context")
+	}
+
+	// NetEco — scheduler de energia/bateria + trap listener de alarmes,
+	// controlados pelo mesmo NETECO_ENABLED.
+	var netEcoCancel context.CancelFunc = func() {}
+	if cfg.NetEco.Enabled {
+		if err := netEcoClient.Login(); err != nil {
+			log.Errorf("neteco: initial login failed: %v", err)
+		}
+
+		netEcoCtx, cancel := context.WithCancel(context.Background())
+		netEcoCancel = cancel
+
+		go func() {
+			interval := time.Duration(cfg.NetEco.IntervalSeconds) * time.Second
+			ticker := time.NewTicker(interval)
+			defer ticker.Stop()
+
+			for {
+				select {
+				case <-netEcoCtx.Done():
+					return
+				case <-ticker.C:
+					netEcoIngestSvc.PollEnergyStatus(netEcoCtx)
+				}
+			}
+		}()
+		log.Info("neteco scheduler worker successfully started in background")
+
+		go func() {
+			err := neteco.StartTrapListener(uint16(cfg.NetEco.TrapPort), cfg.NetEco.TrapCommunity, func(trap neteco.TrapEvent) {
+				netEcoAlarmSvc.HandleTrap(context.Background(), trap)
+			})
+			if err != nil {
+				log.Errorf("neteco: trap listener failed: %v", err)
+			}
+		}()
+		log.Infof("neteco trap listener started on :%d", cfg.NetEco.TrapPort)
+	} else {
+		log.Info("neteco scheduler disabled by configuration")
 	}
 
 	nagiosCtx, nagiosCancel := context.WithCancel(context.Background())
@@ -284,6 +340,7 @@ func main() {
 	snmpCancel()
 	discoveryCancel()
 	comapCancel()
+	netEcoCancel()
 	nagiosCancel()
 
 	shutdownCtx, cancel := context.WithTimeout(

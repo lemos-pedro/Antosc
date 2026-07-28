@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"strings"
 	"time"
 )
@@ -21,6 +20,7 @@ type FeatureRepository interface {
 	Save(ctx context.Context, f Feature) error
 	SaveBatch(ctx context.Context, features []Feature) error
 	ListByTower(ctx context.Context, towerID string, limit int) ([]Feature, error)
+	ListByTowerAndRange(ctx context.Context, towerID, featureName string, from, to time.Time) ([]Feature, error)
 }
 
 type featureRepository struct {
@@ -40,51 +40,40 @@ func (r *featureRepository) Save(ctx context.Context, f Feature) error {
 	return err
 }
 
-// batchChunkSize limita quantas linhas vão em cada INSERT multi-row.
-// O Postgres aceita no máximo 65535 parâmetros por query; com 5
-// parâmetros por linha, o limite teórico seria ~13107 linhas. Usamos
-// uma margem bem mais folgada (2000) para não andar coladas ao limite
-// e para manter cada query com um tamanho razoável.
-const batchChunkSize = 2000
+// SaveBatch grava várias features numa única query (multi-row INSERT).
+// Um ciclo de ingestão pode ter centenas de métricas por torre; inserir uma
+// a uma seria centenas de round-trips à base de dados. Isto reduz para um.
+// maxBatchRows garante que nunca ultrapassamos o limite de 65535
+// parâmetros por query do Postgres (5 colunas por linha -- ver placeholders
+// abaixo). 5000 linhas * 5 = 25000 parâmetros, com margem confortável.
+// Foi um INSERT único de ~55 torres * histórico de 24h que estourou este
+// limite no primeiro ciclo de ingestão (296645 parâmetros).
+const maxBatchRows = 5000
 
-// SaveBatch grava várias features em lotes (multi-row INSERT por lote,
-// dentro de uma única transação). Um ciclo de ingestão pode trazer
-// dezenas de milhares de features (50+ torres x muitas métricas); um
-// único INSERT com todas de uma vez ultrapassa o limite de 65535
-// parâmetros do Postgres -- por isso paginamos em lotes de
-// batchChunkSize, mantendo tudo atómico via transação (ou grava tudo,
-// ou nada, mesmo em vários lotes).
 func (r *featureRepository) SaveBatch(ctx context.Context, features []Feature) error {
 	if len(features) == 0 {
 		return nil
 	}
 
-	tx, err := r.db.DB.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback() // no-op se já tiver havido Commit
-
-	for start := 0; start < len(features); start += batchChunkSize {
-		end := start + batchChunkSize
+	for start := 0; start < len(features); start += maxBatchRows {
+		end := start + maxBatchRows
 		if end > len(features) {
 			end = len(features)
 		}
-
-		if err := saveFeatureChunk(ctx, tx, features[start:end]); err != nil {
+		if err := r.saveBatchChunk(ctx, features[start:end]); err != nil {
 			return err
 		}
 	}
 
-	return tx.Commit()
+	return nil
 }
 
-func saveFeatureChunk(ctx context.Context, tx *sql.Tx, chunk []Feature) error {
+func (r *featureRepository) saveBatchChunk(ctx context.Context, features []Feature) error {
 	var sb strings.Builder
 	sb.WriteString(`INSERT INTO ai_features (tower_id, feature_name, feature_value, unit, created_at) VALUES `)
 
-	args := make([]any, 0, len(chunk)*5)
-	for i, f := range chunk {
+	args := make([]any, 0, len(features)*5)
+	for i, f := range features {
 		if i > 0 {
 			sb.WriteString(",")
 		}
@@ -93,8 +82,32 @@ func saveFeatureChunk(ctx context.Context, tx *sql.Tx, chunk []Feature) error {
 		args = append(args, f.TowerID, f.Name, f.Value, f.Unit, f.CreatedAt)
 	}
 
-	_, err := tx.ExecContext(ctx, sb.String(), args...)
+	_, err := r.db.DB.ExecContext(ctx, sb.String(), args...)
 	return err
+}
+
+func (r *featureRepository) ListByTowerAndRange(ctx context.Context, towerID, featureName string, from, to time.Time) ([]Feature, error) {
+	rows, err := r.db.DB.QueryContext(ctx, `
+		SELECT tower_id, feature_name, feature_value, unit, created_at
+		FROM ai_features
+		WHERE tower_id = $1 AND feature_name = $2 AND created_at >= $3 AND created_at < $4
+		ORDER BY created_at ASC
+	`, towerID, featureName, from, to)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []Feature
+	for rows.Next() {
+		var f Feature
+		if err := rows.Scan(&f.TowerID, &f.Name, &f.Value, &f.Unit, &f.CreatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, f)
+	}
+
+	return out, rows.Err()
 }
 
 func (r *featureRepository) ListByTower(ctx context.Context, towerID string, limit int) ([]Feature, error) {

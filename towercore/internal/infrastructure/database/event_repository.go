@@ -28,10 +28,29 @@ func (r *EventRepository) Create(ctx context.Context, event *domain.Event) error
 
 	const query = `
 INSERT INTO events (
-	event_id, tower_id, type, severity, message, occurred_at, created_at,
-	status, alarm_key, last_seen_at
+    event_id,
+    tower_id,
+    type,
+    severity,
+    message,
+    data_source,
+    occurred_at,
+    created_at,
+    status,
+    alarm_key,
+    last_seen_at
 ) VALUES (
-	$1::uuid, $2::uuid, $3, $4, $5, $6, $7, $8, NULLIF($9, ''), $10
+    $1::uuid,
+    $2::uuid,
+    $3,
+    $4,
+    $5,
+    COALESCE(NULLIF($6, ''), 'direct_snmp'),
+    $7,
+    $8,
+    $9,
+    NULLIF($10, ''),
+    $11
 )`
 
 	status := string(event.Status)
@@ -51,6 +70,7 @@ INSERT INTO events (
 		string(event.Type),
 		string(event.Severity),
 		event.Message,
+		event.DataSource,
 		event.OccurredAt,
 		event.CreatedAt,
 		status,
@@ -106,13 +126,14 @@ func (r *EventRepository) List(ctx context.Context, filter interfaces.EventFilte
 		return nil, 0, err
 	}
 
-	listQuery := `
+listQuery := `
 SELECT
 	event_id::text,
 	tower_id::text,
 	type,
 	severity,
 	message,
+	data_source,
 	occurred_at,
 	created_at,
 	status,
@@ -139,6 +160,7 @@ FROM events` + where + fmt.Sprintf(" ORDER BY occurred_at DESC LIMIT $%d OFFSET 
 			&t,
 			&sev,
 			&ev.Message,
+			&ev.DataSource, 
 			&ev.OccurredAt,
 			&ev.CreatedAt,
 			&status,

@@ -5,20 +5,23 @@ Responsabilidades deste ficheiro:
 
     • Expor a API HTTP (FastAPI)
     • Validar pedidos
-    • Agrupar a série recebida por métrica (nome -> lista de valores,
-      ordenada no tempo)
-    • Selecionar o adaptador do fabricante e normalizar para categorias
-      canónicas (ainda séries, não escalares)
-    • Aplicar feature_engineering sobre as séries canónicas (médias,
-      máximos, quedas, variância, etc. -- as features que os modelos
-      realmente esperam)
+    • Agrupar a série recebida por categoria canónica (bateria, temperatura...)
+    • Selecionar o adaptador do fabricante
+    • Agregar a série em features (média, mínimo, queda, etc via feature_engineering)
     • Selecionar o modelo
     • Executar a inferência
     • Devolver a resposta
 
-Toda a lógica específica de fabricantes, features e modelos fica fora
-deste ficheiro.
+Toda a lógica específica de fabricantes e modelos fica fora deste ficheiro.
+
+NOTA IMPORTANTE (corrigido em relação à v1): o pipeline anterior só
+convertia o último valor de cada métrica (vendor.normalize), perdendo toda
+a informação de tendência -- o que inutilizava os modelos anomaly/forecast,
+que dependem de agregados como battery_voltage_drop. Agora a série completa
+é agrupada por categoria e passada ao feature_engineering antes do modelo.
 """
+
+from collections import defaultdict
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -56,41 +59,36 @@ class PredictResponse(BaseModel):
     score: float
     status: str
     explanation: str
+    predicted_failure_window_days: int | None = None
+    confidence: float | None = None
 
 
 # ---------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------
 
-def group_series(series: list[FeaturePoint]) -> dict[str, list[float]]:
+def group_by_canonical_category(
+    series: list[FeaturePoint],
+    raw_to_canonical: dict[str, str],
+) -> dict[str, list[float]]:
     """
-    Agrupa a série (múltiplos pontos no tempo, várias métricas
-    misturadas) por nome de métrica, ordenada por timestamp:
+    Converte a série bruta (lista de pontos com nome de métrica do
+    fabricante) em listas agrupadas por categoria canónica, na ordem
+    cronológica em que chegaram -- é isto que o feature_engineering espera
+    (ex: {"battery_voltage": [51.2, 51.0, 50.8, ...]}).
 
-        [
-            {"name":"battery_voltage_v","value":51.2,"timestamp":"t1"},
-            {"name":"battery_voltage_v","value":50.8,"timestamp":"t2"},
-            {"name":"battery_temperature_c","value":29,"timestamp":"t1"},
-        ]
-
-    para
-
-        {
-            "battery_voltage_v": [51.2, 50.8],
-            "battery_temperature_c": [29],
-        }
-
-    O feature_engineering precisa da série completa por métrica (para
-    calcular média/mínimo/máximo/queda), não só do último valor.
+    Pontos cujo nome não está mapeado em raw_to_canonical são ignorados --
+    não é erro, só significa que essa métrica não tem uso conhecido ainda.
     """
+    grouped: dict[str, list[float]] = defaultdict(list)
 
-    ordered = sorted(series, key=lambda p: p.timestamp)
+    for point in series:
+        canonical = raw_to_canonical.get(point.name)
+        if canonical is None:
+            continue
+        grouped[canonical].append(point.value)
 
-    grouped: dict[str, list[float]] = {}
-    for point in ordered:
-        grouped.setdefault(point.name, []).append(point.value)
-
-    return grouped
+    return dict(grouped)
 
 
 # ---------------------------------------------------------------------
@@ -113,22 +111,29 @@ def predict(req: PredictRequest):
 
     try:
 
-        raw_series = group_series(req.series)
-
         vendor = get_vendor(req.vendor)
 
-        canonical_series = vendor.normalize(raw_series)
+        raw_to_canonical = getattr(vendor, "RAW_TO_CANONICAL", {})
+        if not raw_to_canonical:
+            raise ValueError(
+                f"vendor '{req.vendor}' sem RAW_TO_CANONICAL definido -- "
+                "não é possível agregar a série para este fabricante"
+            )
 
-        engineered_features = build_features(canonical_series)
+        grouped = group_by_canonical_category(req.series, raw_to_canonical)
+
+        canonical_features = build_features(grouped)
 
         model = get_model(req.model)
 
-        result = model.predict(engineered_features)
+        result = model.predict(canonical_features)
 
         return PredictResponse(
             score=result["score"],
             status=result["status"],
             explanation=result["explanation"],
+            predicted_failure_window_days=result.get("predicted_failure_window_days"),
+            confidence=result.get("confidence"),
         )
 
     except ValueError as exc:

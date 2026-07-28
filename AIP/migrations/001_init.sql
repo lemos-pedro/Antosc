@@ -1,4 +1,3 @@
--- +goose Up
 -- ==========================================
 -- AIP INITIAL DATABASE
 -- Antosc Intelligence Platform
@@ -123,9 +122,3 @@ CREATE TABLE IF NOT EXISTS ai_models (
     active BOOLEAN DEFAULT TRUE
 
 );
-
--- +goose Down
-DROP TABLE IF EXISTS ai_models;
-DROP TABLE IF EXISTS ai_events;
-DROP TABLE IF EXISTS ai_predictions;
-DROP TABLE IF EXISTS ai_features;

@@ -38,28 +38,23 @@ func (c *HTTPClient) GetTowers(ctx context.Context) ([]TowerDTO, error) {
 // torre: GET /towers/{tower_id}/events). Para fleets grandes isto é N+1 —
 // aceitável para já dado o volume (~212 sites), mas é candidato a um
 // endpoint agregado (GET /events) se o volume crescer.
-// GetEvents agrega eventos de todas as torres (api.md só expõe eventos por
-// torre: GET /towers/{tower_id}/events). Para fleets grandes isto é N+1 —
-// aceitável para já dado o volume (~212 sites), mas é candidato a um
-// endpoint agregado (GET /events) se o volume crescer.
-//
-// GET /api/v1/events devolve o array diretamente, sem envelope
-// {"data":...} -- confirmado em produção (mesmo padrão de GetMetrics
-// abaixo). A versão anterior assumia o envelope e falhava sempre com
-// "cannot unmarshal array into struct".
-func (c *HTTPClient) GetEvents(ctx context.Context) ([]EventDTO, error) {
+func (c *HTTPClient) GetEvents(ctx context.Context) ([]EventDTO,error){
 
-	var events []EventDTO
+    var envelope struct {
+        Data []EventDTO `json:"data"`
+    }
 
-	if err := c.getJSON(
-		ctx,
-		"/api/v1/events",
-		&events,
-	); err != nil {
-		return nil, err
-	}
 
-	return events, nil
+    if err := c.getJSON(
+        ctx,
+        "/api/v1/events",
+        &envelope,
+    ); err != nil {
+        return nil, err
+    }
+
+
+    return envelope.Data,nil
 }
 
 // GetMetrics lê GET /api/v1/metrics. Este endpoint devolve o array

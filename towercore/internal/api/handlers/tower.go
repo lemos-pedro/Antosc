@@ -89,11 +89,12 @@ type towersListResponse struct {
 
 func (h *TowerHandler) list(w http.ResponseWriter, r *http.Request) {
 	filter := interfaces.TowerFilter{
-		Status:     r.URL.Query().Get("status"),
-		OperatorID: r.URL.Query().Get("operator_id"),
-		RegionID:   r.URL.Query().Get("region_id"),
-		Limit:      parseIntDefault(r.URL.Query().Get("limit"), 500),
-		Offset:     parseIntDefault(r.URL.Query().Get("offset"), 0),
+		Status:           r.URL.Query().Get("status"),
+		CollectionStatus: r.URL.Query().Get("collection_status"),
+		OperatorID:       r.URL.Query().Get("operator_id"),
+		RegionID:         r.URL.Query().Get("region_id"),
+		Limit:            parseIntDefault(r.URL.Query().Get("limit"), 500),
+		Offset:           parseIntDefault(r.URL.Query().Get("offset"), 0),
 	}
 
 	towers, total, err := h.service.List(r.Context(), filter)
@@ -102,9 +103,23 @@ func (h *TowerHandler) list(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Garante que "data" e sempre um array JSON, nunca null, mesmo sem resultados.
 	if towers == nil {
 		towers = []domain.Tower{}
+	}
+
+	// Mesma lógica de getByID: disponibilidade calculada em tempo real a
+	// partir de downtime real (eventos type=failure), não o valor estático
+	// da coluna towers.availability_30d — sem isto, a lista mostrava sempre
+	// o placeholder da coluna (ex: 100%) mesmo para sites offline.
+	if h.availability != nil {
+		for i := range towers {
+			if avail30, err := h.availability.Calculate(r.Context(), towers[i].ID, 30); err == nil {
+				towers[i].Availability30d = avail30
+			}
+			if avail7, err := h.availability.Calculate(r.Context(), towers[i].ID, 7); err == nil {
+				towers[i].Availability7d = &avail7
+			}
+		}
 	}
 
 	resp := towersListResponse{
@@ -117,8 +132,6 @@ func (h *TowerHandler) list(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	// Mantido por compatibilidade com clientes que ainda leem o header,
-	// mas a fonte de verdade passa a ser meta.total no corpo.
 	w.Header().Set("X-Total-Count", strconv.Itoa(total))
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(resp)

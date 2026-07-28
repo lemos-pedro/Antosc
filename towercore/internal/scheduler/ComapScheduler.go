@@ -103,5 +103,22 @@ func (s *ComapScheduler) CollectOnce(ctx context.Context) {
 		_ = client.Close()
 	}
 }
+func (s *ComapIngestService) MarkUnreachable(ctx context.Context, towerID string) error {
+	if strings.TrimSpace(towerID) == "" {
+		return errors.New("tower_id is required")
+	}
+	if s.towerUpdater == nil {
+		return nil
+	}
+	return s.towerUpdater.UpdateStatus(ctx, towerID, domain.TowerStatusOffline)
+}
 
+client, err := comap.NewTCPClient(ep.IPAddress, ep.Port, uint8(ep.SlaveID), s.modbusTimeout)
+if err != nil {
+    s.log.Errorf("comap scheduler connect failed tower=%s ip=%s err=%v", ep.TowerID, ep.IPAddress, err)
+    if markErr := s.ingestService.MarkUnreachable(ctx, ep.TowerID); markErr != nil {
+        s.log.Errorf("comap scheduler mark unreachable failed tower=%s err=%v", ep.TowerID, markErr)
+    }
+    continue
+}
 func boolPtr(b bool) *bool { return &b }

@@ -4,10 +4,31 @@ app:
   api_port: 8090
 
 towercore:
-  base_url: http://localhost:8080
+  base_url: http://localhost:8000
 
 prediction_service:
-  base_url: http://localhost:9000
+  base_url: http://localhost:8001
+
+# URL da própria API do AIP -- usado pelo assistente para chamar as suas
+# ferramentas via HTTP (nunca acede à base de dados diretamente).
+aip:
+  base_url: http://localhost:8090
+
+# Modelo local, sem custo por pedido. Troca o modelo conforme o hardware
+# disponível (ex: qwen2.5:7b para menos memória, qwen2.5:32b com GPU maior).
+ollama:
+  url: http://localhost:11434
+  model: qwen2.5:3b
+
+# Resend -- envio do relatório semanal por email (grátis até 3000/mês).
+resend:
+  api_key: "" # RESEND_API_KEY
+  from: alerts@antosc.com
+
+# Alertas de limiar (bateria, combustível) para um canal do Teams via
+# Incoming Webhook. Cria o webhook em: canal -> Conectores -> Incoming Webhook.
+teams:
+  webhook_url: "" # TEAMS_WEBHOOK_URL
 
 database:
   host: localhost

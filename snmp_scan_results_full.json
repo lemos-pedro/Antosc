@@ -1,453 +1,5 @@
 [
   {
-    "ip": "192.168.139.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:18.599202+00:00"
-  },
-  {
-    "ip": "192.168.156.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:18.614825+00:00"
-  },
-  {
-    "ip": "192.168.167.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:18.614825+00:00"
-  },
-  {
-    "ip": "192.168.203.101",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:18.617953+00:00"
-  },
-  {
-    "ip": "192.168.177.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:18.617953+00:00"
-  },
-  {
-    "ip": "192.168.191.5",
-    "batch_label": "full",
-    "responded": true,
-    "working_communities": [
-      "community1"
-    ],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": true,
-        "sys_descr": "Linux am335x 3.10.53-HULK2 #0 PREEMPT Tue Jan 1 10:06:00 CST 2019 armv7l",
-        "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
-        "error": null
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": "Linux am335x 3.10.53-HULK2 #0 PREEMPT Tue Jan 1 10:06:00 CST 2019 armv7l",
-    "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:34.046926+00:00"
-  },
-  {
-    "ip": "192.168.198.5",
-    "batch_label": "full",
-    "responded": true,
-    "working_communities": [
-      "community1"
-    ],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": true,
-        "sys_descr": "Linux am335x 3.10.53-HULK2 #0 PREEMPT Tue Jan 1 10:06:00 CST 2019 armv7l",
-        "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
-        "error": null
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": "Linux am335x 3.10.53-HULK2 #0 PREEMPT Tue Jan 1 10:06:00 CST 2019 armv7l",
-    "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:34.229500+00:00"
-  },
-  {
-    "ip": "192.168.210.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:34.229500+00:00"
-  },
-  {
-    "ip": "192.168.129.5",
-    "batch_label": "full",
-    "responded": true,
-    "working_communities": [
-      "community1"
-    ],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": true,
-        "sys_descr": "Linux am335x 3.10.53-HULK2 #0 PREEMPT Tue Jan 1 10:06:00 CST 2019 armv7l",
-        "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
-        "error": null
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": "Linux am335x 3.10.53-HULK2 #0 PREEMPT Tue Jan 1 10:06:00 CST 2019 armv7l",
-    "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:34.229500+00:00"
-  },
-  {
-    "ip": "192.168.180.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:34.637113+00:00"
-  },
-  {
-    "ip": "192.168.159.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:46.045482+00:00"
-  },
-  {
-    "ip": "192.168.113.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:46.178106+00:00"
-  },
-  {
-    "ip": "192.168.170.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:46.178106+00:00"
-  },
-  {
     "ip": "192.168.200.5",
     "batch_label": "full",
     "responded": false,
@@ -461,7 +13,21 @@
         "error": "No SNMP response received before timeout"
       },
       {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
         "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
         "ok": false,
         "sys_descr": null,
         "sys_object_id": null,
@@ -479,109 +45,7 @@
     "sys_object_id": null,
     "vendor_guess": null,
     "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:50.124749+00:00"
-  },
-  {
-    "ip": "192.168.172.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:06:50.441730+00:00"
-  },
-  {
-    "ip": "192.168.194.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:01.703462+00:00"
-  },
-  {
-    "ip": "192.168.174.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:01.703462+00:00"
+    "scanned_at": "2026-07-20T14:09:20.198889+00:00"
   },
   {
     "ip": "192.168.173.5",
@@ -597,7 +61,21 @@
         "error": "No SNMP response received before timeout"
       },
       {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
         "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
         "ok": false,
         "sys_descr": null,
         "sys_object_id": null,
@@ -615,859 +93,7 @@
     "sys_object_id": null,
     "vendor_guess": null,
     "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:01.987328+00:00"
-  },
-  {
-    "ip": "192.168.202.37",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:05.895052+00:00"
-  },
-  {
-    "ip": "192.168.166.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:06.304681+00:00"
-  },
-  {
-    "ip": "192.168.183.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:17.466287+00:00"
-  },
-  {
-    "ip": "192.168.199.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:17.466287+00:00"
-  },
-  {
-    "ip": "192.168.127.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:17.839652+00:00"
-  },
-  {
-    "ip": "192.168.155.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:21.785391+00:00"
-  },
-  {
-    "ip": "192.168.184.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:22.469088+00:00"
-  },
-  {
-    "ip": "192.168.164.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:33.100084+00:00"
-  },
-  {
-    "ip": "192.168.158.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:33.235802+00:00"
-  },
-  {
-    "ip": "192.168.161.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:33.408569+00:00"
-  },
-  {
-    "ip": "192.168.201.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:37.191415+00:00"
-  },
-  {
-    "ip": "192.168.128.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:37.824691+00:00"
-  },
-  {
-    "ip": "192.168.163.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:48.425343+00:00"
-  },
-  {
-    "ip": "192.168.160.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:48.693846+00:00"
-  },
-  {
-    "ip": "192.168.192.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:48.693846+00:00"
-  },
-  {
-    "ip": "192.168.204.165",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:52.863779+00:00"
-  },
-  {
-    "ip": "192.168.168.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:07:53.395217+00:00"
-  },
-  {
-    "ip": "192.168.196.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:03.922326+00:00"
-  },
-  {
-    "ip": "192.168.157.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:04.192135+00:00"
-  },
-  {
-    "ip": "192.168.162.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:04.192135+00:00"
-  },
-  {
-    "ip": "192.168.178.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:08.409436+00:00"
-  },
-  {
-    "ip": "192.168.102.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:08.817029+00:00"
-  },
-  {
-    "ip": "192.168.171.5",
-    "batch_label": "full",
-    "responded": true,
-    "working_communities": [
-      "community1"
-    ],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": true,
-        "sys_descr": "Linux am335x 3.10.53-HULK2 #0 PREEMPT Tue Jan 1 10:06:00 CST 2019 armv7l",
-        "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
-        "error": null
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": "Linux am335x 3.10.53-HULK2 #0 PREEMPT Tue Jan 1 10:06:00 CST 2019 armv7l",
-    "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:19.461554+00:00"
-  },
-  {
-    "ip": "192.168.169.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:19.461554+00:00"
-  },
-  {
-    "ip": "192.168.176.5",
-    "batch_label": "full",
-    "responded": false,
-    "working_communities": [],
-    "all_attempts": [
-      {
-        "community": "community1",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "public",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      },
-      {
-        "community": "private",
-        "ok": false,
-        "sys_descr": null,
-        "sys_object_id": null,
-        "error": "No SNMP response received before timeout"
-      }
-    ],
-    "sys_descr": null,
-    "sys_object_id": null,
-    "vendor_guess": null,
-    "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:20.051616+00:00"
+    "scanned_at": "2026-07-20T14:09:20.202850+00:00"
   },
   {
     "ip": "192.168.154.5",
@@ -1483,7 +109,21 @@
         "error": "No SNMP response received before timeout"
       },
       {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
         "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
         "ok": false,
         "sys_descr": null,
         "sys_object_id": null,
@@ -1501,7 +141,487 @@
     "sys_object_id": null,
     "vendor_guess": null,
     "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:24.285298+00:00"
+    "scanned_at": "2026-07-20T14:09:20.203848+00:00"
+  },
+  {
+    "ip": "192.168.176.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:09:20.203848+00:00"
+  },
+  {
+    "ip": "192.168.155.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:09:20.204846+00:00"
+  },
+  {
+    "ip": "192.168.162.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:09:46.355689+00:00"
+  },
+  {
+    "ip": "192.168.192.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:09:46.355689+00:00"
+  },
+  {
+    "ip": "192.168.178.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:09:46.628929+00:00"
+  },
+  {
+    "ip": "192.168.202.37",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:09:46.628929+00:00"
+  },
+  {
+    "ip": "192.168.158.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:09:47.058065+00:00"
+  },
+  {
+    "ip": "192.168.139.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:12.441454+00:00"
+  },
+  {
+    "ip": "192.168.156.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:12.612010+00:00"
+  },
+  {
+    "ip": "192.168.128.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:12.612010+00:00"
   },
   {
     "ip": "192.168.188.5",
@@ -1517,7 +637,21 @@
         "error": "No SNMP response received before timeout"
       },
       {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
         "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
         "ok": false,
         "sys_descr": null,
         "sys_object_id": null,
@@ -1535,6 +669,1254 @@
     "sys_object_id": null,
     "vendor_guess": null,
     "vendor_confirmed_via": [],
-    "scanned_at": "2026-07-17T08:08:24.614206+00:00"
+    "scanned_at": "2026-07-20T14:10:12.874548+00:00"
+  },
+  {
+    "ip": "192.168.164.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:13.271644+00:00"
+  },
+  {
+    "ip": "192.168.127.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:38.515260+00:00"
+  },
+  {
+    "ip": "192.168.167.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:38.953252+00:00"
+  },
+  {
+    "ip": "192.168.159.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:38.954249+00:00"
+  },
+  {
+    "ip": "192.168.174.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:39.261180+00:00"
+  },
+  {
+    "ip": "192.168.166.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:10:39.533468+00:00"
+  },
+  {
+    "ip": "192.168.157.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:04.865851+00:00"
+  },
+  {
+    "ip": "192.168.177.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:05.318848+00:00"
+  },
+  {
+    "ip": "192.168.183.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:05.319847+00:00"
+  },
+  {
+    "ip": "192.168.180.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:05.998031+00:00"
+  },
+  {
+    "ip": "192.168.203.101",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:06.791599+00:00"
+  },
+  {
+    "ip": "192.168.172.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:31.628644+00:00"
+  },
+  {
+    "ip": "192.168.210.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:32.173046+00:00"
+  },
+  {
+    "ip": "192.168.161.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:32.174092+00:00"
+  },
+  {
+    "ip": "192.168.168.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:33.131623+00:00"
+  },
+  {
+    "ip": "192.168.163.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:33.880866+00:00"
+  },
+  {
+    "ip": "192.168.196.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:58.852851+00:00"
+  },
+  {
+    "ip": "192.168.170.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:11:58.993596+00:00"
+  },
+  {
+    "ip": "192.168.199.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:12:00.011441+00:00"
+  },
+  {
+    "ip": "192.168.160.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:12:00.186050+00:00"
+  },
+  {
+    "ip": "192.168.102.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:12:01.683234+00:00"
+  },
+  {
+    "ip": "192.168.169.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:12:25.885704+00:00"
+  },
+  {
+    "ip": "192.168.201.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:12:26.228526+00:00"
+  },
+  {
+    "ip": "192.168.184.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:12:27.358466+00:00"
+  },
+  {
+    "ip": "192.168.194.5",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:12:27.359494+00:00"
+  },
+  {
+    "ip": "192.168.204.165",
+    "batch_label": "full",
+    "responded": false,
+    "working_communities": [],
+    "all_attempts": [
+      {
+        "community": "community1",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "public",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "Private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      },
+      {
+        "community": "private",
+        "ok": false,
+        "sys_descr": null,
+        "sys_object_id": null,
+        "error": "No SNMP response received before timeout"
+      }
+    ],
+    "sys_descr": null,
+    "sys_object_id": null,
+    "vendor_guess": null,
+    "vendor_confirmed_via": [],
+    "scanned_at": "2026-07-20T14:12:29.619405+00:00"
   }
 ]

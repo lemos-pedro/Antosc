@@ -3,23 +3,24 @@ package towercore
 import "time"
 
 // TowerDTO espelha o payload de GET /api/v1/towers (ver api.md).
+// Nota: o payload real tem mais campos (operators, snmp_*, neteco_*) que
+// não são usados pelo AIP e ficam de fora deste DTO de propósito.
 type TowerDTO struct {
-	TowerID    string    `json:"tower_id"`
-	Name       string    `json:"name"`
-	Status     string    `json:"status"`
-	OperatorID string    `json:"operator_id"`
-	RegionID   string    `json:"region_id"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	TowerID          string    `json:"tower_id"`
+	Name             string    `json:"name"`
+	Status           string    `json:"status"`
+	OperatorID       string    `json:"operator_id"`
+	RegionID         string    `json:"region_id"`
+	Vendor           string    `json:"vendor"` // eltek | huawei | enetek -- usado para escolher o adaptador no /predict
+	Availability7d   float64   `json:"availability_7d"`
+	Availability30d  float64   `json:"availability_30d"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
-// EventDTO espelha o payload de GET /api/v1/events (endpoint agregado,
-// usado por GetEvents). Cada evento inclui o próprio tower_id, já que a
-// lista cruza todas as torres -- ao contrário do endpoint por torre
-// (GET /towers/{tower_id}/events), onde o ID vem implícito na URL e não
-// no corpo da resposta.
+// EventDTO espelha o payload de GET /api/v1/towers/{tower_id}/events.
 type EventDTO struct {
 	EventID    string    `json:"event_id"`
-	TowerID    string    `json:"tower_id"`
+	TowerID    string    `json:"-"` // preenchido pelo client, não vem no payload
 	Type       string    `json:"type"`
 	Severity   string    `json:"severity"`
 	Message    string    `json:"message"`

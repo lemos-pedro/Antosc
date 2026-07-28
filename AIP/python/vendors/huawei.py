@@ -5,23 +5,28 @@ class HuaweiVendor(BaseVendor):
 
     name = "huawei"
 
+    RAW_TO_CANONICAL = {
+        "battery_voltage_v": "battery_voltage",
+        "battery_temperature_c": "temperature",
+    }
+
     def normalize(
         self,
-        raw_series: dict[str, list[float]],
-    ) -> dict[str, list[float]]:
+        features: dict[str, float],
+    ) -> dict[str, float]:
 
         return {
-            "battery_voltage":
-                raw_series.get("battery_voltage_v", []),
 
-            # Ver nota equivalente em vendors/eltek.py: proxy de
-            # temperatura até existir fonte ambiente/equipamento própria.
-            "temperature":
-                raw_series.get("battery_temperature_c", []),
+            "battery_voltage":
+                features.get("battery_voltage_v", 0),
+
+            "battery_temperature":
+                features.get("battery_temperature_c", 0),
 
             "rectifier_current":
-                raw_series.get("rectifier_current_a", []),
+                features.get("rectifier_current_a", 0),
 
             "mains_voltage":
-                raw_series.get("mains_voltage_l1_v", []),
+                features.get("mains_voltage_l1_v", 0),
+
         }

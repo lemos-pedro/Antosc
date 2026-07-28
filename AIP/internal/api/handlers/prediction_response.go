@@ -65,7 +65,6 @@ func (h *PredictionHandler) GetLatest(w http.ResponseWriter, r *http.Request) {
 }
 
 type triggerRequest struct {
-	Vendor     string `json:"vendor"`
 	Model      string `json:"model"`
 	WindowDays int    `json:"prediction_window_days"`
 }
@@ -87,15 +86,11 @@ func (h *PredictionHandler) Trigger(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "VALIDATION_ERROR", "model é obrigatório")
 		return
 	}
-	if body.Vendor == "" {
-		writeError(w, http.StatusBadRequest, "VALIDATION_ERROR", "vendor é obrigatório")
-		return
-	}
 	if body.WindowDays <= 0 {
 		body.WindowDays = 7
 	}
 
-	p, err := h.service.PredictAndStore(r.Context(), towerID, body.Vendor, body.Model, body.WindowDays)
+	p, err := h.service.PredictAndStore(r.Context(), towerID, body.Model, body.WindowDays)
 	if err != nil {
 		if errors.Is(err, prediction.ErrInsufficientHistory) {
 			writeError(w, http.StatusConflict, "CONFLICT", err.Error())

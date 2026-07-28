@@ -7,13 +7,14 @@ from .battery import build_battery_features
 from .temperature import build_temperature_features
 from .availability import build_availability_features
 from .generator import build_generator_features
-from .fuel import build_fuel_features
-from .ewma import build_ewma_features
 
 
-def build_features(data: dict) -> dict:
 
-    result = {}
+def build_features(data:dict)->dict:
+
+
+    result={}
+
 
     if "battery_voltage" in data:
 
@@ -23,12 +24,6 @@ def build_features(data: dict) -> dict:
             )
         )
 
-        result.update(
-            build_ewma_features(
-                "battery_voltage",
-                data["battery_voltage"],
-            )
-        )
 
     if "temperature" in data:
 
@@ -38,12 +33,6 @@ def build_features(data: dict) -> dict:
             )
         )
 
-        result.update(
-            build_ewma_features(
-                "temperature",
-                data["temperature"],
-            )
-        )
 
     if "generator_runtime" in data:
 
@@ -53,20 +42,6 @@ def build_features(data: dict) -> dict:
             )
         )
 
-    if "fuel_liters" in data:
-
-        result.update(
-            build_fuel_features(
-                data["fuel_liters"]
-            )
-        )
-
-        result.update(
-            build_ewma_features(
-                "fuel_liters",
-                data["fuel_liters"],
-            )
-        )
 
     if (
         "total_points" in data
@@ -80,5 +55,6 @@ def build_features(data: dict) -> dict:
                 data["failed_points"],
             )
         )
+
 
     return result

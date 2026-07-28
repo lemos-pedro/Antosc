@@ -13,12 +13,15 @@ var (
 )
 
 // TowerFilter define os filtros aceites na listagem de torres.
+// TowerFilter define os filtros aceites na listagem de torres.
 type TowerFilter struct {
-	Status     string
-	OperatorID string
-	RegionID   string
-	Limit      int
-	Offset     int
+	Status           string
+	CollectionStatus string
+	OperatorID       string
+	RegionID         string
+	NetecoEnabled    *bool
+	Limit            int
+	Offset           int
 }
 
 type TowerCache interface {

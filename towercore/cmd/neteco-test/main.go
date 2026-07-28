@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"towercore/internal/adapters/neteco"
 )
@@ -16,7 +18,8 @@ func main() {
 		log.Fatal("defina NETECO_PASSWORD")
 	}
 
-	client := neteco.NewClient(baseURL, username, password)
+	skipTLSVerify, _ := strconv.ParseBool(os.Getenv("NETECO_TLS_SKIP_VERIFY"))
+	client := neteco.NewClient(baseURL, username, password, skipTLSVerify, 15*time.Second)
 	if err := client.Login(); err != nil {
 		log.Fatal("login falhou: ", err)
 	}
@@ -24,10 +27,10 @@ func main() {
 
 	// siteDn de teste — substituir pelos 4 confirmados
 	sites := map[string]string{
-		"KNROD001_Praceta":     "NE=33554471",
-		"HBHUB001_Macolocolo":  "NE=33554510",
-		"LDVIA003_SAOJOSE":     "NE=33554467",
-		"LDVIA004_VILA FLOR":   "NE=33554498",
+		"KNROD001_Praceta":    "NE=33554471",
+		"HBHUB001_Macolocolo": "NE=33554510",
+		"LDVIA003_SAOJOSE":    "NE=33554467",
+		"LDVIA004_VILA FLOR":  "NE=33554498",
 	}
 
 	for name, dn := range sites {

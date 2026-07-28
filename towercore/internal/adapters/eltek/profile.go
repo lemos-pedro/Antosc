@@ -34,9 +34,19 @@ func Profile() snmp.Profile {
 				Scale: 0.1, // confirmado: MULTIPLIER 0.1 no template
 			},
 			{
-				OID:   ".1.3.6.1.4.1.12148.10.10.7.5.0",
-				Key:   "battery_temperature_c",
-				Scale: 1, // confirmado: sem multiplicador no template
+				OID:          ".1.3.6.1.4.1.12148.10.10.7.5.0",
+				Key:          "battery_temperature_c",
+				Scale:        1,               // confirmado: sem multiplicador no template
+				IgnoreValues: []float64{-100}, // slot/sensor vazio, não é temperatura real
+			},
+			{
+				// No walk de CAOTINHA, .12.2.0 é apenas o rótulo
+				// "BatteryQuality"; .12.5.0 é o valor. Zero significa que
+				// ainda não houve ciclo de teste, nunca uma falha de bateria.
+				OID:                ".1.3.6.1.4.1.12148.10.10.12.5.0",
+				Key:                "battery_quality",
+				Scale:              1,
+				ZeroMeansNotTested: true,
 			},
 			{
 				OID:   ".1.3.6.1.4.1.12148.10.10.9.5.0",
@@ -245,7 +255,7 @@ func Profile() snmp.Profile {
 			// Battery capacity
 			// CORRIGIDO: o warning absoluto de 20  fixo é o que está a
 			// inundar a frota de "degradada" — bancos de bateria pequenos
-			// passam a maior parte da vida útil normal abaixo de 20 
+			// passam a maior parte da vida útil normal abaixo de 20
 			// restantes, sem que isso signifique falha real.
 			// battery_total_ já é coletado — o correto é avaliar como
 			// percentagem (battery_remaining_ / battery_total_), não
@@ -322,4 +332,3 @@ func Profile() snmp.Profile {
 		},
 	}
 }
-

@@ -38,14 +38,14 @@ type Event struct {
 	Type       EventType     `json:"type"`
 	Severity   EventSeverity `json:"severity"`
 	Message    string        `json:"message"`
-	OccurredAt time.Time     `json:"occurred_at"`
-	CreatedAt  time.Time     `json:"created_at"`
+	DataSource string        `json:"data_source"`
 
-	// Campos de deduplicação de alarmes (SNMPIngestService).
+	OccurredAt time.Time  `json:"occurred_at"`
+	CreatedAt  time.Time  `json:"created_at"`
 	Status     EventStatus `json:"status"`
-	AlarmKey   string      `json:"alarm_key,omitempty"`
-	ResolvedAt *time.Time  `json:"resolved_at,omitempty"`
-	LastSeenAt time.Time   `json:"last_seen_at"`
+	AlarmKey   string     `json:"alarm_key,omitempty"`
+	ResolvedAt *time.Time `json:"resolved_at,omitempty"`
+	LastSeenAt time.Time  `json:"last_seen_at"`
 }
 
 // IsCritical indica se o evento requer atenção imediata.

@@ -5,7 +5,7 @@ Variaveis de ambiente previstas para a primeira versao do backend.
 ## Aplicacao
 - `APP_NAME` (default: `towercore-api`)
 - `APP_ENV` (`dev`, `staging`, `prod`)
-- `APP_PORT` (default: `8080`)
+- `APP_PORT` (default: `8000`)
 - `LOG_LEVEL` (`debug`, `info`, `warn`, `error`)
 
 ## Cache

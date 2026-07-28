@@ -20,17 +20,14 @@ func NewTicketRepository(db *sql.DB) *TicketRepository {
 	return &TicketRepository{db: db}
 }
 
-
-
-
 func (r *TicketRepository) Create(ctx context.Context, t *domain.Ticket) error {
 	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
 	defer cancel()
- 
+
 	const query = `
 INSERT INTO tickets (ticket_id, tower_id, event_id, status, created_at, updated_at)
 VALUES ($1::uuid, $2::uuid, NULLIF($3, '')::uuid, $4, $5, $6)`
- 
+
 	_, err := r.db.ExecContext(ctx, query,
 		t.ID,
 		t.TowerID,
@@ -48,22 +45,25 @@ func (r *TicketRepository) GetByID(ctx context.Context, id string) (*domain.Tick
 
 	const query = `
 SELECT
-	ticket_id::text,
-	tower_id::text,
-	COALESCE(event_id::text, ''),
-	status,
-	acknowledged_at,
-	closed_at,
-	created_at,
-	updated_at
-FROM tickets
-WHERE ticket_id::text = $1`
+	t.ticket_id::text,
+	t.tower_id::text,
+	COALESCE(tw.name, ''),
+	COALESCE(t.event_id::text, ''),
+	t.status,
+	t.acknowledged_at,
+	t.closed_at,
+	t.created_at,
+	t.updated_at
+FROM tickets t
+LEFT JOIN towers tw ON tw.tower_id = t.tower_id
+WHERE t.ticket_id::text = $1`
 
 	var t domain.Ticket
 	var status string
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&t.ID,
 		&t.TowerID,
+		&t.TowerName,
 		&t.EventID,
 		&status,
 		&t.AcknowledgedAt,
@@ -90,12 +90,12 @@ func (r *TicketRepository) List(ctx context.Context, filter interfaces.TicketFil
 	next := 1
 
 	if filter.Status != "" {
-		clauses = append(clauses, fmt.Sprintf("status = $%d", next))
+		clauses = append(clauses, fmt.Sprintf("t.status = $%d", next))
 		args = append(args, filter.Status)
 		next++
 	}
 	if filter.TowerID != "" {
-		clauses = append(clauses, fmt.Sprintf("tower_id::text = $%d", next))
+		clauses = append(clauses, fmt.Sprintf("t.tower_id::text = $%d", next))
 		args = append(args, filter.TowerID)
 		next++
 	}
@@ -105,7 +105,7 @@ func (r *TicketRepository) List(ctx context.Context, filter interfaces.TicketFil
 		where = " WHERE " + strings.Join(clauses, " AND ")
 	}
 
-	countQuery := "SELECT COUNT(*) FROM tickets" + where
+	countQuery := "SELECT COUNT(*) FROM tickets t" + where
 	var total int
 	if err := r.db.QueryRowContext(ctx, countQuery, args...).Scan(&total); err != nil {
 		return nil, 0, err
@@ -114,15 +114,17 @@ func (r *TicketRepository) List(ctx context.Context, filter interfaces.TicketFil
 	// api.md: "Lista tickets ordenados por data de criacao (desc)"
 	listQuery := `
 SELECT
-	ticket_id::text,
-	tower_id::text,
-	COALESCE(event_id::text, ''),
-	status,
-	acknowledged_at,
-	closed_at,
-	created_at,
-	updated_at
-FROM tickets` + where + fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d OFFSET $%d", next, next+1)
+	t.ticket_id::text,
+	t.tower_id::text,
+	COALESCE(tw.name, ''),
+	COALESCE(t.event_id::text, ''),
+	t.status,
+	t.acknowledged_at,
+	t.closed_at,
+	t.created_at,
+	t.updated_at
+FROM tickets t
+LEFT JOIN towers tw ON tw.tower_id = t.tower_id` + where + fmt.Sprintf(" ORDER BY t.created_at DESC LIMIT $%d OFFSET $%d", next, next+1)
 
 	args = append(args, filter.Limit, filter.Offset)
 
@@ -139,6 +141,7 @@ FROM tickets` + where + fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d OFFSET 
 		if err := rows.Scan(
 			&t.ID,
 			&t.TowerID,
+			&t.TowerName,
 			&t.EventID,
 			&status,
 			&t.AcknowledgedAt,
@@ -167,8 +170,6 @@ func (r *TicketRepository) UpdateStatus(
 	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
 	defer cancel()
 
-	// COALESCE($n, coluna) preserva o timestamp já existente quando não
-	// passamos um novo valor (ex: close() não toca em acknowledged_at).
 	const query = `
 UPDATE tickets SET
 	status = $1,
