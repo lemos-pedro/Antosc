@@ -93,6 +93,7 @@ func (h *TowerHandler) list(w http.ResponseWriter, r *http.Request) {
 		CollectionStatus: r.URL.Query().Get("collection_status"),
 		OperatorID:       r.URL.Query().Get("operator_id"),
 		RegionID:         r.URL.Query().Get("region_id"),
+		Name:             r.URL.Query().Get("name"),
 		Limit:            parseIntDefault(r.URL.Query().Get("limit"), 500),
 		Offset:           parseIntDefault(r.URL.Query().Get("offset"), 0),
 	}

@@ -93,6 +93,12 @@ func (s *NagiosScheduler) CollectOnce(ctx context.Context) {
 			status, err := s.poller.FetchHostStatus(ctx, hostname)
 			if err != nil {
 				s.log.Errorf("nagios scheduler fetch failed tower=%s hostname=%s err=%v", tw.ID, hostname, err)
+				// Sem isto, a torre ficava presa no último status bom
+				// quando perdíamos comunicação com o Nagios — mesmo bug
+				// que já tinha sido corrigido no SNMP scheduler.
+				if markErr := s.ingestService.MarkUnreachable(ctx, tw.ID); markErr != nil {
+					s.log.Errorf("nagios scheduler mark unreachable failed tower=%s err=%v", tw.ID, markErr)
+				}
 				continue
 			}
 

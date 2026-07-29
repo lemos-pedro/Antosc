@@ -188,11 +188,10 @@ func main() {
 	// ComAp (Modbus) — telemetria de energia do grupo gerador.
 	// Enabled=false por default (COMAP_ENABLED) até validação de campo
 	// confirmar fatores de escala de fuel_percent/battery_voltage.
-	comapIngestSvc := services.NewComapIngestService(comapReadingRepo, eventSvc, ticketSvc)
+	comapIngestSvc := services.NewComapIngestService(comapReadingRepo, eventSvc, ticketSvc, towerSvc)
 	comapScheduler := scheduler.NewComapScheduler(
 		towerEndpointRepo,
 		comapIngestSvc,
-		towerService,
 		log,
 		time.Duration(cfg.Comap.IntervalSeconds)*time.Second,
 		cfg.Scheduler.BatchSize,

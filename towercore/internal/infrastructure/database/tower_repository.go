@@ -64,6 +64,14 @@ func (r *TowerRepository) List(ctx context.Context, filter interfaces.TowerFilte
 		next++
 	}
 
+	if filter.Name != "" {
+		// Pesquisa parcial e case-insensitive 
+		// procurar sites pelo nome, não só por ID (UUID).
+		clauses = append(clauses, fmt.Sprintf("name ILIKE $%d", next))
+		args = append(args, "%"+filter.Name+"%")
+		next++
+	}
+
 	where := ""
 	if len(clauses) > 0 {
 		where = " WHERE " + strings.Join(clauses, " AND ")

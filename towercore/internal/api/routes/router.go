@@ -48,7 +48,7 @@ func NewRouter(
 	mux.Handle("GET /health", metrics.Instrument("/health", healthHandler))
 	mux.Handle("GET /metrics", metrics.Instrument("/metrics", metrics.Handler()))
 
-	mux.Handle("POST /api/v1/users", metrics.Instrument("/api/v1/users", writeChain(userHandler)))
+	mux.Handle("POST /api/v1/users", metrics.Instrument("/api/v1/users", writeChain(middleware.RequireRole("admin")(userHandler))))
 	mux.Handle("POST /api/v1/auth/login", metrics.Instrument("/api/v1/auth/login", authHandler))
 
 	mux.Handle("GET /api/v1/towers", metrics.Instrument("/api/v1/towers", towerHandler))
@@ -87,8 +87,9 @@ func NewRouter(
 
 	mux.Handle("GET /api/v1/towers/{tower_id}/energy/generator", metrics.Instrument("/api/v1/towers/{tower_id}/energy/generator", http.HandlerFunc(comapReadingHandler.GetByTowerID)))
 	
-	mux.Handle("GET /api/v1/sla/global",
-	metrics.Instrument("/api/v1/sla/global", slaHandler))
+	mux.Handle("GET /api/v1/sla/global",metrics.Instrument("/api/v1/sla/global", slaHandler))
+
+	mux.Handle("GET /api/v1/sla/region/{id}",metrics.Instrument("/api/v1/sla/region/{id}", http.HandlerFunc(slaHandler.ServeRegion)))
 	
 
 	mux.Handle("/", metrics.Instrument("not_found", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -69,6 +69,10 @@ func (s *ComapScheduler) Start(ctx context.Context) {
 	}
 }
 
+// CollectOnce percorre os endpoints ComAp habilitados e faz uma leitura.
+// Qualquer falha (conexão Modbus ou leitura/gravação) marca a torre como
+// unreachable — nunca deixa o estado anterior "preso" quando perdemos
+// comunicação com o gerador.
 func (s *ComapScheduler) CollectOnce(ctx context.Context) {
 	endpoints, _, err := s.endpointsRepo.List(ctx, interfaces.TowerEndpointFilter{
 		EquipmentType: "generator",
@@ -90,12 +94,18 @@ func (s *ComapScheduler) CollectOnce(ctx context.Context) {
 		client, err := comap.NewTCPClient(ep.IPAddress, ep.Port, uint8(ep.SlaveID), s.modbusTimeout)
 		if err != nil {
 			s.log.Errorf("comap scheduler connect failed tower=%s ip=%s err=%v", ep.TowerID, ep.IPAddress, err)
+			if markErr := s.ingestService.MarkUnreachable(ctx, ep.TowerID); markErr != nil {
+				s.log.Errorf("comap scheduler mark unreachable failed tower=%s err=%v", ep.TowerID, markErr)
+			}
 			continue
 		}
 
 		reader := comap.NewReader(client, uint8(ep.SlaveID))
 		if err := s.ingestService.Ingest(ctx, ep.TowerID, reader); err != nil {
 			s.log.Errorf("comap scheduler ingest failed tower=%s err=%v", ep.TowerID, err)
+			if markErr := s.ingestService.MarkUnreachable(ctx, ep.TowerID); markErr != nil {
+				s.log.Errorf("comap scheduler mark unreachable failed tower=%s err=%v", ep.TowerID, markErr)
+			}
 		} else {
 			s.log.Infof("comap scheduler collected tower=%s ip=%s", ep.TowerID, ep.IPAddress)
 		}
@@ -103,22 +113,5 @@ func (s *ComapScheduler) CollectOnce(ctx context.Context) {
 		_ = client.Close()
 	}
 }
-func (s *ComapIngestService) MarkUnreachable(ctx context.Context, towerID string) error {
-	if strings.TrimSpace(towerID) == "" {
-		return errors.New("tower_id is required")
-	}
-	if s.towerUpdater == nil {
-		return nil
-	}
-	return s.towerUpdater.UpdateStatus(ctx, towerID, domain.TowerStatusOffline)
-}
 
-client, err := comap.NewTCPClient(ep.IPAddress, ep.Port, uint8(ep.SlaveID), s.modbusTimeout)
-if err != nil {
-    s.log.Errorf("comap scheduler connect failed tower=%s ip=%s err=%v", ep.TowerID, ep.IPAddress, err)
-    if markErr := s.ingestService.MarkUnreachable(ctx, ep.TowerID); markErr != nil {
-        s.log.Errorf("comap scheduler mark unreachable failed tower=%s err=%v", ep.TowerID, markErr)
-    }
-    continue
-}
 func boolPtr(b bool) *bool { return &b }

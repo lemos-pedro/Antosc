@@ -61,6 +61,22 @@ func (s *NagiosIngestService) Ingest(ctx context.Context, towerID string, status
 	return err
 }
 
+// MarkUnreachable marca a torre como offline quando a própria consulta ao
+// Nagios falha (timeout de rede, CGI indisponível, hostname não resolvido).
+// Antes desta função existir, uma falha de fetch era apenas registada em
+// log e ignorada (ver nagios_scheduler.go) — a torre ficava presa no
+// último status bom, mesmo sem qualquer comunicação real. Segue o mesmo
+// padrão de SNMPIngestService.MarkUnreachable.
+func (s *NagiosIngestService) MarkUnreachable(ctx context.Context, towerID string) error {
+	if strings.TrimSpace(towerID) == "" {
+		return errors.New("tower_id is required")
+	}
+	if s.towerUpdater == nil {
+		return nil
+	}
+	return s.towerUpdater.UpdateStatus(ctx, towerID, domain.TowerStatusOffline)
+}
+
 func mapNagiosState(state interfaces.HostState) (domain.TowerStatus, bool, string) {
 	switch state {
 	case interfaces.HostStateUp:

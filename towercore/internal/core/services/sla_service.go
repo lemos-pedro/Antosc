@@ -18,3 +18,6 @@ func NewSLAService(repo interfaces.SLARepository) *SLAService {
 func (s *SLAService) GetGlobal(ctx context.Context) (*domain.SLA, error) {
 	return s.repo.GetGlobal(ctx)
 }
+func (s *SLAService) GetByRegion(ctx context.Context, regionID string) (*domain.SLA, error) {
+	return s.repo.GetByRegion(ctx, regionID)
+}

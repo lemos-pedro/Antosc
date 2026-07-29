@@ -20,6 +20,7 @@ type TowerFilter struct {
 	OperatorID       string
 	RegionID         string
 	NetecoEnabled    *bool
+	Name             string
 	Limit            int
 	Offset           int
 }
