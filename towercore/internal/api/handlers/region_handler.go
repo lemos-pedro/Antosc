@@ -87,8 +87,8 @@ type regionDetailResponse struct {
 }
 
 // ServeByID trata GET /api/v1/regions/{id} — detalhe com métricas agregadas
-// (reaproveita SLAService.GetByRegion, já existente), registado
-// separadamente no router porque usa path param.
+// (reaproveita SLAService.GetByRegion), registado separadamente no router
+// porque usa path param.
 func (h *RegionHandler) ServeByID(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		apierror.MethodNotAllowed(w)
@@ -124,8 +124,6 @@ func (h *RegionHandler) ServeByID(w http.ResponseWriter, r *http.Request) {
 		resp.OfflineSites = sla.OfflineSites
 		resp.DegradedSites = sla.DegradedSites
 	}
-	// Falha a buscar métricas não deve derrubar o detalhe da região —
-	// devolve os dados base da região na mesma, só sem os agregados.
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

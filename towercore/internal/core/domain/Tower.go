@@ -28,6 +28,7 @@ type Tower struct {
 	// gerado automaticamente pela BD (sequence towers_site_code_seq).
 	// Existe só para deixar de expor o UUID na UI — tower_id continua a
 	// ser a PK real, usada em todas as outras relações.
+	SiteID              string           `json:"site_id"`
 	SiteCode            string           `json:"site_code"`
 	Status              TowerStatus      `json:"status"`
 	CollectionStatus    CollectionStatus `json:"collection_status"`

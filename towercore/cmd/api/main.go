@@ -215,7 +215,7 @@ func main() {
 		promotionSvc,
 	)
 
-	regionHandler := handlers.NewRegionHandler(regionSvc)
+	regionHandler := handlers.NewRegionHandler(regionSvc, slaSvc)
 	operatorHandler := handlers.NewOperatorHandler(operatorSvc)
 	slaHandler := handlers.NewSLAHandler(slaSvc)
 

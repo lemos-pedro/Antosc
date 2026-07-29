@@ -77,12 +77,12 @@ func NewRouter(
 	mux.Handle("POST /api/v1/discovered-devices/{id}/promote", metrics.Instrument("/api/v1/discovered-devices/{id}/promote", writeChain(http.HandlerFunc(discoveredDeviceHandler.Promote))))
 	mux.Handle("POST /api/v1/discovered-devices/{id}/ignore", metrics.Instrument("/api/v1/discovered-devices/{id}/ignore", writeChain(http.HandlerFunc(discoveredDeviceHandler.Ignore))))
 
-	mux.Handle("GET /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler)) 
-	mux.Handle("POST /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler)) 
+	mux.Handle("GET /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler))
+	mux.Handle("POST /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler))
 	mux.Handle("GET /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", http.HandlerFunc(operatorHandler.ServeByID)))
 	mux.Handle("PUT /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", writeChain(http.HandlerFunc(operatorHandler.ServeByID))))
 	mux.Handle("DELETE /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", writeChain(http.HandlerFunc(operatorHandler.ServeByID))))
-	mux.Handle("POST /api/v1/towers/{id}/operators", metrics.Instrument("/api/v1/towers/{id}/operators", towerOperatorHandler)) 
+	mux.Handle("POST /api/v1/towers/{id}/operators", metrics.Instrument("/api/v1/towers/{id}/operators", towerOperatorHandler))
 	mux.Handle("DELETE /api/v1/towers/{id}/operators/{operator_id}", metrics.Instrument("/api/v1/towers/{id}/operators/{operator_id}", towerOperatorHandler))
 
 	mux.Handle("GET /api/v1/regions", metrics.Instrument("/api/v1/regions", regionHandler))

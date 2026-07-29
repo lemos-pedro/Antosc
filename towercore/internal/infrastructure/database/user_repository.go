@@ -104,3 +104,36 @@ INSERT INTO users (
 	)
 	return err
 }
+
+// List devolve todos os users, sem password_hash (nunca deve sair via API).
+func (r *UserRepository) List(ctx context.Context) ([]domain.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	const query = `
+SELECT
+	user_id::text,
+	username,
+	COALESCE(email, ''),
+	role,
+	created_at,
+	updated_at
+FROM users
+ORDER BY username ASC`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []domain.User
+	for rows.Next() {
+		var u domain.User
+		if err := rows.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.CreatedAt, &u.UpdatedAt); err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+	return users, rows.Err()
+}
