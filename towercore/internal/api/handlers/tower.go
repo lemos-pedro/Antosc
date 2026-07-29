@@ -42,22 +42,26 @@ func (h *TowerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type createTowerRequest struct {
-	ID              string  `json:"tower_id"`
-	Name            string  `json:"name"`
-	Status          string  `json:"status"`
-	OperatorID      string  `json:"operator_id"`
-	RegionID        string  `json:"region_id"`
-	Vendor          string  `json:"vendor"`
-	SNMPEnabled     bool    `json:"snmp_enabled"`
-	SNMPVersion     string  `json:"snmp_version"`
-	SNMPTarget      string  `json:"snmp_target"`
-	SNMPCommunity   string  `json:"snmp_community"`
-	SNMPV3User      string  `json:"snmp_v3_user"`
-	SNMPAuthProto   string  `json:"snmp_auth_protocol"`
-	SNMPAuthPass    string  `json:"snmp_auth_password"`
-	SNMPPrivProto   string  `json:"snmp_priv_protocol"`
-	SNMPPrivPass    string  `json:"snmp_priv_password"`
-	Availability30d float64 `json:"availability_30d"`
+	ID            string `json:"tower_id"`
+	Name          string `json:"name"`
+	Status        string `json:"status"`
+	OperatorID    string `json:"operator_id"`
+	RegionID      string `json:"region_id"`
+	Vendor        string `json:"vendor"`
+	SNMPEnabled   bool   `json:"snmp_enabled"`
+	SNMPVersion   string `json:"snmp_version"`
+	SNMPTarget    string `json:"snmp_target"`
+	SNMPCommunity string `json:"snmp_community"`
+	SNMPV3User    string `json:"snmp_v3_user"`
+	SNMPAuthProto string `json:"snmp_auth_protocol"`
+	SNMPAuthPass  string `json:"snmp_auth_password"`
+	SNMPPrivProto string `json:"snmp_priv_protocol"`
+	SNMPPrivPass  string `json:"snmp_priv_password"`
+	// Availability30d foi removido de propósito: disponibilidade é
+	// calculada pelo AvailabilityService a partir de eventos reais, nunca
+	// escrita manualmente por quem cria a torre (achado da auditoria
+	// original — permitir isto contradizia o princípio "no fabricated
+	// data" já seguido no resto do frontend).
 }
 
 type configureSNMPRequest struct {
@@ -176,23 +180,22 @@ func (h *TowerHandler) create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := domain.Tower{
-		ID:              strings.TrimSpace(req.ID),
-		Name:            strings.TrimSpace(req.Name),
-		Status:          domain.TowerStatus(strings.TrimSpace(req.Status)),
-		OperatorID:      strings.TrimSpace(req.OperatorID),
-		RegionID:        strings.TrimSpace(req.RegionID),
-		Vendor:          strings.ToLower(strings.TrimSpace(req.Vendor)),
-		SNMPEnabled:     req.SNMPEnabled,
-		SNMPVersion:     strings.ToLower(strings.TrimSpace(req.SNMPVersion)),
-		SNMPTarget:      strings.TrimSpace(req.SNMPTarget),
-		SNMPCommunity:   strings.TrimSpace(req.SNMPCommunity),
-		SNMPV3User:      strings.TrimSpace(req.SNMPV3User),
-		SNMPAuthProto:   strings.ToLower(strings.TrimSpace(req.SNMPAuthProto)),
-		SNMPAuthPass:    strings.TrimSpace(req.SNMPAuthPass),
-		SNMPPrivProto:   strings.ToLower(strings.TrimSpace(req.SNMPPrivProto)),
-		SNMPPrivPass:    strings.TrimSpace(req.SNMPPrivPass),
-		Availability30d: req.Availability30d,
-		CreatedAt:       time.Now().UTC(),
+		ID:            strings.TrimSpace(req.ID),
+		Name:          strings.TrimSpace(req.Name),
+		Status:        domain.TowerStatus(strings.TrimSpace(req.Status)),
+		OperatorID:    strings.TrimSpace(req.OperatorID),
+		RegionID:      strings.TrimSpace(req.RegionID),
+		Vendor:        strings.ToLower(strings.TrimSpace(req.Vendor)),
+		SNMPEnabled:   req.SNMPEnabled,
+		SNMPVersion:   strings.ToLower(strings.TrimSpace(req.SNMPVersion)),
+		SNMPTarget:    strings.TrimSpace(req.SNMPTarget),
+		SNMPCommunity: strings.TrimSpace(req.SNMPCommunity),
+		SNMPV3User:    strings.TrimSpace(req.SNMPV3User),
+		SNMPAuthProto: strings.ToLower(strings.TrimSpace(req.SNMPAuthProto)),
+		SNMPAuthPass:  strings.TrimSpace(req.SNMPAuthPass),
+		SNMPPrivProto: strings.ToLower(strings.TrimSpace(req.SNMPPrivProto)),
+		SNMPPrivPass:  strings.TrimSpace(req.SNMPPrivPass),
+		CreatedAt:     time.Now().UTC(),
 	}
 
 	if err := h.service.Save(r.Context(), &t); err != nil {
@@ -200,9 +203,20 @@ func (h *TowerHandler) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// site_code é gerado pela BD (DEFAULT da sequence), não existe ainda
+	// no struct em memória depois do Save — relê para a resposta já vir
+	// com o código legível, em vez do cliente ter de pedir GET/{id} logo
+	// a seguir só para saber o site_code que acabou de ser criado.
+	created, err := h.service.GetByID(r.Context(), t.ID)
+	if err != nil {
+		// A torre já foi criada com sucesso — não falhar a resposta por
+		// causa disto, só devolver sem o site_code preenchido.
+		created = &t
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(t)
+	_ = json.NewEncoder(w).Encode(created)
 }
 
 func (h *TowerHandler) configureSNMP(w http.ResponseWriter, r *http.Request) {

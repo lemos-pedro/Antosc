@@ -79,11 +79,20 @@ func NewRouter(
 
 	mux.Handle("GET /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler)) 
 	mux.Handle("POST /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler)) 
+	mux.Handle("GET /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", http.HandlerFunc(operatorHandler.ServeByID)))
+	mux.Handle("PUT /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", writeChain(http.HandlerFunc(operatorHandler.ServeByID))))
+	mux.Handle("DELETE /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", writeChain(http.HandlerFunc(operatorHandler.ServeByID))))
 	mux.Handle("POST /api/v1/towers/{id}/operators", metrics.Instrument("/api/v1/towers/{id}/operators", towerOperatorHandler)) 
 	mux.Handle("DELETE /api/v1/towers/{id}/operators/{operator_id}", metrics.Instrument("/api/v1/towers/{id}/operators/{operator_id}", towerOperatorHandler))
 
 	mux.Handle("GET /api/v1/regions", metrics.Instrument("/api/v1/regions", regionHandler))
 	mux.Handle("POST /api/v1/regions", metrics.Instrument("/api/v1/regions", writeChain(regionHandler)))
+	mux.Handle("GET /api/v1/regions/{id}", metrics.Instrument("/api/v1/regions/{id}", http.HandlerFunc(regionHandler.ServeByID)))
+
+	// Listar users expõe email+role de toda a equipa — ao contrário do
+	// resto dos GETs (públicos dentro da rede interna), este fica atrás
+	// de auth+role admin, tal como o POST.
+	mux.Handle("GET /api/v1/users", metrics.Instrument("/api/v1/users", writeChain(middleware.RequireRole("admin")(userHandler))))
 
 	mux.Handle("GET /api/v1/towers/{tower_id}/energy/generator", metrics.Instrument("/api/v1/towers/{tower_id}/energy/generator", http.HandlerFunc(comapReadingHandler.GetByTowerID)))
 	

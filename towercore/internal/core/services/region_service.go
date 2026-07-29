@@ -22,3 +22,7 @@ func (s *RegionService) List(ctx context.Context) ([]domain.Region, error) {
 func (s *RegionService) Save(ctx context.Context, region *domain.Region) error {
 	return s.repo.Create(ctx, region)
 }
+
+func (s *RegionService) GetByID(ctx context.Context, id string) (*domain.Region, error) {
+	return s.repo.GetByID(ctx, id)
+}

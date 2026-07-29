@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"towercore/internal/core/domain"
+	"towercore/internal/core/interfaces"
 )
 
 type RegionRepository struct {
@@ -58,4 +59,24 @@ func (r *RegionRepository) Create(ctx context.Context, region *domain.Region) er
 		&region.RegionID,
 		&region.CreatedAt,
 	)
+}
+
+func (r *RegionRepository) GetByID(ctx context.Context, regionID string) (*domain.Region, error) {
+	var region domain.Region
+	err := r.db.QueryRowContext(ctx, `
+		SELECT region_id, name, created_at
+		FROM regions
+		WHERE region_id::text = $1
+	`, regionID).Scan(
+		&region.RegionID,
+		&region.Name,
+		&region.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, interfaces.ErrRegionNotFound
+		}
+		return nil, err
+	}
+	return &region, nil
 }

@@ -33,9 +33,26 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
 		h.create(w, r)
+	case http.MethodGet:
+		h.list(w, r)
 	default:
 		apierror.MethodNotAllowed(w)
 	}
+}
+
+func (h *UserHandler) list(w http.ResponseWriter, r *http.Request) {
+	users, err := h.repo.List(r.Context())
+	if err != nil {
+		apierror.Internal(w)
+		return
+	}
+	if users == nil {
+		users = []domain.User{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(users)
 }
 
 func (h *UserHandler) create(w http.ResponseWriter, r *http.Request) {
