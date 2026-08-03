@@ -20,6 +20,7 @@ type Prediction struct {
 type PredictionRepository interface {
 	Save(ctx context.Context, p Prediction) error
 	LatestByTower(ctx context.Context, towerID string) (*Prediction, error)
+	ListLatestPerTower(ctx context.Context, limit int) ([]Prediction, error)
 }
 
 type predictionRepository struct {

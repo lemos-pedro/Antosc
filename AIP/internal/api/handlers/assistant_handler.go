@@ -7,6 +7,7 @@ import (
 
 	"github.com/antosc/aip/internal/api/dto"
 	"github.com/antosc/aip/internal/assistant"
+	"github.com/antosc/aip/internal/auth"
 	"github.com/antosc/aip/internal/prompts"
 )
 
@@ -34,6 +35,13 @@ func (h *AssistantHandler) Ask(w http.ResponseWriter, r *http.Request) {
 	if req.Question == "" {
 		http.Error(w, "question é obrigatório", http.StatusBadRequest)
 		return
+	}
+
+	// Se autenticado, a role do token prevalece (admin pode impersonar via body).
+	if p, ok := auth.PrincipalFrom(r.Context()); ok {
+		if !auth.IsAdmin(p.Role) || req.Role == "" {
+			req.Role = p.Role
+		}
 	}
 
 	systemPrompt := prompts.SystemPromptFor(req.Role)

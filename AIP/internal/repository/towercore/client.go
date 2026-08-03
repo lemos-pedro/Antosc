@@ -17,7 +17,7 @@ func NewHTTPClient(baseURL string) *HTTPClient {
 	return &HTTPClient{
 		baseURL: baseURL,
 		client: &http.Client{
-			Timeout: 15 * time.Second,
+			Timeout: 90 * time.Second,
 		},
 	}
 }
@@ -38,23 +38,22 @@ func (c *HTTPClient) GetTowers(ctx context.Context) ([]TowerDTO, error) {
 // torre: GET /towers/{tower_id}/events). Para fleets grandes isto é N+1 —
 // aceitável para já dado o volume (~212 sites), mas é candidato a um
 // endpoint agregado (GET /events) se o volume crescer.
-func (c *HTTPClient) GetEvents(ctx context.Context) ([]EventDTO,error){
+func (c *HTTPClient) GetEvents(ctx context.Context) ([]EventDTO, error) {
+	// NOTA: ao contrário de GetTowers, este endpoint do towercore devolve
+	// o array diretamente (sem envelope {"data":...}) -- confirmado em
+	// produção (erro de unmarshal ao tentar decodificar como envelope).
+	// Mesmo padrão inconsistente já documentado em GetMetrics.
+	var events []EventDTO
 
-    var envelope struct {
-        Data []EventDTO `json:"data"`
-    }
+	if err := c.getJSON(
+		ctx,
+		"/api/v1/events",
+		&events,
+	); err != nil {
+		return nil, fmt.Errorf("towercore GetEvents: %w", err)
+	}
 
-
-    if err := c.getJSON(
-        ctx,
-        "/api/v1/events",
-        &envelope,
-    ); err != nil {
-        return nil, err
-    }
-
-
-    return envelope.Data,nil
+	return events, nil
 }
 
 // GetMetrics lê GET /api/v1/metrics. Este endpoint devolve o array

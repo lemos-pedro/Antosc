@@ -65,7 +65,7 @@ func (r *TowerRepository) List(ctx context.Context, filter interfaces.TowerFilte
 	}
 
 	if filter.Name != "" {
-		// Pesquisa parcial e case-insensitive 
+		// Pesquisa parcial e case-insensitive
 		// procurar sites pelo nome, não só por ID (UUID).
 		clauses = append(clauses, fmt.Sprintf("name ILIKE $%d", next))
 		args = append(args, "%"+filter.Name+"%")
@@ -115,6 +115,8 @@ SELECT
 	last_successful_at,
 	last_collection_error,
 	availability_30d::float8,
+	latitude,
+	longitude,
 	updated_at,
 	created_at
 FROM towers` + where + fmt.Sprintf(" ORDER BY created_at ASC LIMIT $%d OFFSET $%d", next, next+1)
@@ -162,6 +164,8 @@ FROM towers` + where + fmt.Sprintf(" ORDER BY created_at ASC LIMIT $%d OFFSET $%
 			&t.LastSuccessfulAt,
 			&t.LastCollectionError,
 			&t.Availability30d,
+			&t.Latitude,
+			&t.Longitude,
 			&t.UpdatedAt,
 			&t.CreatedAt,
 		); err != nil {
@@ -231,6 +235,8 @@ SELECT
 	last_successful_at,
 	last_collection_error,
 	availability_30d::float8,
+	latitude,
+	longitude,
 	updated_at,
 	created_at
 FROM towers
@@ -269,6 +275,8 @@ WHERE tower_id::text = $1`
 		&t.LastSuccessfulAt,
 		&t.LastCollectionError,
 		&t.Availability30d,
+		&t.Latitude,
+		&t.Longitude,
 		&t.UpdatedAt,
 		&t.CreatedAt,
 	)
@@ -303,14 +311,14 @@ INSERT INTO towers (
 	battery_soc, battery_soh, battery_backup_time_h, battery_updated_at,
 	dc_output_voltage, dc_load_current, rectifier_current,
 	collection_status, last_collected_at, last_successful_at, last_collection_error,
-	availability_30d, updated_at, created_at
+	availability_30d, latitude, longitude, updated_at, created_at
 ) VALUES (
 	$1::uuid, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NULLIF($14, '')::uuid, NULLIF($15, '')::uuid,
 	$16, $17, $18,
 	$19, $20, $21, $22,
 	$23, $24, $25,
 	$26, $27, $28, $29,
-	$30, $31, $32
+	$30, $31, $32, $33, $34
 )
 ON CONFLICT (tower_id) DO UPDATE SET
 	name = EXCLUDED.name,
@@ -342,6 +350,8 @@ ON CONFLICT (tower_id) DO UPDATE SET
 	last_successful_at = EXCLUDED.last_successful_at,
 	last_collection_error = EXCLUDED.last_collection_error,
 	availability_30d = EXCLUDED.availability_30d,
+	latitude = EXCLUDED.latitude,
+	longitude = EXCLUDED.longitude,
 	updated_at = EXCLUDED.updated_at`
 
 	encCommunity, err := r.encryptSecret(tower.SNMPCommunity)
@@ -390,6 +400,8 @@ ON CONFLICT (tower_id) DO UPDATE SET
 		tower.LastSuccessfulAt,
 		tower.LastCollectionError,
 		tower.Availability30d,
+		tower.Latitude,
+		tower.Longitude,
 		tower.UpdatedAt,
 		tower.CreatedAt,
 	)

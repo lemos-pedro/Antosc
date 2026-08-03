@@ -22,6 +22,7 @@ import joblib
 import numpy as np
 
 from .base import BaseModel
+from .explain import domain_reference_contributions, format_contributions_pt, top_contributions, try_shap_tree
 
 
 MODEL_FILE = Path(__file__).parent / "anomaly.joblib"
@@ -29,17 +30,32 @@ MODEL_FILE = Path(__file__).parent / "anomaly.joblib"
 # Mesma ordem usada no treino -- tem de bater certo com training/dataset.py.
 # Centralizado aqui em vez de duplicado, para as duas pontas nunca divergirem.
 FEATURE_ORDER = [
+    # agregados de domínio (v1)
     "battery_voltage_avg",
     "battery_voltage_min",
     "battery_voltage_max",
     "battery_voltage_drop",
+    "battery_voltage_drop_short",
     "temperature_avg",
     "temperature_max",
     "temperature_variance",
     "generator_runtime_avg",
     "generator_runtime_growth",
     "availability_percent",
+    # temporais (v2)
+    "battery_voltage_lag1",
+    "battery_voltage_roll_mean_6",
+    "battery_voltage_roll_std_6",
+    "battery_voltage_slope_6",
+    "battery_voltage_ewma",
+    "temperature_lag1",
+    "temperature_roll_mean_6",
+    "temperature_slope_6",
+    "temperature_ewma",
+    "generator_runtime_slope_6",
+    "generator_runtime_ewma",
 ]
+FEATURE_VERSION = "2.0.0"
 
 
 def vectorize(features: dict[str, float]) -> np.ndarray:
@@ -52,7 +68,7 @@ def vectorize(features: dict[str, float]) -> np.ndarray:
 class AnomalyModel(BaseModel):
 
     name = "anomaly"
-    version = "1.0.0"
+    version = "2.0.0"
 
     def __init__(self):
         if not MODEL_FILE.exists():
@@ -78,14 +94,35 @@ class AnomalyModel(BaseModel):
 
         explanation = self._explain(features) if is_anomaly else "sem desvio significativo face ao padrão histórico"
 
+        # SHAP (se disponível) ou contribuições de domínio
+        contrib = None
+        feature_names = list(features.keys())
+        try:
+            x = vectorize(features)
+            contrib = try_shap_tree(self.model, x, FEATURE_ORDER)
+        except Exception:
+            contrib = None
+        if not contrib:
+            contrib = domain_reference_contributions(features)
+        top = top_contributions(contrib)
+        if top:
+            explanation = (explanation.rstrip(". ") + ". " + format_contributions_pt(top)).strip()
+
         return {
             "score": round(normalized_score, 1),
             "status": status,
             "explanation": explanation,
+            "feature_contributions": top,
+            "confidence": 0.75 if is_anomaly else 0.65,
         }
 
     def metadata(self) -> dict:
-        return {"name": self.name, "version": self.version}
+        return {
+            "name": self.name,
+            "version": self.version,
+            "feature_version": FEATURE_VERSION,
+            "n_features": len(FEATURE_ORDER),
+        }
 
     @staticmethod
     def _explain(features: dict[str, float]) -> str:

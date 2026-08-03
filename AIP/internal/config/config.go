@@ -39,6 +39,20 @@ type Config struct {
 	// combustível, etc.). Deixa vazio para desligar o envio ao Teams.
 	TeamsWebhookURL string
 
+	// JWTSecret assina tokens de utilizadores. Mínimo 32 chars em produção.
+	JWTSecret string
+	// JWTTTLHours validade do access token (default 1 hora).
+	JWTTTLHours int
+	// RefreshTTLHours validade do refresh token (default 168 = 7 dias).
+	RefreshTTLHours int
+	// MaxFailedLogins antes de lockout (default 5).
+	MaxFailedLogins int
+	// LockoutMinutes duração do bloqueio (default 15).
+	LockoutMinutes int
+
+	// APIKey protege Power BI/exports (alternativa a JWT).
+	APIKey string
+
 	Database DatabaseConfig
 }
 
@@ -58,6 +72,12 @@ func Load() Config {
 		ResendAPIKey:         getEnv("RESEND_API_KEY", ""),
 		ResendFrom:           getEnv("RESEND_FROM", "alerts@antosc.com"),
 		TeamsWebhookURL:      getEnv("TEAMS_WEBHOOK_URL", ""),
+		JWTSecret:            getEnv("AIP_JWT_SECRET", ""),
+		JWTTTLHours:          getEnvInt("AIP_JWT_TTL_HOURS", 1),
+		RefreshTTLHours:      getEnvInt("AIP_REFRESH_TTL_HOURS", 168),
+		MaxFailedLogins:      getEnvInt("AIP_MAX_FAILED_LOGINS", 5),
+		LockoutMinutes:       getEnvInt("AIP_LOCKOUT_MINUTES", 15),
+		APIKey:               getEnv("AIP_API_KEY", ""),
 		Database:             LoadDatabase(),
 	}
 }
@@ -67,4 +87,22 @@ func getEnv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func getEnvInt(key string, fallback int) int {
+	v := os.Getenv(key)
+	if v == "" {
+		return fallback
+	}
+	n := 0
+	for _, c := range v {
+		if c < '0' || c > '9' {
+			return fallback
+		}
+		n = n*10 + int(c-'0')
+	}
+	if n <= 0 {
+		return fallback
+	}
+	return n
 }

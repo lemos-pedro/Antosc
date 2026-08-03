@@ -25,6 +25,7 @@ type TowerRepository interface {
 	// GetVendor devolve o vendor conhecido para uma torre -- usado pelo
 	// serviço de previsão para saber que adaptador pedir ao Python.
 	GetVendor(ctx context.Context, towerID string) (string, error)
+	ListAll(ctx context.Context) ([]Tower, error)
 }
 
 type towerRepository struct {

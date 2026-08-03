@@ -1,25 +1,13 @@
-CREATE TABLE IF NOT EXISTS assistant_audit_log (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+-- ==========================================
+-- 005: DEPRECATED / NO-OP
+-- ==========================================
+-- A tabela assistant_audit_log já é criada em 003_assistant_audit.sql
+-- com o esquema canónico usado pelo código Go:
+--   role, question, tools_called, final_answer, grounded, ungrounded_values
+--
+-- Esta migração existia como rascunho alternativo (answer, tool_name, ...)
+-- e conflitava com 003. Mantida como no-op para não partir sequências de
+-- deploy que já referenciam o ficheiro 005.
+-- ==========================================
 
-    role VARCHAR(50) NOT NULL,
-
-    question TEXT NOT NULL,
-
-    answer TEXT,
-
-    tool_name VARCHAR(100),
-
-    tool_arguments JSONB,
-
-    success BOOLEAN NOT NULL DEFAULT TRUE,
-
-    error TEXT,
-
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_assistant_audit_created_at
-ON assistant_audit_log(created_at);
-
-CREATE INDEX IF NOT EXISTS idx_assistant_audit_role
-ON assistant_audit_log(role);
+SELECT 1;

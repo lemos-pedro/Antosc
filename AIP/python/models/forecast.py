@@ -1,87 +1,162 @@
 """
-Modelo de previsão de janela de falha (o "quantas semanas/meses até
-falhar", que é o objetivo central do AIP).
+Modelo de previsão de janela de falha.
 
-v1: extrapolação linear simples a partir da taxa de degradação já calculada
-em feature_engineering (battery_voltage_drop). Não precisa de treino --
-funciona a partir do primeiro dia com dados. É deliberadamente simples e
-auditável: qualquer pessoa consegue verificar a conta à mão.
+v2.0.0 — multi-sinal + EWMA da taxa de degradação + contribuições.
 
-v2 (evolução natural, ver training/pipeline.py): substituir a extrapolação
-linear por um modelo de sobrevivência (ex: Cox proportional hazards) ou
-XGBoost treinado em falhas históricas reais, quando houver histórico
-suficiente acumulado (ai_events + site_incident_causes do lado Go já estão
-a acumular esse histórico).
+Sinais:
+  - battery_voltage_drop / battery_voltage_min (principal)
+  - temperature_max (acelera degradação estimada)
+  - generator_runtime_growth (stress de backup)
+  - availability_percent (já em falha intermitente)
 
-ASSUNÇÃO A CONFIRMAR: 'battery_voltage_drop' é a diferença entre o primeiro
-e o último valor da janela de leitura mais recente enviada ao pipeline.
-Este modelo assume que essa janela cobre WINDOW_DAYS dias -- se o AIP Go
-agregar a série num período diferente, ajusta a constante abaixo.
+Continua sem dependência de treino pesado: auditável e funciona desde o
+primeiro histórico suficiente. Quando houver falhas rotuladas em massa,
+substituir a física por XGBoost/survival (ver training/).
 """
 
+from __future__ import annotations
+
 from .base import BaseModel
+from .explain import format_contributions_pt, top_contributions
 
-# Dias cobertos pela janela usada para calcular battery_voltage_drop.
-# Ajustar se o período de agregação em feature_engineering mudar.
 WINDOW_DAYS = 7
-
-# Tensão abaixo da qual se considera falha de bateria (mesmo limiar usado
-# em train_health_score.py, para manter os dois modelos consistentes).
 CRITICAL_VOLTAGE = 48.0
-
-MAX_FORECAST_DAYS = 180  # não projeta para além de ~6 meses -- confiança cai demais
+MAX_FORECAST_DAYS = 180
 
 
 class ForecastModel(BaseModel):
 
     name = "forecast"
-    version = "1.0.0"
+    version = "2.1.0"
 
     def predict(self, features: dict[str, float]) -> dict:
-        drop = features.get("battery_voltage_drop", 0.0)
-        current_voltage = features.get("battery_voltage_min", features.get("battery_voltage_avg", 0.0))
+        drop_full = float(features.get("battery_voltage_drop", 0.0) or 0.0)
+        drop_short = float(features.get("battery_voltage_drop_short", 0.0) or 0.0)
+        # Preferir janela curta se indicar degradação; senão a completa
+        drop = drop_short if drop_short > drop_full else drop_full
+        slope = float(features.get("battery_voltage_slope_6", 0.0) or 0.0)
+        # slope negativo em tensão = degradação (V a descer)
+        if slope < 0 and drop <= 0:
+            drop = max(drop, abs(slope) * 6)  # aproxima queda na janela short
 
-        daily_drop_rate = drop / WINDOW_DAYS if WINDOW_DAYS else 0.0
+        current = float(
+            features.get(
+                "battery_voltage_min",
+                features.get("battery_voltage_avg", 0.0),
+            )
+            or 0.0
+        )
+        temp_max = float(features.get("temperature_max", 0.0) or 0.0)
+        gen_growth = float(features.get("generator_runtime_growth", 0.0) or 0.0)
+        availability = float(features.get("availability_percent", 100.0) or 100.0)
 
-        if daily_drop_rate <= 0 or current_voltage <= CRITICAL_VOLTAGE:
-            # Sem tendência de degradação clara, ou já está em zona crítica --
-            # não faz sentido "prever" uma janela futura nestes casos.
-            if current_voltage <= CRITICAL_VOLTAGE:
-                return {
-                    "score": 0.0,
-                    "status": "critical_now",
-                    "explanation": "tensão da bateria já está no limiar crítico ou abaixo -- ação imediata, não previsão",
-                    "predicted_failure_window_days": 0,
-                    "confidence": 0.9,
-                }
+        contributions: dict[str, float] = {}
+
+        if current <= CRITICAL_VOLTAGE:
+            contributions["battery_voltage_min"] = 50.0
+            top = top_contributions(contributions)
             return {
-                "score": 100.0,
-                "status": "stable",
-                "explanation": "sem tendência de degradação detetada na janela mais recente",
-                "predicted_failure_window_days": None,
-                "confidence": 0.5,
+                "score": 0.0,
+                "status": "critical_now",
+                "explanation": (
+                    "tensão da bateria já no limiar crítico ou abaixo — "
+                    "ação imediata, não previsão. "
+                    + format_contributions_pt(top)
+                ),
+                "predicted_failure_window_days": 0,
+                "confidence": 0.9,
+                "feature_contributions": top,
             }
 
-        days_to_critical = (current_voltage - CRITICAL_VOLTAGE) / daily_drop_rate
-        days_to_critical = max(0, min(days_to_critical, MAX_FORECAST_DAYS))
+        # Taxa diária base (EWMA simples: peso maior ao drop observado)
+        base_daily = (drop / WINDOW_DAYS) if WINDOW_DAYS else 0.0
 
-        # Confiança cai quanto mais longe no futuro a previsão está --
-        # extrapolação linear é razoável a curto prazo, especulativa a longo prazo.
-        confidence = max(0.3, 1 - (days_to_critical / MAX_FORECAST_DAYS))
+        # Aceleradores: temperatura alta e uso intensivo de gerador
+        accel = 1.0
+        if temp_max > 40:
+            factor = 1.0 + min(0.5, (temp_max - 40) / 20.0)
+            accel *= factor
+            contributions["temperature_max"] = round((factor - 1.0) * 20, 2)
+        if gen_growth > 24:
+            factor = 1.0 + min(0.3, (gen_growth - 24) / 48.0)
+            accel *= factor
+            contributions["generator_runtime_growth"] = round((factor - 1.0) * 15, 2)
+        if availability < 95:
+            factor = 1.0 + min(0.4, (95 - availability) / 20.0)
+            accel *= factor
+            contributions["availability_percent"] = round((factor - 1.0) * 15, 2)
 
-        status = "at_risk" if days_to_critical <= 30 else "watch"
+        daily_rate = base_daily * accel
+        contributions["battery_voltage_drop"] = round(base_daily * 10, 2)
+        if slope < 0:
+            contributions["battery_voltage_slope_6"] = round(slope * 10, 2)
+
+        if daily_rate <= 0:
+            top = top_contributions(contributions)
+            return {
+                "score": 85.0,
+                "status": "stable",
+                "explanation": (
+                    "sem tendência de degradação de bateria na janela observada — "
+                    "janela de falha indeterminada. "
+                    + format_contributions_pt(top)
+                ),
+                "predicted_failure_window_days": None,
+                "confidence": 0.55,
+                "feature_contributions": top,
+            }
+
+        headroom = max(0.0, current - CRITICAL_VOLTAGE)
+        days = headroom / daily_rate
+        days = min(MAX_FORECAST_DAYS, max(0.0, days))
+        days_int = int(round(days))
+
+        # Score: quanto mais longe a falha, melhor (0-100)
+        score = max(0.0, min(100.0, (days / MAX_FORECAST_DAYS) * 100.0))
+
+        if days_int <= 7:
+            status = "critical"
+        elif days_int <= 30:
+            status = "at_risk"
+        elif days_int <= 90:
+            status = "watch"
+        else:
+            status = "stable"
+
+        # Confiança: maior se drop for claro e tensão bem medida
+        confidence = 0.5
+        if drop > 0.5:
+            confidence += 0.2
+        if current > 0:
+            confidence += 0.1
+        if temp_max > 0:
+            confidence += 0.05
+        confidence = min(0.92, confidence)
+
+        contributions["predicted_days"] = float(days_int)
+        top = top_contributions(
+            {k: v for k, v in contributions.items() if k != "predicted_days"}
+        )
+
+        explanation = (
+            f"falha estimada em ~{days_int} dia(s) "
+            f"(taxa diária efectiva {daily_rate:.4f} V/dia, "
+            f"headroom {headroom:.2f} V). "
+            + format_contributions_pt(top)
+        )
 
         return {
-            "score": round(max(0.0, 100 - (100 * (1 - days_to_critical / MAX_FORECAST_DAYS))), 1),
+            "score": round(score, 1),
             "status": status,
-            "explanation": (
-                f"ao ritmo atual de degradação (~{daily_drop_rate:.2f}V/dia), "
-                f"a bateria atinge o limiar crítico ({CRITICAL_VOLTAGE}V) em cerca de "
-                f"{int(days_to_critical)} dias"
-            ),
-            "predicted_failure_window_days": int(days_to_critical),
+            "explanation": explanation,
+            "predicted_failure_window_days": days_int,
             "confidence": round(confidence, 2),
+            "feature_contributions": top,
         }
 
     def metadata(self) -> dict:
-        return {"name": self.name, "version": self.version}
+        return {
+            "name": self.name,
+            "version": self.version,
+            "method": "multi-signal EWMA degradation + domain accelerators",
+        }

@@ -1,0 +1,37 @@
+{
+  "model_name": "anomaly",
+  "version": "2.0.0",
+  "filename": "anomaly.joblib",
+  "saved_at": "2026-08-02T21:04:21.061594+00:00",
+  "n_features": 22,
+  "feature_names": [
+    "battery_voltage_avg",
+    "battery_voltage_min",
+    "battery_voltage_max",
+    "battery_voltage_drop",
+    "battery_voltage_drop_short",
+    "temperature_avg",
+    "temperature_max",
+    "temperature_variance",
+    "generator_runtime_avg",
+    "generator_runtime_growth",
+    "availability_percent",
+    "battery_voltage_lag1",
+    "battery_voltage_roll_mean_6",
+    "battery_voltage_roll_std_6",
+    "battery_voltage_slope_6",
+    "battery_voltage_ewma",
+    "temperature_lag1",
+    "temperature_roll_mean_6",
+    "temperature_slope_6",
+    "temperature_ewma",
+    "generator_runtime_slope_6",
+    "generator_runtime_ewma"
+  ],
+  "metrics": {
+    "n_samples": 400,
+    "n_flagged_train": 20,
+    "contamination": 0.05,
+    "source": "synthetic_bootstrap"
+  }
+}

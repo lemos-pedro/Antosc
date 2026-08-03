@@ -28,6 +28,7 @@ from pydantic import BaseModel
 
 from vendors.registry import get_vendor
 from models.registry import get_model
+from models.prescribe import prescribe as build_prescriptions
 from feature_engineering.features import build_features
 
 
@@ -55,12 +56,27 @@ class PredictRequest(BaseModel):
     series: list[FeaturePoint]
 
 
+class FeatureContribution(BaseModel):
+    feature: str
+    contribution: float
+
+
+class Prescription(BaseModel):
+    code: str
+    title: str
+    due_days: int
+    priority: str
+    reason: str
+
+
 class PredictResponse(BaseModel):
     score: float
     status: str
     explanation: str
     predicted_failure_window_days: int | None = None
     confidence: float | None = None
+    feature_contributions: list[FeatureContribution] | None = None
+    prescriptions: list[Prescription] | None = None
 
 
 # ---------------------------------------------------------------------
@@ -124,16 +140,60 @@ def predict(req: PredictRequest):
 
         canonical_features = build_features(grouped)
 
-        model = get_model(req.model)
+        if req.model.lower() == "prescribe":
+            result = {"score": 0, "status": "prescribe", "explanation": ""}
+            model = None
+        else:
+            model = get_model(req.model)
+            result = model.predict(canonical_features)
 
-        result = model.predict(canonical_features)
+        # Prescrições: usa o resultado actual como health/forecast/anomaly conforme o modelo pedido
+        kw = {}
+        key = req.model.lower()
+        if key == "forecast":
+            kw["forecast"] = result
+        elif key == "anomaly":
+            kw["anomaly"] = result
+        else:
+            kw["health"] = result
+        # Se o cliente pedir model=prescribe, agrega os três
+        prescriptions = None
+        if key == "prescribe":
+            # corre os três modelos e funde
+            bundle = {}
+            for name in ("health_score", "forecast", "anomaly"):
+                try:
+                    bundle[name] = get_model(name).predict(canonical_features)
+                except Exception:
+                    pass
+            prescriptions = build_prescriptions(
+                canonical_features,
+                health=bundle.get("health_score"),
+                forecast=bundle.get("forecast"),
+                anomaly=bundle.get("anomaly"),
+            )
+            # score/status resumo a partir do forecast se existir
+            primary = bundle.get("forecast") or bundle.get("health_score") or result
+            result = {
+                "score": primary.get("score", 0),
+                "status": primary.get("status", "unknown"),
+                "explanation": "prescrições geradas a partir de health+forecast+anomaly",
+                "predicted_failure_window_days": primary.get("predicted_failure_window_days"),
+                "confidence": primary.get("confidence"),
+                "feature_contributions": primary.get("feature_contributions"),
+            }
+        else:
+            prescriptions = build_prescriptions(canonical_features, **kw)
 
+        contribs = result.get("feature_contributions")
         return PredictResponse(
             score=result["score"],
             status=result["status"],
             explanation=result["explanation"],
             predicted_failure_window_days=result.get("predicted_failure_window_days"),
             confidence=result.get("confidence"),
+            feature_contributions=contribs,
+            prescriptions=prescriptions,
         )
 
     except ValueError as exc:

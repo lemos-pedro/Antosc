@@ -20,7 +20,7 @@ type TowerDTO struct {
 // EventDTO espelha o payload de GET /api/v1/towers/{tower_id}/events.
 type EventDTO struct {
 	EventID    string    `json:"event_id"`
-	TowerID    string    `json:"-"` // preenchido pelo client, não vem no payload
+	TowerID    string    `json:"tower_id"`
 	Type       string    `json:"type"`
 	Severity   string    `json:"severity"`
 	Message    string    `json:"message"`

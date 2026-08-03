@@ -9,7 +9,7 @@ FEATURE_ORDER de python/models/anomaly.py:
 
 Como gerar este CSV a partir do AIP:
     - query SQL sobre ai_features (pivotada de linhas longas para colunas)
-      e exportar com \copy no psql, ou um pequeno script à parte.
+      e exportar com copy no psql, ou um pequeno script à parte.
     - fica fora do escopo deste ficheiro de propósito: dataset.py só
       carrega e valida o CSV, não decide como ele foi gerado.
 """

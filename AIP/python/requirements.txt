@@ -5,3 +5,5 @@ xgboost>=2.0
 fastapi>=0.115
 uvicorn>=0.30
 joblib>=1.4
+# opcional — explicabilidade TreeSHAP para IsolationForest
+# shap>=0.44

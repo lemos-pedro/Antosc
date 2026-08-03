@@ -215,7 +215,12 @@ func (s *ingestionService) saveEvents(ctx context.Context, events []towercore.Ev
 	}
 
 	batch := make([]postgres.AIEvent, 0, len(events))
+	skipped := 0
 	for _, e := range events {
+		if e.TowerID == "" {
+			skipped++
+			continue
+		}
 		batch = append(batch, postgres.AIEvent{
 			TowerID:   e.TowerID,
 			Type:      e.Type,
@@ -223,6 +228,12 @@ func (s *ingestionService) saveEvents(ctx context.Context, events []towercore.Ev
 			Message:   e.Message,
 			CreatedAt: e.OccurredAt,
 		})
+	}
+	if skipped > 0 {
+		s.log.Warn("eventos ignorados por tower_id vazio", "count", skipped)
+	}
+	if len(batch) == 0 {
+		return nil
 	}
 
 	return s.events.SaveBatch(ctx, batch)

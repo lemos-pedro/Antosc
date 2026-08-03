@@ -1,83 +1,97 @@
-# AIP — Antosc Intelligence Platform
+# AIP — Antosc Intelligence Platform (completo)
 
-Módulo de IA do Antosc System. Consome dados do `towercore` (só leitura),
-gera features/eventos/previsões, e serve-os via API própria.
+Núcleo original + relatórios por persona, Power BI, assistente portfolio,
+predict_batch e API key. **Compila e tem toolchain de ops.**
 
-## O que mudou nesta refactorização
+## Requisitos
 
-**Corrigido (impedia compilar):**
-- `go.mod` não existia — criado (`github.com/antosc/aip`, Go 1.22).
-- `internal/confi.go` estava em package `config` mas na pasta errada
-  (`internal/` em vez de `internal/config/`) — fundido em `internal/config/config.go`.
-- Pacote `postgres` vivia em `/postgres` mas era importado como
-  `internal/repository/postgres` — movido para o path correto.
-- `cmd/main.go` e `cmd/scheduler/main.go` eram duplicados a fazer o mesmo —
-  ficou só `cmd/scheduler/main.go`.
-- `ingestion.NewService(...)` tinha assinatura diferente da chamada em
-  `main.go` (1 arg vs 3) — corrigido e alinhado, agora recebe logger também.
-- `python/trainig` e `python/expriments` (erros ortográficos, duplicados de
-  `train`/`experiments`) — removidos.
+- Go 1.22+
+- PostgreSQL 14+
+- (opcional) Ollama, TowerCore, serviço Python de inferência, Resend
 
-**Adicionado (não existia):**
-- `internal/prediction/` — o contrato Go↔Python que faltava por completo.
-  Go chama `POST {AIP_PREDICTION_SERVICE_URL}/predict`, Python
-  (`python/inference/service.py`, FastAPI) responde com score/status/explicação.
-- API HTTP real: `GET /health`, `GET /api/v1/predictions/{tower_id}`,
-  `POST /api/v1/predictions/{tower_id}` — os handlers/routes/dto que
-  estavam vazios no zip original.
-- `internal/logger` — logging estruturado (JSON, `log/slog`) em vez de
-  `log.Println` disperso.
-- Batch inserts (`SaveBatch`) em features/eventos — um ciclo de ingestão
-  grava centenas de linhas numa query, não uma a uma.
-- Regra explícita "sem previsão com histórico insuficiente"
-  (`ErrInsufficientHistory`, mínimo 30 pontos) — consistente com a
-  restrição já definida para o módulo de IA.
-- `towercore.ErrMetricsEndpointNotAvailable`: **correção (13/07):** este endpoint
-  afinal existe — `GET /api/v1/metrics` (não estava documentado em `api.md`,
-  só descoberto ao ver o handler real). Não segue o envelope
-  `{"data":...,"meta":...}` do resto da API — devolve o array direto, total
-  no header `X-Total-Count`. Cada métrica é um snapshot por torre com várias
-  grandezas (`map[string]float64`), não uma métrica isolada. `GetMetrics`
-  agora pagina de verdade e filtra por `from` (o scheduler só pede o que é
-  novo desde o último ciclo, guardado em memória em `lastMetricsSince`).
+## Setup
 
-## Validado neste ambiente
+```bash
+# 1) DB
+make migrate
 
-```
-go mod tidy   # OK
-go build ./... # OK, zero erros
-go vet ./...  # limpo
-gofmt -l .    # limpo (após gofmt -w)
+# 2) Auth — definir secret
+# AIP_JWT_SECRET=pelo-menos-32-caracteres-aleatorios
+
+# 3) Arrancar API e criar o primeiro admin
+make run-api
+curl -X POST localhost:8090/api/v1/auth/bootstrap \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"admin@empresa.com","full_name":"Admin","password":"senha-forte-123"}'
 ```
 
-## Estrutura
+Ver `docs/auth.md`.
 
-```
-cmd/
-  api/         # servidor HTTP (predictions, health)
-  scheduler/   # loop de ingestão periódica (5 min) do towercore
-internal/
-  config/      # env vars, DSN
-  logger/      # slog estruturado
-  repository/
-    postgres/  # ai_features, ai_events, ai_predictions
-    towercore/ # client HTTP só-leitura para o towercore
-  analytics/ingestion/  # orquestra a coleta e persistência
-  prediction/           # contrato com o serviço Python de inferência
-  api/
-    handlers/ routes/ dto/
-python/
-  feature_engineering/  # Postgres -> datasets
-  train/                # EWMA/regressão primeiro, XGBoost depois
-  inference/service.py  # FastAPI, serve o modelo treinado
-  evaluation/ models/ notebooks/ utils/
-migrations/001_init.sql
+## Setup (resto)
+
+```bash
+cp .env.example .env   # editar credenciais
+make migrate           # aplica migrations 001–006
+make seed              # admin + users por persona
+make build             # binários em ./bin
+make run-api           # terminal 1
+make run-scheduler     # terminal 2
+make predict           # preenche ai_predictions
+make smoke             # valida endpoints (API a correr)
 ```
 
-## Próximo passo mais importante
+## Make targets
 
-`api.md` do towercore está desatualizado — não lista `GET/POST /api/v1/metrics`,
-que já existe de facto no `MetricHandler`. Vale a pena atualizar o contrato
-documentado para refletir o comportamento real (envelope diferente do resto
-da API, paginação via `X-Total-Count`), para o próximo integrador não passar
-pelo mesmo processo de descoberta.
+| Target | Função |
+|--------|--------|
+| `make build` | compila api, scheduler, report_job, predict_batch, weekly_report |
+| `make migrate` | SQL em ordem (precisa `psql` + `AIP_DB_*`) |
+| `make run-api` | API :8090 |
+| `make run-scheduler` | ingestão TowerCore |
+| `make predict` | batch de previsões |
+| `make report-weekly` | emails semanais por persona |
+| `make report-monthly` | emails mensais |
+| `make smoke` | smoke test HTTP |
+| `make seed` | cria admin + users por persona |
+| `docs/STATUS_ROADMAP.md` | o que está feito vs. falta |
+| `make vet` | go vet |
+
+## Cron produção
+
+```cron
+0 */6 * * *  cd /opt/aip && . .env && ./bin/predict_batch
+0 7 * * 1    cd /opt/aip && . .env && REPORT_PERIOD=weekly ./bin/report_job
+0 8 1 * *    cd /opt/aip && . .env && REPORT_PERIOD=monthly ./bin/report_job
+```
+
+Ver `docs/runbook_producao.md`.
+
+## Módulos
+
+- **API** — predictions, norms, incidents, consumption, assistant, Power BI, exports
+- **Scheduler** — ingestão 5 min + alertas Teams
+- **report_job** — relatórios por persona (HTML + Excel + ranking risco + resumo Ollama)
+- **predict_batch** — previsões para todas as torres
+- **Python** — feature engineering, health_score, anomaly, forecast
+
+## Power BI
+
+`/api/v1/powerbi/{catalog,incidents,kpis,consumption,predictions,towers}`  
+Header: `X-API-Key` se `AIP_API_KEY` estiver definido.
+
+## Personas (email)
+
+`REPORT_RECIPIENTS_OM`, `_ENGENHARIA`, `_CONTROLLER`, `_FINANCEIRO`,
+`_DIRETOR_TECNICO`, `_CEO`, `_CONSELHO_ADMINISTRACAO`
+
+## Validação desta build
+
+```
+go build ./...   # OK
+make build       # binários em ./bin
+```
+
+
+
+
+curl -s -X POST localhost:8090/api/v1/auth/login -H "Content-Type: application/json" -d '{\"email\":\"admin@antosc.local\",\"password\":\"Trocar123!\"}'

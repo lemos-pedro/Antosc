@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/antosc/aip/internal/repository/postgres"
@@ -28,10 +29,27 @@ type FeaturePoint struct {
 }
 
 // PredictResponse é o que esperamos de volta do serviço Python.
+type FeatureContribution struct {
+	Feature      string  `json:"feature"`
+	Contribution float64 `json:"contribution"`
+}
+
+type Prescription struct {
+	Code     string `json:"code"`
+	Title    string `json:"title"`
+	DueDays  int    `json:"due_days"`
+	Priority string `json:"priority"`
+	Reason   string `json:"reason"`
+}
+
 type PredictResponse struct {
-	Score       float64 `json:"score"`
-	Status      string  `json:"status"`
-	Explanation string  `json:"explanation"`
+	Score                  float64               `json:"score"`
+	Status                 string                `json:"status"`
+	Explanation            string                `json:"explanation"`
+	PredictedFailureWindow *int                  `json:"predicted_failure_window_days,omitempty"`
+	Confidence             *float64              `json:"confidence,omitempty"`
+	FeatureContributions   []FeatureContribution `json:"feature_contributions,omitempty"`
+	Prescriptions          []Prescription        `json:"prescriptions,omitempty"`
 }
 
 // ErrInsufficientHistory sinaliza que não há dados suficientes para prever —
@@ -136,12 +154,47 @@ func (s *service) PredictAndStore(ctx context.Context, towerID, model string, wi
 		return nil, err
 	}
 
+	explanation := out.Explanation
+	if len(out.FeatureContributions) > 0 && !strings.Contains(explanation, "Principais factores") {
+		parts := make([]string, 0, len(out.FeatureContributions))
+		for i, c := range out.FeatureContributions {
+			if i >= 5 {
+				break
+			}
+			parts = append(parts, fmt.Sprintf("%s (%+.2f)", c.Feature, c.Contribution))
+		}
+		if len(parts) > 0 {
+			explanation = strings.TrimSpace(explanation)
+			if explanation != "" && !strings.HasSuffix(explanation, ".") {
+				explanation += "."
+			}
+			explanation += " Principais factores: " + strings.Join(parts, "; ")
+		}
+	}
+
+	if len(out.Prescriptions) > 0 {
+		parts := make([]string, 0, len(out.Prescriptions))
+		for i, pr := range out.Prescriptions {
+			if i >= 5 {
+				break
+			}
+			parts = append(parts, fmt.Sprintf("%s (≤%dd, %s)", pr.Title, pr.DueDays, pr.Priority))
+		}
+		if len(parts) > 0 {
+			explanation = strings.TrimSpace(explanation)
+			if explanation != "" && !strings.HasSuffix(explanation, ".") {
+				explanation += "."
+			}
+			explanation += " Prescrições: " + strings.Join(parts, "; ")
+		}
+	}
+
 	prediction := postgres.Prediction{
 		TowerID:          towerID,
 		Model:            model,
 		Score:            out.Score,
 		Status:           out.Status,
-		Explanation:      out.Explanation,
+		Explanation:      explanation,
 		PredictionWindow: windowDays,
 		CreatedAt:        time.Now(),
 	}

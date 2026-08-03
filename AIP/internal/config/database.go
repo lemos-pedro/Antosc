@@ -30,5 +30,6 @@ func (c DatabaseConfig) DSN() string {
 		" user=" + c.User +
 		" password=" + c.Password +
 		" dbname=" + c.Name +
-		" sslmode=" + c.SSLMode
+		" sslmode=" + c.SSLMode +
+		" client_encoding=UTF8"
 }
