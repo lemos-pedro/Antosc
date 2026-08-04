@@ -18,7 +18,7 @@ class EnetekVendor(BaseVendor):
         return {
 
             "battery_voltage":
-                features.get("battery_voltage_v", 0),
+                features.get("dc_output_voltage", features.get("battery_voltage_v", 0)),
 
             "battery_temperature":
                 features.get("battery_temperature_c", 0),

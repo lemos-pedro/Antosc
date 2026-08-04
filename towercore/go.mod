@@ -6,7 +6,7 @@ require github.com/lib/pq v1.10.9
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/gosnmp/gosnmp v1.43.2
+	github.com/gosnmp/gosnmp v1.44.0
 	github.com/joho/godotenv v1.5.1
 	github.com/prometheus/client_golang v1.20.5
 	github.com/simonvetter/modbus v1.6.4

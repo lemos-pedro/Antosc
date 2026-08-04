@@ -38,11 +38,11 @@ class HealthScoreModel(BaseModel):
         if voltage < 48:
             contributions["battery_voltage_avg"] = -30
             score -= 30
-            risks.append("battery voltage critical")
+            risks.append(f"battery voltage critical ({voltage:.1f}V)")
         elif voltage < 50:
             contributions["battery_voltage_avg"] = -15
             score -= 15
-            risks.append("battery voltage low")
+            risks.append(f"battery voltage low ({voltage:.1f}V)")
 
         drop = float(features.get("battery_voltage_drop", 0) or 0)
         drop_short = float(features.get("battery_voltage_drop_short", 0) or 0)
