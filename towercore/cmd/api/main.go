@@ -24,6 +24,7 @@ import (
 	"towercore/internal/infrastructure/security"
 	"towercore/internal/observability"
 	"towercore/internal/scheduler"
+	"towercore/internal/adapters/vertiv"
 )
 
 func main() {
@@ -121,6 +122,7 @@ func main() {
 		"eltek":  eltek.Profile(),
 		"huawei": huawei.Profile(),
 		"enetek": enetek.Profile(),
+		"vertiv": vertiv.Profile(),
 	}
 
 	// SNMP services
