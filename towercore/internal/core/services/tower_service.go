@@ -179,6 +179,10 @@ func (s *TowerService) ConfigureSNMP(
 		if err := validateSNMPCredentials(tower); err != nil {
 			return nil, err
 		}
+		// SNMP acabou de ser (re)configurado — ainda não há coleta neste ciclo.
+		if tower.CollectionStatus == domain.CollectionStatusNotConfigured {
+			tower.CollectionStatus = domain.CollectionStatusNeverCollected
+		}
 	}
 
 	tower.UpdatedAt = time.Now().UTC()
@@ -261,6 +265,36 @@ func (s *TowerService) MarkCollectionSuccess(ctx context.Context, towerID string
 		tower.Status = domain.TowerStatusOnline
 	}
 	tower.UpdatedAt = time.Now().UTC()
+	if err := s.repo.Upsert(ctx, tower); err != nil {
+		return err
+	}
+	s.invalidateTowerCache(tower.ID)
+	return nil
+}
+
+// MarkCollectionFailed grava falha de coleta SNMP/rede.
+// Distingue "nunca configurado" de "já tentámos e falhou".
+// Não força status offline — isso fica a cargo de MarkUnreachable/UpdateStatus.
+func (s *TowerService) MarkCollectionFailed(ctx context.Context, towerID string, errMsg string) error {
+	towerID = strings.TrimSpace(towerID)
+	if towerID == "" {
+		return errors.New("tower_id is required")
+	}
+
+	tower, err := s.repo.GetByID(ctx, towerID)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now().UTC()
+	tower.CollectionStatus = domain.CollectionStatusFailed // "collection_failed"
+	tower.LastCollectedAt = &now
+	tower.LastCollectionError = strings.TrimSpace(errMsg)
+	if len(tower.LastCollectionError) > 500 {
+		tower.LastCollectionError = tower.LastCollectionError[:500]
+	}
+	tower.UpdatedAt = now
+
 	if err := s.repo.Upsert(ctx, tower); err != nil {
 		return err
 	}

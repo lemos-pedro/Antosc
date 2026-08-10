@@ -91,7 +91,8 @@ func (s *SNMPScheduler) CollectOnce(ctx context.Context) {
 			samples, err := s.collector.Collect(ctx, tw, profile)
 			if err != nil {
 				s.log.Errorf("snmp scheduler collect failed tower=%s vendor=%s err=%v", tw.ID, vendor, err)
-				if markErr := s.ingestService.MarkUnreachable(ctx, tw.ID); markErr != nil {
+				// offline + collection_failed + last_collection_error
+				if markErr := s.ingestService.MarkUnreachableWithError(ctx, tw.ID, err.Error()); markErr != nil {
 					s.log.Errorf("snmp scheduler mark unreachable failed tower=%s err=%v", tw.ID, markErr)
 				}
 				continue
@@ -104,7 +105,13 @@ func (s *SNMPScheduler) CollectOnce(ctx context.Context) {
 				Samples:     samples,
 			})
 			if err != nil {
+				// Collect OK mas Ingest falhou (ex.: no mapped OIDs) —
+				// NÃO marcar unreachable (a torre respondeu SNMP).
+				// Só regista o erro de coleta para diagnóstico.
 				s.log.Errorf("snmp scheduler ingest failed tower=%s vendor=%s err=%v", tw.ID, vendor, err)
+				if markErr := s.ingestService.MarkIngestConfigError(ctx, tw.ID, err.Error()); markErr != nil {
+					s.log.Errorf("snmp scheduler mark ingest error failed tower=%s err=%v", tw.ID, markErr)
+				}
 				continue
 			}
 

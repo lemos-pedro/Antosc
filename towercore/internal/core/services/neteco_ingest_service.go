@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"log"
+	"strings"
 	"time"
 
 	"towercore/internal/core/domain"
@@ -19,8 +20,60 @@ func NewNetEcoIngestService(client interfaces.NetEcoClient, towerRepo interfaces
 	return &NetEcoIngestService{client: client, towerRepo: towerRepo, metricSvc: metricSvc}
 }
 
+// netEcoConnectState classifica siteConnectStatus do NetEco.
+// Valores observados variam (Connected/Disconnected, 0/1, etc.).
+type netEcoConnectState int
+
+const (
+	netEcoConnectUnknown netEcoConnectState = iota
+	netEcoConnectUp
+	netEcoConnectDown
+)
+
+// classifyNetEcoConnect interpreta o campo siteConnectStatus devolvido pela API.
+func classifyNetEcoConnect(raw string) netEcoConnectState {
+	s := strings.ToLower(strings.TrimSpace(raw))
+	if s == "" {
+		return netEcoConnectUnknown
+	}
+
+	// Desconectado / offline / down
+	for _, neg := range []string{
+		"disconnect", "disconnected", "offline", "down", "unreachable",
+		"not connect", "not_connect", "no connect", "link down", "0",
+	} {
+		if s == neg || strings.Contains(s, neg) {
+			// evitar falso positivo em "not disconnected"
+			if strings.Contains(s, "not disconnect") {
+				continue
+			}
+			return netEcoConnectDown
+		}
+	}
+
+	// Conectado / online / up
+	for _, pos := range []string{
+		"connect", "connected", "online", "up", "normal", "1",
+	} {
+		if s == pos || strings.Contains(s, pos) {
+			return netEcoConnectUp
+		}
+	}
+
+	return netEcoConnectUnknown
+}
+
 // PollEnergyStatus percorre todas as torres com NetecoEnabled=true e atualiza
 // bateria + energia DC/retificador a partir do NetEco.
+//
+// Regra de status (Prioridade 2 — sites Huawei via NetEco):
+//
+//	API falhou (bateria e energia)     → offline
+//	API ok + siteConnectStatus DOWN    → offline  (controladora/site inacessível)
+//	API ok + siteConnectStatus UP      → online   (exceto se já degraded por alarme)
+//	API ok + siteConnectStatus unknown → online   (fallback; log de aviso)
+//
+// Não sobrescreve degraded → online: alarmes/traps activos mantêm degraded.
 func (s *NetEcoIngestService) PollEnergyStatus(ctx context.Context) {
 	enabled := true
 	towers, _, err := s.towerRepo.List(ctx, interfaces.TowerFilter{
@@ -40,6 +93,8 @@ func (s *NetEcoIngestService) PollEnergyStatus(ctx context.Context) {
 		collectedAt := time.Now().UTC()
 		collected := false
 		var collectionErr error
+		connectState := netEcoConnectUnknown
+		var connectRaw string
 
 		battery, err := s.client.FetchBatteryStatus(tower.NetecoNEID)
 		if err != nil {
@@ -48,6 +103,8 @@ func (s *NetEcoIngestService) PollEnergyStatus(ctx context.Context) {
 		} else {
 			s.applyBatteryStatus(tower, battery)
 			collected = true
+			connectRaw = battery.ConnectStatus
+			connectState = classifyNetEcoConnect(battery.ConnectStatus)
 		}
 
 		energy, err := s.client.FetchSiteCounterInfo(tower.NetecoNEID)
@@ -59,39 +116,68 @@ func (s *NetEcoIngestService) PollEnergyStatus(ctx context.Context) {
 			collected = true
 		}
 
-	tower.LastCollectedAt = &collectedAt
-	if collected {
-		tower.CollectionStatus = domain.CollectionStatusActive
-		tower.LastSuccessfulAt = &collectedAt
-		tower.LastCollectionError = ""
-		// Antes só promovia de NoData->Online. Torres sem polling SNMP
-		// (ex.: sites Huawei recém-onboarded, monitorados só via NetEco REST)
-		// ficavam presas em Offline mesmo com coletas bem-sucedidas
-		// consecutivas, porque nada mais tinha autoridade para as tirar
-		// desse estado. NetEco não avalia alarmes/thresholds (isso vem por
-		// trap, canal separado), então uma coleta bem-sucedida aqui só
-		// significa "consigo falar com o equipamento" — status justo é
-		// Online, a menos que já esteja Degraded (aí um alarme já em
-		// curso decide isso, não mexemos).
-		if tower.Status == domain.TowerStatusNoData || tower.Status == domain.TowerStatusOffline {
-			tower.Status = domain.TowerStatusOnline
+		tower.LastCollectedAt = &collectedAt
+
+		if !collected {
+			tower.CollectionStatus = domain.CollectionStatusFailed
+			if collectionErr != nil {
+				tower.LastCollectionError = collectionErr.Error()
+			}
+			tower.Status = domain.TowerStatusOffline
+			log.Printf(
+				"[NetEco] status=offline tower=%s neid=%s reason=collection_failed",
+				tower.Name, tower.NetecoNEID,
+			)
+		} else {
+			tower.CollectionStatus = domain.CollectionStatusActive
+			tower.LastSuccessfulAt = &collectedAt
+			tower.LastCollectionError = ""
+
+			switch connectState {
+			case netEcoConnectDown:
+				// API NetEco respondeu, mas o site/controladora está desconectado.
+				tower.Status = domain.TowerStatusOffline
+				log.Printf(
+					"[NetEco] status=offline tower=%s neid=%s reason=site_connect_down connectStatus=%q",
+					tower.Name, tower.NetecoNEID, connectRaw,
+				)
+			case netEcoConnectUp:
+				// Só promove para online se não houver degraded activo
+				// (alarme/trap crítico em curso).
+				if tower.Status == domain.TowerStatusDegraded {
+					log.Printf(
+						"[NetEco] status=degraded mantido tower=%s neid=%s connectStatus=%q",
+						tower.Name, tower.NetecoNEID, connectRaw,
+					)
+				} else {
+					tower.Status = domain.TowerStatusOnline
+					log.Printf(
+						"[NetEco] status=online tower=%s neid=%s connectStatus=%q",
+						tower.Name, tower.NetecoNEID, connectRaw,
+					)
+				}
+			default:
+				// siteConnectStatus vazio/desconhecido: comportamento anterior
+				// (coleta ok → online), mas regista aviso para afinar o parser.
+				if connectRaw != "" {
+					log.Printf(
+						"[NetEco] siteConnectStatus desconhecido tower=%s value=%q — tratar como up",
+						tower.Name, connectRaw,
+					)
+				}
+				if tower.Status == domain.TowerStatusNoData || tower.Status == domain.TowerStatusOffline {
+					tower.Status = domain.TowerStatusOnline
+				}
+				// degraded mantém-se
+			}
 		}
-	} else {
-		tower.CollectionStatus = domain.CollectionStatusFailed
-		if collectionErr != nil {
-			tower.LastCollectionError = collectionErr.Error()
-		}
-		// Falha de coleta real (equipamento inacessível) deve refletir-se
-		// no status, não só no CollectionStatus.
-		tower.Status = domain.TowerStatusOffline
-	}
+
 		tower.UpdatedAt = collectedAt
 		if err := s.towerRepo.Upsert(ctx, tower); err != nil {
 			log.Printf("[NetEco] erro ao gravar torre %s: %v", tower.Name, err)
 		}
 		s.recordMetricSnapshot(ctx, tower)
 	}
-
 }
 
 func (s *NetEcoIngestService) recordMetricSnapshot(ctx context.Context, tower *domain.Tower) {

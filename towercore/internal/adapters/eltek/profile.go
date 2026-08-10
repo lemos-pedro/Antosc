@@ -281,26 +281,28 @@ func Profile() snmp.Profile {
 			// Regra de L3 REMOVIDA — ver nota nas Metrics acima.
 			// ======================
 			{
-				Key:       "mains_voltage_l1_v",
-				Severity:  domain.EventSeverityCritical,
-				Threshold: 80,
-				Condition: "lt",
-				Message:   "mains power failure L1",
+				Key:        "mains_voltage_l1_v",
+				Severity:   domain.EventSeverityWarning,
+				Threshold:  80,
+				Condition:  "lt",
+				Message:    "mains power failure L1",
+				IgnoreZero: true,
 			},
 			{
-				Key:       "mains_voltage_l2_v",
-				Severity:  domain.EventSeverityCritical,
-				Threshold: 80,
-				Condition: "lt",
-				Message:   "mains power failure L2",
+				Key:        "mains_voltage_l2_v",
+				Severity:   domain.EventSeverityWarning,
+				Threshold:  80,
+				Condition:  "lt",
+				Message:    "mains power failure L2",
+				IgnoreZero: true,
 			},
 			{
-				// REINTEGRADO junto com a métrica — ver nota acima.
-				Key:       "mains_voltage_l3_v",
-				Severity:  domain.EventSeverityCritical,
-				Threshold: 80,
-				Condition: "lt",
-				Message:   "mains power failure L3",
+				Key:        "mains_voltage_l3_v",
+				Severity:   domain.EventSeverityWarning,
+				Threshold:  80,
+				Condition:  "lt",
+				Message:    "mains power failure L3",
+				IgnoreZero: true,
 			},
 
 			// Status AC apenas se Eltek reportar erro real
@@ -325,7 +327,7 @@ func Profile() snmp.Profile {
 			{
 				Key:       "load_current_a",
 				Severity:  domain.EventSeverityWarning,
-				Threshold: 180,
+				Threshold: 220, // anteriormente 180
 				Condition: "gt",
 				Message:   "load current high",
 			},
