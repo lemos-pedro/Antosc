@@ -1,4 +1,7 @@
 .env
 .venv*/
 AIP/.env
-AIP/python/venv*/
+AIP/python/venv*/towercore/towercore.log
+
+towercore.log
+towercore_dump.dump
