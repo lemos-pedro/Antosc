@@ -20,7 +20,7 @@ type TowerRepository struct {
 	secretBox *security.SecretBox
 }
 
-const queryTimeout = 3 * time.Second
+const queryTimeout = 30 * time.Second
 
 func NewTowerRepository(db *sql.DB, secretBox *security.SecretBox) *TowerRepository {
 	return &TowerRepository{db: db, secretBox: secretBox}

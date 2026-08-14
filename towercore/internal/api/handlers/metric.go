@@ -13,6 +13,11 @@ import (
 	"towercore/pkg/apierror"
 )
 
+const (
+	metricsDefaultLimit = 50
+	metricsMaxLimit     = 200
+)
+
 type MetricHandler struct {
 	service *services.MetricService
 }
@@ -71,10 +76,25 @@ func (h *MetricHandler) create(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(metric)
 }
 
+// clampLimit aplica a regra geral do contrato (api.md): default 50, maximo 200.
+// Valores <=0 ou nao numericos caem no default; valores acima do maximo sao
+// truncados para o maximo, nunca rejeitados com erro (mantém compatibilidade
+// com clientes existentes que já mandam limit alto).
+func clampLimit(raw string) int {
+	limit := parseIntDefault(raw, metricsDefaultLimit)
+	if limit <= 0 {
+		return metricsDefaultLimit
+	}
+	if limit > metricsMaxLimit {
+		return metricsMaxLimit
+	}
+	return limit
+}
+
 func (h *MetricHandler) list(w http.ResponseWriter, r *http.Request) {
 	filter := interfaces.MetricFilter{
 		TowerID: r.URL.Query().Get("tower_id"),
-		Limit:   parseIntDefault(r.URL.Query().Get("limit"), 50),
+		Limit:   clampLimit(r.URL.Query().Get("limit")),
 		Offset:  parseIntDefault(r.URL.Query().Get("offset"), 0),
 	}
 
@@ -97,7 +117,7 @@ func (h *MetricHandler) list(w http.ResponseWriter, r *http.Request) {
 
 	metrics, total, err := h.service.List(r.Context(), filter)
 	if err != nil {
-		apierror.Internal(w)
+		apierror.Internal(w, err)
 		return
 	}
 

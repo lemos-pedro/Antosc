@@ -110,7 +110,7 @@ func (s *EventService) Resolve(ctx context.Context, towerID, alarmKey string) er
 }
 
 func (s *EventService) List(ctx context.Context, filter interfaces.EventFilter) ([]domain.Event, int, error) {
-	if filter.Limit <= 0 || filter.Limit > 200 {
+	if filter.Limit <= 0 || filter.Limit > 20000000 {
 		filter.Limit = 50
 	}
 	if filter.Offset < 0 {

@@ -85,6 +85,7 @@ func NewRouter(
 	mux.Handle("POST /api/v1/towers/{id}/operators", metrics.Instrument("/api/v1/towers/{id}/operators", towerOperatorHandler))
 	mux.Handle("DELETE /api/v1/towers/{id}/operators/{operator_id}", metrics.Instrument("/api/v1/towers/{id}/operators/{operator_id}", towerOperatorHandler))
 
+	
 	mux.Handle("GET /api/v1/regions", metrics.Instrument("/api/v1/regions", regionHandler))
 	mux.Handle("POST /api/v1/regions", metrics.Instrument("/api/v1/regions", writeChain(regionHandler)))
 	mux.Handle("GET /api/v1/regions/{id}", metrics.Instrument("/api/v1/regions/{id}", http.HandlerFunc(regionHandler.ServeByID)))

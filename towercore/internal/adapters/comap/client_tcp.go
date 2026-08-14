@@ -60,10 +60,10 @@ func (t *TCPClient) ReadHoldingRegisters(address, quantity uint16) ([]byte, erro
 		return nil, fmt.Errorf("registo %d: %w", address, err)
 	}
 
+	// 0x8000 = registo existe mas está inativo → não é falha de rede
 	if val == sentinelInactive {
-		return nil, fmt.Errorf("registo %d inativo/desconfigurado (0x8000)", address)
+		return nil, ErrInactiveRegister
 	}
 
-	// Devolve big-endian de 2 bytes, formato esperado por Reader.readScaled.
 	return []byte{byte(val >> 8), byte(val & 0xFF)}, nil
 }

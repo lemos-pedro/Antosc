@@ -77,8 +77,8 @@ func (s *ComapIngestService) Ingest(ctx context.Context, towerID string, reader 
 
 	reading := &interfaces.ComapReading{
 		TowerID:         towerID,
-		FuelLiters:      metrics.FuelLiters,
-		FuelPercent:     metrics.FuelPercent,
+		FuelLiters:      metrics.FuelLevelPct,
+		FuelPercent:     metrics.FuelLevelPct,
 		BatteryVoltageV: metrics.BatteryVoltageV,
 		RunHoursTotal:   metrics.RunHoursTotal,
 		CollectedAt:     &collectedAt,
