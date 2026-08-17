@@ -3,9 +3,11 @@
 //
 // IMPORTANTE — estado de validação:
 // Registos confirmados em campo via comapcheck (Ago 2026):
-//   50 = Battery Voltage (×0.1 V)
-//   54 = Engine Temp (°C)
-//   53 / 55 = frequentemente 0x8000 (sensor não configurado)
+//
+//	50 = Battery Voltage (×0.1 V)
+//	54 = Engine Temp (°C)
+//	53 / 55 = frequentemente 0x8000 (sensor não configurado)
+//
 // RegRunHours (152) mantido do mapeamento anterior — validar em campo.
 package comap
 
@@ -27,6 +29,15 @@ const (
 	RegEngineTemp     RegisterAddress = 54  // °C
 	RegFuelLevel      RegisterAddress = 55  // % (muitas vezes 0x8000)
 	RegRunHours       RegisterAddress = 152 // validar em campo
+
+	// === Elétrica do Gerador ===
+	RegFrequency   RegisterAddress = 116 // ×0.01 Hz
+	RegCurrentL1   RegisterAddress = 110 // ×0.1 A
+	RegCurrentL2   RegisterAddress = 111 // ×0.1 A
+	RegCurrentL3   RegisterAddress = 112 // ×0.1 A
+	RegVoltageL1L2 RegisterAddress = 100 // ×0.1 V (opcional)
+	RegVoltageL2L3 RegisterAddress = 101 // ×0.1 V (opcional)
+	RegVoltageL3L1 RegisterAddress = 102 // ×0.1 V (opcional)
 )
 
 // ErrInactiveRegister indica que o registo existe mas está marcado como
@@ -87,6 +98,62 @@ var Profile = map[string]RegisterDef{
 		Signed:  false,
 		Status:  StatusValidated,
 	},
+
+	// === Métricas Elétricas do Gerador ===
+	"frequency_hz": {
+		Address: RegFrequency,
+		Name:    "frequency_hz",
+		Scale:   0.01, // ×0.01 Hz → Hz
+		Signed:  false,
+		Status:  StatusValidated, // Geralmente confiável
+	},
+	"current_l1_a": {
+		Address: RegCurrentL1,
+		Name:    "current_l1_a",
+		Scale:   0.1, // ×0.1 A → A
+		Signed:  false,
+		Status:  StatusValidated,
+	},
+	"current_l2_a": {
+		Address: RegCurrentL2,
+		Name:    "current_l2_a",
+		Scale:   0.1, // ×0.1 A → A
+		Signed:  false,
+		Status:  StatusValidated,
+	},
+	"current_l3_a": {
+		Address: RegCurrentL3,
+		Name:    "current_l3_a",
+		Scale:   0.1, // ×0.1 A → A
+		Signed:  false,
+		Status:  StatusValidated,
+	},
+
+	// FIX: estas 3 chaves estavam ausentes do Profile. Read() já as chamava
+	// (voltage_l1_l2_v/l2_l3_v/l3_l1_v), então caíam no zero-value do map
+	// (Address=0, Scale=0) e devolviam sempre 0.0 sem erro — dado fabricado
+	// silenciosamente, violando a invariante de nil documentada acima.
+	"voltage_l1_l2_v": {
+		Address: RegVoltageL1L2,
+		Name:    "voltage_l1_l2_v",
+		Scale:   0.1, // ×0.1 V → V
+		Signed:  false,
+		Status:  StatusUnconfirmed, // ainda não validado em campo
+	},
+	"voltage_l2_l3_v": {
+		Address: RegVoltageL2L3,
+		Name:    "voltage_l2_l3_v",
+		Scale:   0.1,
+		Signed:  false,
+		Status:  StatusUnconfirmed,
+	},
+	"voltage_l3_l1_v": {
+		Address: RegVoltageL3L1,
+		Name:    "voltage_l3_l1_v",
+		Scale:   0.1,
+		Signed:  false,
+		Status:  StatusUnconfirmed,
+	},
 }
 
 // Metrics representa a telemetria lida de um controlador ComAp.
@@ -97,7 +164,17 @@ type Metrics struct {
 	FuelLevelPct    *float64
 	OilPressureBar  *float64
 	RunHoursTotal   *float64
-	CollectedAt     time.Time
+
+	// === Elétrica do Gerador ===
+	FrequencyHz  *float64
+	CurrentL1A   *float64
+	CurrentL2A   *float64
+	CurrentL3A   *float64
+	VoltageL1L2V *float64
+	VoltageL2L3V *float64
+	VoltageL3L1V *float64
+
+	CollectedAt time.Time
 }
 
 // Reader lê o Profile de um controlador ComAp.
@@ -137,6 +214,13 @@ func (r *Reader) Read(ctx context.Context) (*Metrics, error) {
 	read("fuel_level", &m.FuelLevelPct)
 	read("oil_pressure", &m.OilPressureBar)
 	read("run_hours", &m.RunHoursTotal)
+	read("frequency_hz", &m.FrequencyHz)
+	read("current_l1_a", &m.CurrentL1A)
+	read("current_l2_a", &m.CurrentL2A)
+	read("current_l3_a", &m.CurrentL3A)
+	read("voltage_l1_l2_v", &m.VoltageL1L2V)
+	read("voltage_l2_l3_v", &m.VoltageL2L3V)
+	read("voltage_l3_l1_v", &m.VoltageL3L1V)
 
 	if ok == 0 && len(errs) > 0 {
 		return m, fmt.Errorf("comap: nenhum registo útil (%d falhas): %v", len(errs), errs)

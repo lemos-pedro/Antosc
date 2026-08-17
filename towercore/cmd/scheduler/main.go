@@ -6,6 +6,8 @@ import (
 	"syscall"
 	"time"
 
+	"go.uber.org/zap"
+
 	"towercore/internal/adapters/eltek"
 	"towercore/internal/adapters/enetek"
 	"towercore/internal/adapters/huawei"
@@ -16,7 +18,6 @@ import (
 	"towercore/internal/core/services"
 	"towercore/internal/infrastructure/config"
 	"towercore/internal/infrastructure/database"
-	"towercore/internal/infrastructure/logger"
 	"towercore/internal/infrastructure/security"
 	"towercore/internal/scheduler"
 )
@@ -28,19 +29,25 @@ import (
 // que já corre na EC2) e não expõe nenhuma rota HTTP.
 func main() {
 	cfg := config.Load()
-	log := logger.New(cfg.LogLevel)
+
+	// Criar logger estruturado com Zap
+	zapLog, err := zap.NewProduction()
+	if err != nil {
+		panic("failed to create zap logger: " + err.Error())
+	}
+	defer zapLog.Sync()
 
 	// Database — aponta para o Postgres remoto (EC2/RDS) via .env
 	db, err := database.Open(cfg.DB)
 	if err != nil {
-		log.Fatalf("failed to connect to database: %v", err)
+		zapLog.Fatal("failed to connect to database", zap.Error(err))
 	}
 	defer db.Close()
 
 	// Security
 	secretBox, err := security.NewSecretBox(cfg.SNMP.SecretKey)
 	if err != nil {
-		log.Fatalf("failed to initialize secret box: %v", err)
+		zapLog.Fatal("failed to initialize secret box", zap.Error(err))
 	}
 
 	// Repositories — só os necessários para os schedulers
@@ -67,7 +74,13 @@ func main() {
 		"vertiv": vertiv.Profile(),
 	}
 
-	snmpIngestSvc := services.NewSNMPIngestService(metricSvc, eventSvc, snmpProfiles, towerSvc, ticketSvc)
+	snmpIngestSvc := services.NewSNMPIngestService(
+		metricSvc,
+		eventSvc,
+		snmpProfiles,
+		towerSvc,
+		ticketSvc,
+	)
 
 	snmpScheduler := scheduler.NewSNMPScheduler(
 		towerRepo,
@@ -77,7 +90,7 @@ func main() {
 			cfg.SNMP.Retries,
 		),
 		snmpProfiles,
-		log,
+		zapLog,
 		time.Duration(cfg.Scheduler.IntervalSeconds)*time.Second,
 		cfg.Scheduler.BatchSize,
 	)
@@ -89,22 +102,33 @@ func main() {
 		cfg.Nagios.Password,
 		time.Duration(cfg.Nagios.TimeoutSeconds)*time.Second,
 	)
-	nagiosIngestSvc := services.NewNagiosIngestService(eventSvc, towerSvc)
+
+	nagiosIngestSvc := services.NewNagiosIngestService(
+		eventSvc,
+		towerSvc,
+	)
+
 	nagiosScheduler := scheduler.NewNagiosScheduler(
 		towerRepo,
 		nagiosIngestSvc,
 		nagiosClient,
-		log,
+		zapLog,
 		time.Duration(cfg.Nagios.PollIntervalSeconds)*time.Second,
 		cfg.Scheduler.BatchSize,
 	)
 
 	// ComAp (Modbus)
-	comapIngestSvc := services.NewComapIngestService(comapReadingRepo, eventSvc, ticketSvc, towerSvc)
+	comapIngestSvc := services.NewComapIngestService(
+		comapReadingRepo,
+		eventSvc,
+		ticketSvc,
+		towerSvc,
+	)
+
 	comapScheduler := scheduler.NewComapScheduler(
 		towerEndpointRepo,
 		comapIngestSvc,
-		log,
+		zapLog,
 		time.Duration(cfg.Comap.IntervalSeconds)*time.Second,
 		cfg.Scheduler.BatchSize,
 		time.Duration(cfg.Comap.TimeoutSeconds)*time.Second,
@@ -120,12 +144,13 @@ func main() {
 		snmp.NewEnterpriseVendorResolver(),
 		cfg.Discovery.Community,
 		cfg.Discovery.Concurrency,
-		log,
+		zapLog,
 	)
+
 	discoveryScheduler := scheduler.NewDiscoveryScheduler(
 		discoverySvc,
 		cfg.Discovery.CIDR,
-		log,
+		zapLog,
 		time.Duration(cfg.Discovery.IntervalSeconds)*time.Second,
 	)
 
@@ -137,8 +162,18 @@ func main() {
 		cfg.NetEco.TLSInsecureSkipVerify,
 		time.Duration(cfg.NetEco.TimeoutSeconds)*time.Second,
 	)
-	netEcoIngestSvc := services.NewNetEcoIngestService(netEcoClient, towerRepo, metricSvc)
-	netEcoAlarmSvc := services.NewNetEcoAlarmService(eventSvc, towerRepo, ticketSvc)
+
+	netEcoIngestSvc := services.NewNetEcoIngestService(
+		netEcoClient,
+		towerRepo,
+		metricSvc,
+	)
+
+	netEcoAlarmSvc := services.NewNetEcoAlarmService(
+		eventSvc,
+		towerRepo,
+		ticketSvc,
+	)
 
 	// Graceful shutdown
 	ctx, stop := signal.NotifyContext(
@@ -148,38 +183,54 @@ func main() {
 	)
 	defer stop()
 
-	log.Info("cmd/scheduler starting — coletor local (sem servidor HTTP)")
+	zapLog.Info(
+		"cmd/scheduler starting — coletor local (sem servidor HTTP)",
+	)
 
 	var snmpCancel context.CancelFunc = func() {}
+
 	if cfg.Scheduler.Enabled {
 		snmpCtx, cancel := context.WithCancel(context.Background())
 		snmpCancel = cancel
+
 		go snmpScheduler.Start(snmpCtx)
 	} else {
-		log.Info("snmp scheduler disabled by configuration")
+		zapLog.Info("snmp scheduler disabled by configuration")
 	}
 
 	var discoveryCancel context.CancelFunc = func() {}
+
 	if cfg.Discovery.Enabled {
 		discoveryCtx, cancel := context.WithCancel(context.Background())
 		discoveryCancel = cancel
+
 		go discoveryScheduler.Start(discoveryCtx)
 	} else {
-		log.Info("discovery scheduler disabled by configuration")
+		zapLog.Info("discovery scheduler disabled by configuration")
 	}
 
 	var comapCancel context.CancelFunc = func() {}
+
 	if cfg.Comap.Enabled {
 		go comapScheduler.Start(ctx)
-		log.Info("comap scheduler worker successfully started in background")
+
+		zapLog.Info(
+			"comap scheduler worker successfully started in background",
+		)
 	} else {
-		log.Info("comap scheduler skipped from startup context")
+		zapLog.Info(
+			"comap scheduler skipped from startup context",
+		)
 	}
 
 	var netEcoCancel context.CancelFunc = func() {}
+
 	if cfg.NetEco.Enabled {
 		if err := netEcoClient.Login(); err != nil {
-			log.Errorf("neteco: initial login failed: %v", err)
+			zapLog.Error(
+				"neteco: initial login failed",
+				zap.Error(err),
+			)
 		}
 
 		netEcoCtx, cancel := context.WithCancel(context.Background())
@@ -194,32 +245,55 @@ func main() {
 				select {
 				case <-netEcoCtx.Done():
 					return
+
 				case <-ticker.C:
 					netEcoIngestSvc.PollEnergyStatus(netEcoCtx)
 				}
 			}
 		}()
-		log.Info("neteco scheduler worker successfully started in background")
+
+		zapLog.Info(
+			"neteco scheduler worker successfully started in background",
+		)
 
 		go func() {
-			err := neteco.StartTrapListener(uint16(cfg.NetEco.TrapPort), cfg.NetEco.TrapCommunity, func(trap neteco.TrapEvent) {
-				netEcoAlarmSvc.HandleTrap(context.Background(), trap)
-			})
+			err := neteco.StartTrapListener(
+				uint16(cfg.NetEco.TrapPort),
+				cfg.NetEco.TrapCommunity,
+				func(trap neteco.TrapEvent) {
+					netEcoAlarmSvc.HandleTrap(
+						context.Background(),
+						trap,
+					)
+				},
+			)
+
 			if err != nil {
-				log.Errorf("neteco: trap listener failed: %v", err)
+				zapLog.Error(
+					"neteco: trap listener failed",
+					zap.Error(err),
+				)
 			}
 		}()
-		log.Infof("neteco trap listener started on :%d", cfg.NetEco.TrapPort)
+
+		zapLog.Info(
+			"neteco trap listener started",
+			zap.Int("port", cfg.NetEco.TrapPort),
+		)
 	} else {
-		log.Info("neteco scheduler disabled by configuration")
+		zapLog.Info(
+			"neteco scheduler disabled by configuration",
+		)
 	}
 
 	nagiosCtx, nagiosCancel := context.WithCancel(context.Background())
+
 	go nagiosScheduler.Start(nagiosCtx)
 
 	// Wait shutdown
 	<-ctx.Done()
-	log.Info("shutdown signal received")
+
+	zapLog.Info("shutdown signal received")
 
 	snmpCancel()
 	discoveryCancel()
@@ -227,5 +301,5 @@ func main() {
 	netEcoCancel()
 	nagiosCancel()
 
-	log.Info("cmd/scheduler stopped")
+	zapLog.Info("cmd/scheduler stopped")
 }

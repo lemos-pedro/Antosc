@@ -51,6 +51,10 @@ func NewComapIngestService(
 // da torre é reposto para online aqui, ANTES de qualquer outra escrita,
 // seguindo a mesma ordem usada no SNMPIngestService (status primeiro,
 // para nunca ficar desatualizado se algo falhar depois).
+//
+// TODO: FuelLiters está a receber metrics.FuelLevelPct (percentagem, não
+// litros) — comap.Metrics não tem um campo de litros próprio. Corrigir
+// quando o registo Modbus de fuel_liters for mapeado no Profile.
 func (s *ComapIngestService) Ingest(ctx context.Context, towerID string, reader *comap.Reader) error {
 	if strings.TrimSpace(towerID) == "" {
 		return errors.New("tower_id is required")
@@ -81,7 +85,16 @@ func (s *ComapIngestService) Ingest(ctx context.Context, towerID string, reader 
 		FuelPercent:     metrics.FuelLevelPct,
 		BatteryVoltageV: metrics.BatteryVoltageV,
 		RunHoursTotal:   metrics.RunHoursTotal,
-		CollectedAt:     &collectedAt,
+
+		FrequencyHz:  metrics.FrequencyHz,
+		CurrentL1A:   metrics.CurrentL1A,
+		CurrentL2A:   metrics.CurrentL2A,
+		CurrentL3A:   metrics.CurrentL3A,
+		VoltageL1L2V: metrics.VoltageL1L2V,
+		VoltageL2L3V: metrics.VoltageL2L3V,
+		VoltageL3L1V: metrics.VoltageL3L1V,
+
+		CollectedAt: &collectedAt,
 	}
 
 	return s.readingRepo.Upsert(ctx, reading)

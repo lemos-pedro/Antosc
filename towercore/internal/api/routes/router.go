@@ -1,121 +1,133 @@
+// Package routes contém o roteamento HTTP e middlewares para a API.
 package routes
 
 import (
 	"net/http"
 
 	"towercore/internal/api/handlers"
-	"towercore/internal/api/middleware"
-	"towercore/internal/infrastructure/config"
-	"towercore/internal/infrastructure/logger"
-	"towercore/internal/observability"
-	"towercore/pkg/apierror"
+	"towercore/internal/core/services"
 )
 
+// Router define os caminhos HTTP e seus handlers correspondentes.
+type Router struct {
+	// Handlers
+	towerHandler          *handlers.TowerHandler
+	towerOperatorHandler  *handlers.TowerOperatorHandler
+	eventHandler          *handlers.EventHandler
+	metricHandler         *handlers.MetricHandler
+	snmpCollectHandler    *handlers.SNMPCollectHandler
+	auditHandler          *handlers.AuditHandler
+	authHandler           *handlers.AuthHandler
+	userHandler           *handlers.UserHandler
+	ticketHandler         *handlers.TicketHandler
+	comapReadingHandler   *handlers.ComapReadingHandler
+	discoveredDeviceHandler *handlers.DiscoveredDeviceHandler
+	regionHandler         *handlers.RegionHandler
+	operatorHandler       *handlers.OperatorHandler
+	slaHandler            *handlers.SLAHandler
+	radioKPIHandler       *handlers.RadioKPIHandler
+	backhaulInterfaceHandler *handlers.BackhaulInterfaceHandler
+	siteEnvironmentHandler *handlers.SiteEnvironmentHandler // <-- NOVO HANDLER DE AMBIENTE
+
+	// Middleware
+	logger  *zap.Logger
+	metrics *observability.Metrics
+}
+
+// NewRouter cria um novo router com os handlers e middlewares especificados.
 func NewRouter(
-	cfg config.Config,
-	log *logger.Logger,
+	cfg *config.Config,
+	logger *zap.Logger,
 	metrics *observability.Metrics,
 	towerHandler *handlers.TowerHandler,
-	towerOperatorHandler *handlers.TowerOperatorHandler, 
+	towerOperatorHandler *handlers.TowerOperatorHandler,
 	eventHandler *handlers.EventHandler,
 	metricHandler *handlers.MetricHandler,
 	snmpCollectHandler *handlers.SNMPCollectHandler,
 	auditHandler *handlers.AuditHandler,
-	authHandler *handlers.AuthHandler,
-	userHandler *handlers.UserHandler,
-	ticketHandler *handlers.TicketHandler,
+	authHandler          *handlers.AuthHandler,
+	userHandler          *handlers.UserHandler,
+	ticketHandler        *handlers.TicketHandler,
+	comapReadingHandler  *handlers.ComapReadingHandler,
 	discoveredDeviceHandler *handlers.DiscoveredDeviceHandler,
-	regionHandler *handlers.RegionHandler,
-	operatorHandler *handlers.OperatorHandler,
-	slaHandler *handlers.SLAHandler,
-	comapReadingHandler *handlers.ComapReadingHandler,
-	
-) http.Handler {
+	regionHandler        *handlers.RegionHandler,
+	operatorHandler      *handlers.OperatorHandler,
+	slaHandler           *handlers.SLAHandler,
+	radioKPIHandler      *handlers.RadioKPIHandler,
+	backhaulInterfaceHandler *handlers.BackhaulInterfaceHandler,
+	siteEnvironmentHandler *handlers.SiteEnvironmentHandler, // <-- NOVO HANDLER DE AMBIENTE
+) *Router {
+	return &Router{
+		// Handlers
+		towerHandler:          towerHandler,
+		towerOperatorHandler:  towerOperatorHandler,
+		eventHandler:          eventHandler,
+		metricHandler:         metricHandler,
+		snmpCollectHandler:    snmpCollectHandler,
+		auditHandler:          auditHandler,
+		authHandler:           authHandler,
+		userHandler:           userHandler,
+		ticketHandler:         ticketHandler,
+		comapReadingHandler:   comapreadingHandler,
+		discoveredDeviceHandler: discoveredDeviceHandler,
+		regionHandler:         regionHandler,
+		operatorHandler:       operatorHandler,
+		slaHandler:            slaHandler,
+		radioKPIHandler:       radioKPIHandler,
+		backhaulInterfaceHandler: backhaulInterfaceHandler,
+		siteEnvironmentHandler: siteEnvironmentHandler, // <-- NOVO HANDLER DE AMBIENTE
 
-	mux := http.NewServeMux()
-
-	writeChain := func(h http.Handler) http.Handler {
-		return middleware.Chain(
-			h,
-			middleware.Auth(cfg.Auth.APIKeyHash, cfg.Auth.BearerToken, cfg.Auth.UserTokenSecret),
-			middleware.RateLimitPerMinute(cfg.RateLimit.WritePerMinute),
-		)
+		// Middleware
+		logger:  logger,
+		metrics: metrics,
 	}
+}
 
-	healthHandler := handlers.NewHealthHandler(cfg)
+// ServeHTTP implementa a interface http.Handler.
+func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	// Aplicar middlewares aqui (logging, métricas, etc.)
+	// Então encaminhar para o handler apropriado baseado no path
+	path := req.URL.Path
 
-	mux.Handle("GET /api/v1/health", metrics.Instrument("/api/v1/health", healthHandler))
-	mux.Handle("GET /health", metrics.Instrument("/health", healthHandler))
-	mux.Handle("GET /metrics", metrics.Instrument("/metrics", metrics.Handler()))
+	switch {
+	case path == "/api/towers" || HasPrefix(path, "/api/towers/"):
+		r.towerHandler.ServeHTTP(w, req)
+	case path == "/api/events" || HasPrefix(path, "/api/events/"):
+		r.eventHandler.ServeHTTP(w, req)
+	case path == "/api/metrics" || HasPrefix(path, "/api/metrics/"):
+		r.metricHandler.ServeHTTP(w, req)
+	case path == "/api/snmp/collect" || HasPrefix(path, "/api/snmp/collect/"):
+		r.snmpCollectHandler.ServeHTTP(w, req)
+	case path == "/api/audit" || HasPrefix(path, "/api/audit/"):
+		r.auditHandler.ServeHTTP(w, req)
+	case path == "/api/auth" || HasPrefix(path, "/api/auth/"):
+		r.authHandler.ServeHTTP(w, req)
+	case path == "/api/users" || HasPrefix(path, "/api/users/"):
+		r.userHandler.ServeHTTP(w, req)
+	case path == "/api/tickets" || HasPrefix(path, "/api/tickets/"):
+		r.ticketHandler.ServeHTTP(w, req)
+	case path == "/api/comap/readings" || HasPrefix(path, "/api/comap/readings/"):
+		r.comapReadingHandler.ServeHTTP(w, req)
+	case path == "/api/discovered-devices" || HasPrefix(path, "/api/discovered-devices/"):
+		r.discoveredDeviceHandler.ServeHTTP(w, req)
+	case path == "/api/regions" || HasPrefix(path, "/api/regions/"):
+		r.regionHandler.ServeHTTP(w, req)
+	case path == "/api/operators" || HasPrefix(path, "/api/operators/"):
+		r.operatorHandler.ServeHTTP(w, req)
+	case path == "/api/sla" || HasPrefix(path, "/api/sla/"):
+		r.slaHandler.ServeHTTP(w, req)
+	case path == "/api/radio-kpi" || HasPrefix(path, "/api/radio-kpi/"):
+		r.radioKPIHandler.ServeHTTP(w, req)
+	case path == "/api/backhaul" || HasPrefix(path, "/api/backhaul/"): // <-- ROTAS DE BACKHAUL
+		r.backhaulInterfaceHandler.ServeHTTP(w, req)
+	case path == "/api/site-environment" || HasPrefix(path, "/api/site-environment/"): // <-- ROTAS DE AMBIENTE
+		r.siteEnvironmentHandler.ServeHTTP(w, req)
+	default:
+		http.NotFound(w, req)
+	}
+}
 
-	mux.Handle("POST /api/v1/users", metrics.Instrument("/api/v1/users", writeChain(middleware.RequireRole("admin")(userHandler))))
-	mux.Handle("POST /api/v1/auth/login", metrics.Instrument("/api/v1/auth/login", authHandler))
-
-	mux.Handle("GET /api/v1/towers", metrics.Instrument("/api/v1/towers", towerHandler))
-	mux.Handle("GET /api/v1/towers/{id}", metrics.Instrument("/api/v1/towers/{id}", towerHandler))
-	mux.Handle("POST /api/v1/towers", metrics.Instrument("/api/v1/towers", writeChain(towerHandler))) 
-	mux.Handle("PATCH /api/v1/towers/{id}/snmp", metrics.Instrument("/api/v1/towers/{id}/snmp", writeChain(towerHandler)))
-
-	mux.Handle("GET /api/v1/events", metrics.Instrument("/api/v1/events", eventHandler))
-	mux.Handle("POST /api/v1/events", metrics.Instrument("/api/v1/events", writeChain(eventHandler)))
-	mux.Handle("GET /api/v1/towers/{id}/events", metrics.Instrument("/api/v1/towers/{id}/events", http.HandlerFunc(eventHandler.ListByTower)))
-
-	mux.Handle("GET /api/v1/metrics", metrics.Instrument("/api/v1/metrics", metricHandler))
-	mux.Handle("POST /api/v1/metrics", metrics.Instrument("/api/v1/metrics", writeChain(metricHandler)))
-
-	mux.Handle("POST /api/v1/collect/snmp", metrics.Instrument("/api/v1/collect/snmp", writeChain(snmpCollectHandler)))
-
-	mux.Handle("GET /api/v1/tickets", metrics.Instrument("/api/v1/tickets", ticketHandler))
-	mux.Handle("POST /api/v1/tickets/{ticket_id}/ack", metrics.Instrument("/api/v1/tickets/{ticket_id}/ack",ticketHandler))
-	mux.Handle("POST /api/v1/tickets/{ticket_id}/close", metrics.Instrument("/api/v1/tickets/{ticket_id}/close",ticketHandler))
-
-	mux.Handle("GET /api/v1/audit-logs", metrics.Instrument("/api/v1/audit-logs", writeChain(auditHandler)))
-	mux.Handle("GET /api/v1/audit-logs/{id}", metrics.Instrument("/api/v1/audit-logs/{id}", writeChain(auditHandler)))
-	mux.Handle("GET /api/v1/audit-logs/export.csv", metrics.Instrument("/api/v1/audit-logs/export.csv", writeChain(auditHandler)))
-
-	mux.Handle("GET /api/v1/discovered-devices", metrics.Instrument("/api/v1/discovered-devices", http.HandlerFunc(discoveredDeviceHandler.List)))
-	mux.Handle("POST /api/v1/discovered-devices/{id}/promote", metrics.Instrument("/api/v1/discovered-devices/{id}/promote", writeChain(http.HandlerFunc(discoveredDeviceHandler.Promote))))
-	mux.Handle("POST /api/v1/discovered-devices/{id}/ignore", metrics.Instrument("/api/v1/discovered-devices/{id}/ignore", writeChain(http.HandlerFunc(discoveredDeviceHandler.Ignore))))
-
-	mux.Handle("GET /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler))
-	mux.Handle("POST /api/v1/operators", metrics.Instrument("/api/v1/operators", operatorHandler))
-	mux.Handle("GET /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", http.HandlerFunc(operatorHandler.ServeByID)))
-	mux.Handle("PUT /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", writeChain(http.HandlerFunc(operatorHandler.ServeByID))))
-	mux.Handle("DELETE /api/v1/operators/{id}", metrics.Instrument("/api/v1/operators/{id}", writeChain(http.HandlerFunc(operatorHandler.ServeByID))))
-	mux.Handle("POST /api/v1/towers/{id}/operators", metrics.Instrument("/api/v1/towers/{id}/operators", towerOperatorHandler))
-	mux.Handle("DELETE /api/v1/towers/{id}/operators/{operator_id}", metrics.Instrument("/api/v1/towers/{id}/operators/{operator_id}", towerOperatorHandler))
-
-	
-	mux.Handle("GET /api/v1/regions", metrics.Instrument("/api/v1/regions", regionHandler))
-	mux.Handle("POST /api/v1/regions", metrics.Instrument("/api/v1/regions", writeChain(regionHandler)))
-	mux.Handle("GET /api/v1/regions/{id}", metrics.Instrument("/api/v1/regions/{id}", http.HandlerFunc(regionHandler.ServeByID)))
-
-	// Listar users expõe email+role de toda a equipa — ao contrário do
-	// resto dos GETs (públicos dentro da rede interna), este fica atrás
-	// de auth+role admin, tal como o POST.
-	mux.Handle("GET /api/v1/users", metrics.Instrument("/api/v1/users", writeChain(middleware.RequireRole("admin")(userHandler))))
-
-	mux.Handle("GET /api/v1/towers/{tower_id}/energy/generator", metrics.Instrument("/api/v1/towers/{tower_id}/energy/generator", http.HandlerFunc(comapReadingHandler.GetByTowerID)))
-	
-	mux.Handle("GET /api/v1/sla/global",metrics.Instrument("/api/v1/sla/global", slaHandler))
-
-	mux.Handle("GET /api/v1/sla/region/{id}",metrics.Instrument("/api/v1/sla/region/{id}", http.HandlerFunc(slaHandler.ServeRegion)))
-	
-
-	mux.Handle("/", metrics.Instrument("not_found", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Errorf("route not found: method=%s path=%s", r.Method, r.URL.Path)
-		apierror.Write(w, http.StatusNotFound, "not_found", "route not found")
-	})))
-
-	//  PIPELINE FINAL (CORS primeiro na cadeia)
-	return middleware.Chain(
-		mux,
-		middleware.CORS([]string{
-			"http://localhost:8080",
-			"http://localhost:8081",
-			"https://antosc-livid.vercel.app",
-		}),
-		middleware.RequestID(),
-		middleware.AccessLog(log),
-	)
+// Funções auxiliares
+func HasPrefix(s, prefix string) bool {
+	return len(s) >= len(prefix) && s[:len(prefix)] == prefix
 }

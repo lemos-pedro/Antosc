@@ -12,13 +12,15 @@ import (
 	"time"
 
 	"github.com/gosnmp/gosnmp"
+	"github.com/prometheus/client_golang/prometheus"
 	"towercore/internal/core/domain"
 )
 
 type GoSNMPCollector struct {
-	timeout time.Duration
-	retries int
-	port    uint16
+	timeout        time.Duration
+	retries        int
+	port           uint16
+	timeoutMetrics *prometheus.HistogramVec
 }
 
 func NewGoSNMPCollector(timeout time.Duration, retries int) *GoSNMPCollector {
@@ -28,14 +30,51 @@ func NewGoSNMPCollector(timeout time.Duration, retries int) *GoSNMPCollector {
 	if retries < 0 {
 		retries = 0
 	}
+
+	timeoutMetrics := prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "snmp_collection_duration_seconds",
+			Help:    "Duration of SNMP collection attempts",
+			Buckets: prometheus.ExponentialBuckets(0.005, 2, 10), // 5ms a ~2.5s
+		},
+		[]string{"vendor", "result"}, // result: success, timeout, protocol_error
+	)
+	prometheus.MustRegister(timeoutMetrics)
+
 	return &GoSNMPCollector{
-		timeout: timeout,
-		retries: retries,
-		port:    161,
+		timeout:        timeout,
+		retries:        retries,
+		port:           161,
+		timeoutMetrics: timeoutMetrics,
 	}
 }
 
 func (c *GoSNMPCollector) Collect(ctx context.Context, tower domain.Tower, profile Profile) (map[string]float64, error) {
+	start := time.Now()
+
+	values, err := c.doCollect(ctx, tower, profile)
+
+	duration := time.Since(start)
+
+	var result string
+	switch {
+	case err == nil:
+		result = "success"
+	case errors.Is(err, context.DeadlineExceeded), strings.Contains(err.Error(), "timeout"):
+		result = "timeout"
+	default:
+		result = "protocol_error"
+	}
+
+	c.timeoutMetrics.WithLabelValues(tower.Vendor, result).Observe(duration.Seconds())
+
+	return values, err
+}
+
+// doCollect contém a lógica de coleta SNMP original, agora isolada para que
+// Collect possa medir a duração total (incluindo connect + get) sem misturar
+// a instrumentação com a lógica de protocolo.
+func (c *GoSNMPCollector) doCollect(ctx context.Context, tower domain.Tower, profile Profile) (map[string]float64, error) {
 	if !tower.SNMPEnabled {
 		return nil, errors.New("snmp is disabled for tower")
 	}

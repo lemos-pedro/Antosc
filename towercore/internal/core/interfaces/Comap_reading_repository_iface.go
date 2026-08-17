@@ -15,7 +15,17 @@ type ComapReading struct {
 	FuelPercent     *float64 // StatusUnconfirmed — frontend deve marcar como não validado
 	BatteryVoltageV *float64 // StatusUnconfirmed — frontend deve marcar como não validado
 	RunHoursTotal   *float64
-	CollectedAt     *time.Time
+
+	// === Elétrica do Gerador (migration 00008) ===
+	FrequencyHz  *float64
+	CurrentL1A   *float64
+	CurrentL2A   *float64
+	CurrentL3A   *float64
+	VoltageL1L2V *float64 // StatusUnconfirmed — frontend deve marcar como não validado
+	VoltageL2L3V *float64 // StatusUnconfirmed — frontend deve marcar como não validado
+	VoltageL3L1V *float64 // StatusUnconfirmed — frontend deve marcar como não validado
+
+	CollectedAt *time.Time
 }
 
 // ComapReadingRepository persiste a última leitura ComAp por torre.

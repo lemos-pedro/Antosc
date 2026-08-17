@@ -1,3 +1,6 @@
+
+
+
 package main
 
 import (
@@ -82,6 +85,10 @@ func main() {
 	auditSvc := services.NewAuditService(auditRepo)
 	ticketSvc := services.NewTicketService(ticketRepo, auditRepo)
 	availabilitySvc := services.NewAvailabilityService(eventRepo, towerRepo, metricRepo)
+
+	// Radio KPI service
+	radioKPIRepo := database.NewRadioKPIRepository(db)
+	radioKPISvc := services.NewRadioKPIService(radioKPIRepo)
 
 	// NetEco (Huawei) — bateria e energia DC via API interna do NetEco +
 	// alarmes via SNMP trap. Enabled=false por default (NETECO_ENABLED) —
@@ -212,6 +219,9 @@ func main() {
 	ticketHandler := handlers.NewTicketHandler(ticketSvc)
 	comapReadingHandler := handlers.NewComapReadingHandler(comapReadingRepo)
 
+	// Radio KPI handler
+	radioKPIHandler := handlers.NewRadioKPIHandler(radioKPISvc)
+
 	discoveredDeviceHandler := handlers.NewDiscoveredDeviceHandler(
 		discoveredDeviceRepo,
 		promotionSvc,
@@ -240,6 +250,7 @@ func main() {
 		operatorHandler,
 		slaHandler,
 		comapReadingHandler,
+		radioKPIHandler,
 	)
 
 	server := &http.Server{
