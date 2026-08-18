@@ -3,6 +3,7 @@
 -- Armazena medições periódicas de status e performance de links de backhaul
 CREATE TABLE IF NOT EXISTS backhaul_interface_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    interface_id UUID NOT NULL DEFAULT gen_random_uuid(),
 
     -- Identificação do site
     tower_id UUID NOT NULL REFERENCES towers(tower_id) ON DELETE CASCADE,
@@ -65,6 +66,8 @@ CREATE TABLE IF NOT EXISTS backhaul_interface_history (
     source_poller VARCHAR(64) NOT NULL,  -- Quem coletou estes dados (ex: "local_agent", "snmp_poller", "script")
     collection_interval_sec INTEGER,     -- Intervalo em segundos desta medição
     raw_data JSONB,                      -- Dados brutos originais (para debug/audit)
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     -- Índices para consultas comuns
     CONSTRAINT chk_admin_status CHECK (admin_status IN ('up', 'down', 'testing', 'unknown')),

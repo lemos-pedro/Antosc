@@ -27,3 +27,38 @@ type Profile struct {
 	Metrics []MetricDefinition
 	Alarms  []AlarmRule
 }
+
+// NormalizeSamples converts a map of OID->rawValue into a map of metricKey->value
+// using the profile's MetricDefinitions (applies scale, ignores configured
+// sentinel values and emits _not_tested markers when configured).
+func NormalizeSamples(profile Profile, samples map[string]float64) map[string]float64 {
+	normalized := make(map[string]float64)
+	for _, md := range profile.Metrics {
+		raw, exists := samples[md.OID]
+		if !exists {
+			continue
+		}
+		scale := md.Scale
+		if scale == 0 {
+			scale = 1
+		}
+		value := raw * scale
+		if isIgnoredMetricValue(value, md.IgnoreValues) {
+			continue
+		}
+		normalized[md.Key] = value
+		if md.ZeroMeansNotTested && value == 0 {
+			normalized[md.Key+"_not_tested"] = 1
+		}
+	}
+	return normalized
+}
+
+func isIgnoredMetricValue(value float64, ignored []float64) bool {
+	for _, candidate := range ignored {
+		if value == candidate {
+			return true
+		}
+	}
+	return false
+}

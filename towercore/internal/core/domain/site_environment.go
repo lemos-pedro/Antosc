@@ -89,16 +89,6 @@ type SiteEnvironmentFilter struct {
 	OrderBy             []string // ex: []string{"measured_at DESC", "site_id ASC"}
 }
 
-// SiteEnvironmentRepository define a interface para repositórios de medições de ambiente.
-type SiteEnvironmentRepository interface {
-	// Create insere uma nova medição de ambiente
-	Create(ctx context.Context, env *SiteEnvironment) error
-	// CreateMany insere múltiplas medições de uma vez (ótimo para batch)
-	CreateMany(ctx context.Context, envs []*SiteEnvironment) error
-	// List retorna medições baseado em filtros
-	List(ctx context.Context, filter *SiteEnvironmentFilter) ([]*SiteEnvironment, int, error)
-	// GetLatest retorna a medição mais recente para um site
-	GetLatest(ctx context.Context, siteID uuid.UUID) (*SiteEnvironment, error)
-	// DeleteOlderThan remove medições mais antigas que um determinado tempo (para retenção)
-	DeleteOlderThan(ctx context.Context, olderThan time.Time) error
-}
+// NOTA: SiteEnvironmentRepository NÃO é definida aqui — ver
+// internal/core/interfaces/site_environment.go (hexagonal architecture:
+// ports ficam em core/interfaces, não em domain).

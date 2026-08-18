@@ -2,10 +2,11 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -19,7 +20,7 @@ type RadioKPIHandler struct {
 }
 
 // NewRadioKPIHandler cria um novo handler para KPIs de rádio.
-func NewRadioKPIService(service *services.RadioKPIService) *RadioKPIHandler {
+func NewRadioKPIHandler(service *services.RadioKPIService) *RadioKPIHandler {
 	return &RadioKPIHandler{service: service}
 }
 
@@ -130,9 +131,9 @@ func (h *RadioKPIHandler) getKPIs(w http.ResponseWriter, r *http.Request) {
 		Limit:           limit,
 		Offset:          offset,
 		OrderBy:         []string{"measured_at DESC"},
-		MeasuredAtAfter: &measuredAfter,
-		MeasuredAtBefore: &measuredBefore,
 	}
+	if !measuredAfter.IsZero() { filter.MeasuredAtAfter = &measuredAfter }
+	if !measuredBefore.IsZero() { filter.MeasuredAtBefore = &measuredBefore }
 
 	// Buscar os KPIs
 	kpis, total, err := h.service.GetKPIsHistorico(r.Context(), filter)

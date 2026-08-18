@@ -1,133 +1,91 @@
-// Package routes contém o roteamento HTTP e middlewares para a API.
+// Package routes wires the HTTP API, its public endpoints, and its middleware.
 package routes
 
 import (
 	"net/http"
 
 	"towercore/internal/api/handlers"
-	"towercore/internal/core/services"
+	"towercore/internal/api/middleware"
+	"towercore/internal/infrastructure/config"
+	"towercore/internal/infrastructure/logger"
+	"towercore/internal/observability"
 )
 
-// Router define os caminhos HTTP e seus handlers correspondentes.
-type Router struct {
-	// Handlers
-	towerHandler          *handlers.TowerHandler
-	towerOperatorHandler  *handlers.TowerOperatorHandler
-	eventHandler          *handlers.EventHandler
-	metricHandler         *handlers.MetricHandler
-	snmpCollectHandler    *handlers.SNMPCollectHandler
-	auditHandler          *handlers.AuditHandler
-	authHandler           *handlers.AuthHandler
-	userHandler           *handlers.UserHandler
-	ticketHandler         *handlers.TicketHandler
-	comapReadingHandler   *handlers.ComapReadingHandler
-	discoveredDeviceHandler *handlers.DiscoveredDeviceHandler
-	regionHandler         *handlers.RegionHandler
-	operatorHandler       *handlers.OperatorHandler
-	slaHandler            *handlers.SLAHandler
-	radioKPIHandler       *handlers.RadioKPIHandler
-	backhaulInterfaceHandler *handlers.BackhaulInterfaceHandler
-	siteEnvironmentHandler *handlers.SiteEnvironmentHandler // <-- NOVO HANDLER DE AMBIENTE
-
-	// Middleware
-	logger  *zap.Logger
-	metrics *observability.Metrics
+type Handlers struct {
+	Tower *handlers.TowerHandler
+	TowerOperator *handlers.TowerOperatorHandler
+	Event *handlers.EventHandler
+	Metric *handlers.MetricHandler
+	SNMPCollect *handlers.SNMPCollectHandler
+	Audit *handlers.AuditHandler
+	Auth *handlers.AuthHandler
+	User *handlers.UserHandler
+	Ticket *handlers.TicketHandler
+	ComapReading *handlers.ComapReadingHandler
+	DiscoveredDevice *handlers.DiscoveredDeviceHandler
+	Region *handlers.RegionHandler
+	Operator *handlers.OperatorHandler
+	SLA *handlers.SLAHandler
+	RadioKPI *handlers.RadioKPIHandler
+	Backhaul *handlers.BackhaulInterfaceHandler
+	SiteEnvironment *handlers.SiteEnvironmentHandler
 }
 
-// NewRouter cria um novo router com os handlers e middlewares especificados.
-func NewRouter(
-	cfg *config.Config,
-	logger *zap.Logger,
-	metrics *observability.Metrics,
-	towerHandler *handlers.TowerHandler,
-	towerOperatorHandler *handlers.TowerOperatorHandler,
-	eventHandler *handlers.EventHandler,
-	metricHandler *handlers.MetricHandler,
-	snmpCollectHandler *handlers.SNMPCollectHandler,
-	auditHandler *handlers.AuditHandler,
-	authHandler          *handlers.AuthHandler,
-	userHandler          *handlers.UserHandler,
-	ticketHandler        *handlers.TicketHandler,
-	comapReadingHandler  *handlers.ComapReadingHandler,
-	discoveredDeviceHandler *handlers.DiscoveredDeviceHandler,
-	regionHandler        *handlers.RegionHandler,
-	operatorHandler      *handlers.OperatorHandler,
-	slaHandler           *handlers.SLAHandler,
-	radioKPIHandler      *handlers.RadioKPIHandler,
-	backhaulInterfaceHandler *handlers.BackhaulInterfaceHandler,
-	siteEnvironmentHandler *handlers.SiteEnvironmentHandler, // <-- NOVO HANDLER DE AMBIENTE
-) *Router {
-	return &Router{
-		// Handlers
-		towerHandler:          towerHandler,
-		towerOperatorHandler:  towerOperatorHandler,
-		eventHandler:          eventHandler,
-		metricHandler:         metricHandler,
-		snmpCollectHandler:    snmpCollectHandler,
-		auditHandler:          auditHandler,
-		authHandler:           authHandler,
-		userHandler:           userHandler,
-		ticketHandler:         ticketHandler,
-		comapReadingHandler:   comapreadingHandler,
-		discoveredDeviceHandler: discoveredDeviceHandler,
-		regionHandler:         regionHandler,
-		operatorHandler:       operatorHandler,
-		slaHandler:            slaHandler,
-		radioKPIHandler:       radioKPIHandler,
-		backhaulInterfaceHandler: backhaulInterfaceHandler,
-		siteEnvironmentHandler: siteEnvironmentHandler, // <-- NOVO HANDLER DE AMBIENTE
+// NewRouter builds the complete API surface. Health, metrics and login are
+// public; operational endpoints require an authenticated user or service.
+func NewRouter(cfg config.Config, log *logger.Logger, metrics *observability.Metrics, h Handlers) http.Handler {
+	public := http.NewServeMux()
+	health := handlers.NewHealthHandler(cfg)
+	public.Handle("GET /healthz", health)
+	public.Handle("GET /readyz", health)
+	public.Handle("GET /metrics", metrics.Handler())
+	public.Handle("POST /api/v1/auth", h.Auth)
 
-		// Middleware
-		logger:  logger,
-		metrics: metrics,
+	api := http.NewServeMux()
+	api.Handle("/api/v1/towers", h.Tower)
+	api.Handle("/api/v1/towers/", h.Tower)
+	api.Handle("POST /api/v1/towers/{id}/operators", h.TowerOperator)
+	api.Handle("DELETE /api/v1/towers/{id}/operators/{operator_id}", h.TowerOperator)
+	api.Handle("/api/v1/events", h.Event)
+	api.Handle("/api/v1/events/", h.Event)
+	api.Handle("/api/v1/metrics", h.Metric)
+	api.Handle("/api/v1/metrics/", h.Metric)
+	api.Handle("/api/v1/snmp/collect", h.SNMPCollect)
+	api.Handle("/api/v1/audit", h.Audit)
+	api.Handle("/api/v1/audit/", h.Audit)
+	api.Handle("/api/v1/users", h.User)
+	api.Handle("/api/v1/users/", h.User)
+	api.Handle("/api/v1/tickets", h.Ticket)
+	api.Handle("/api/v1/tickets/", h.Ticket)
+	api.Handle("/api/v1/comap/readings", h.ComapReading)
+	api.Handle("/api/v1/comap/readings/", h.ComapReading)
+	api.Handle("/api/v1/discovered-devices", h.DiscoveredDevice)
+	api.Handle("/api/v1/discovered-devices/", h.DiscoveredDevice)
+	api.Handle("/api/v1/regions", h.Region)
+	api.Handle("GET /api/v1/regions/{id}", http.HandlerFunc(h.Region.ServeByID))
+	api.Handle("/api/v1/operators", h.Operator)
+	api.Handle("GET /api/v1/operators/{id}", http.HandlerFunc(h.Operator.ServeByID))
+	api.Handle("PUT /api/v1/operators/{id}", http.HandlerFunc(h.Operator.ServeByID))
+	api.Handle("DELETE /api/v1/operators/{id}", http.HandlerFunc(h.Operator.ServeByID))
+	api.Handle("/api/v1/sla", h.SLA)
+	api.Handle("GET /api/v1/sla/region/{id}", http.HandlerFunc(h.SLA.ServeRegion))
+	api.Handle("/api/v1/radio-kpi", h.RadioKPI)
+	api.Handle("GET /api/v1/backhaul/tower/{id}/status", http.HandlerFunc(h.Backhaul.GetTowerBackhaulStatus))
+	api.Handle("/api/v1/backhaul", h.Backhaul)
+	api.Handle("GET /api/v1/site-environment/site/{id}/status", http.HandlerFunc(h.SiteEnvironment.GetSiteEnvironmentStatus))
+	api.Handle("/api/v1/site-environment", h.SiteEnvironment)
+
+	if cfg.Env == "prod" {
+		public.Handle("/api/v1/", middleware.Chain(api,
+			middleware.Auth(cfg.Auth.APIKeyHash, cfg.Auth.BearerToken, cfg.Auth.UserTokenSecret),
+			middleware.RateLimitPerMinute(cfg.RateLimit.WritePerMinute),
+		))
+	} else {
+		// In non-production environments we skip authentication to ease
+		// local development and testing. Do NOT enable this in production.
+		public.Handle("/api/v1/", middleware.Chain(api,
+			middleware.RateLimitPerMinute(cfg.RateLimit.WritePerMinute),
+		))
 	}
-}
-
-// ServeHTTP implementa a interface http.Handler.
-func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	// Aplicar middlewares aqui (logging, métricas, etc.)
-	// Então encaminhar para o handler apropriado baseado no path
-	path := req.URL.Path
-
-	switch {
-	case path == "/api/towers" || HasPrefix(path, "/api/towers/"):
-		r.towerHandler.ServeHTTP(w, req)
-	case path == "/api/events" || HasPrefix(path, "/api/events/"):
-		r.eventHandler.ServeHTTP(w, req)
-	case path == "/api/metrics" || HasPrefix(path, "/api/metrics/"):
-		r.metricHandler.ServeHTTP(w, req)
-	case path == "/api/snmp/collect" || HasPrefix(path, "/api/snmp/collect/"):
-		r.snmpCollectHandler.ServeHTTP(w, req)
-	case path == "/api/audit" || HasPrefix(path, "/api/audit/"):
-		r.auditHandler.ServeHTTP(w, req)
-	case path == "/api/auth" || HasPrefix(path, "/api/auth/"):
-		r.authHandler.ServeHTTP(w, req)
-	case path == "/api/users" || HasPrefix(path, "/api/users/"):
-		r.userHandler.ServeHTTP(w, req)
-	case path == "/api/tickets" || HasPrefix(path, "/api/tickets/"):
-		r.ticketHandler.ServeHTTP(w, req)
-	case path == "/api/comap/readings" || HasPrefix(path, "/api/comap/readings/"):
-		r.comapReadingHandler.ServeHTTP(w, req)
-	case path == "/api/discovered-devices" || HasPrefix(path, "/api/discovered-devices/"):
-		r.discoveredDeviceHandler.ServeHTTP(w, req)
-	case path == "/api/regions" || HasPrefix(path, "/api/regions/"):
-		r.regionHandler.ServeHTTP(w, req)
-	case path == "/api/operators" || HasPrefix(path, "/api/operators/"):
-		r.operatorHandler.ServeHTTP(w, req)
-	case path == "/api/sla" || HasPrefix(path, "/api/sla/"):
-		r.slaHandler.ServeHTTP(w, req)
-	case path == "/api/radio-kpi" || HasPrefix(path, "/api/radio-kpi/"):
-		r.radioKPIHandler.ServeHTTP(w, req)
-	case path == "/api/backhaul" || HasPrefix(path, "/api/backhaul/"): // <-- ROTAS DE BACKHAUL
-		r.backhaulInterfaceHandler.ServeHTTP(w, req)
-	case path == "/api/site-environment" || HasPrefix(path, "/api/site-environment/"): // <-- ROTAS DE AMBIENTE
-		r.siteEnvironmentHandler.ServeHTTP(w, req)
-	default:
-		http.NotFound(w, req)
-	}
-}
-
-// Funções auxiliares
-func HasPrefix(s, prefix string) bool {
-	return len(s) >= len(prefix) && s[:len(prefix)] == prefix
+	return middleware.Chain(public, middleware.RequestID(), middleware.AccessLog(log), middleware.CORS([]string{"http://localhost:3000", "http://localhost:8000","http://localhost:8080","http://172.21.1.106:8080","http://172.21.1.106:8000"}))
 }

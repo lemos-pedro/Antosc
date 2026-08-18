@@ -57,21 +57,21 @@ func (r *radioKPIRepository) CreateMany(ctx context.Context, kpis []*domain.Radi
 	// Usar transação para melhor performance em batch
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
-		return errors.Errorf("falha ao iniciar transação: %w", err)
+		return fmt.Errorf("falha ao iniciar transação: %w", err)
 	}
 	defer func() {
 		if err != nil {
 			tx.Rollback() // Ignorar erro de rollback se já houver erro
 		} else {
 			if errTx := tx.Commit(); errTx != nil {
-				err = errors.Errorf("falha ao commitar transação: %w", errTx)
+				err = fmt.Errorf("falha ao commitar transação: %w", errTx)
 			}
 		}
 	}()
 
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
-		return errors.Errorf("falha ao preparar statement: %w", err)
+		return fmt.Errorf("falha ao preparar statement: %w", err)
 	}
 	defer stmt.Close()
 
@@ -100,13 +100,13 @@ func (r *radioKPIRepository) CreateMany(ctx context.Context, kpis []*domain.Radi
 			kpi.ConnectedUEs, kpi.MaxSupportedUEs, kpi.PRBUtilizationPct, kpi.ChannelOccupancyPct,
 			kpi.Ber, kpi.Bler, kpi.Fer, kpi.CodecDropPct,
 			kpi.HoAttempt, kpi.HoSuccess, kpi.HoFail, kpi.HoPingPong,
-			kpi.CallDropPct, kpi.CallBlockPct, kpi.PCPSDULossPct, kpi.RLCRetransPct,
+			kpi.CallDropPct, kpi.CallBlockPct, kpi.PDCPSDULossPct, kpi.RLCRetransPct,
 			kpi.SourceSystem, kpi.CollectionIntervalSec, kpi.RawData,
 			kpi.CreatedAt, kpi.UpdatedAt,
 		)
 
 		if err != nil {
-			return errors.Errorf("falha ao inserir RadioKPI: %w", err)
+			return fmt.Errorf("falha ao inserir RadioKPI: %w", err)
 		}
 	}
 
@@ -233,7 +233,7 @@ func (r *radioKPIRepository) List(ctx context.Context, filter *domain.RadioKPIFi
 	// Executar a query
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, 0, errors.Errorf("falha ao executar query de RadioKPI: %w", err)
+		return nil, 0, fmt.Errorf("falha ao executar query de RadioKPI: %w", err)
 	}
 	defer rows.Close()
 
@@ -248,23 +248,23 @@ func (r *radioKPIRepository) List(ctx context.Context, filter *domain.RadioKPIFi
 			&kpi.ConnectedUEs, &kpi.MaxSupportedUEs, &kpi.PRBUtilizationPct, &kpi.ChannelOccupancyPct,
 			&kpi.Ber, &kpi.Bler, &kpi.Fer, &kpi.CodecDropPct,
 			&kpi.HoAttempt, &kpi.HoSuccess, &kpi.HoFail, &kpi.HoPingPong,
-			&kpi.CallDropPct, &kpi.CallBlockPct, &kpi.PCPSDULossPct, &kpi.RLCRetransPct,
+			&kpi.CallDropPct, &kpi.CallBlockPct, &kpi.PDCPSDULossPct, &kpi.RLCRetransPct,
 			&kpi.SourceSystem, &kpi.CollectionIntervalSec, &kpi.RawData,
 			&kpi.CreatedAt, &kpi.UpdatedAt,
 		)
 		if err != nil {
-			return nil, 0, errors.Errorf("falha ao escanear RadioKPI: %w", err)
+			return nil, 0, fmt.Errorf("falha ao escanear RadioKPI: %w", err)
 		}
 		kpis = append(kpis, kpi)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, 0, errors.Errorf("erro ao iterar resultados de RadioKPI: %w", err)
+		return nil, 0, fmt.Errorf("erro ao iterar resultados de RadioKPI: %w", err)
 	}
 
 	// Contar total sem limites para paginação informativa
 	countQuery := "SELECT COUNT(*) FROM radio_kpi_staging WHERE 1=1"
-	countArgs := []interface{}
+	countArgs := []interface{}{}
 	countArgIndex := 1
 
 	// Aplicar os mesmos filtros de contagem (sem ordenação, limite, offset)
@@ -295,7 +295,7 @@ func (r *radioKPIRepository) List(ctx context.Context, filter *domain.RadioKPIFi
 	}
 	if filter.ReceivedAtAfter != nil {
 		countQuery += fmt.Sprintf(" AND received_at >= $%d", countArgIndex)
-		args = append(args, *filter.ReceivedAtAfter)
+		countArgs = append(countArgs, *filter.ReceivedAtAfter)
 		countArgIndex++
 	}
 	if filter.ReceivedAtBefore != nil {
@@ -335,9 +335,9 @@ func (r *radioKPIRepository) List(ctx context.Context, filter *domain.RadioKPIFi
 	}
 
 	var total int
-	err = r.db.QueryContext(ctx, countQuery, countArgs...).Scan(&total)
+	err = r.db.QueryRowContext(ctx, countQuery, countArgs...).Scan(&total)
 	if err != nil {
-		return nil, 0, errors.Errorf("falha ao contar RadioKPIs: %w", err)
+		return nil, 0, fmt.Errorf("falha ao contar RadioKPIs: %w", err)
 	}
 
 	return kpis, total, nil
@@ -352,12 +352,12 @@ func (r *radioKPIRepository) DeleteOlderThan(ctx context.Context, olderThan time
 	query := `DELETE FROM radio_kpi_staging WHERE received_at < $1`
 	result, err := r.db.ExecContext(ctx, query, olderThan)
 	if err != nil {
-		return errors.Errorf("falha ao excluir RadioKPIs antigos: %w", err)
+		return fmt.Errorf("falha ao excluir RadioKPIs antigos: %w", err)
 	}
 
-	rowsAffected, err := result.RowsAffected()
+	_, err = result.RowsAffected()
 	if err != nil {
-		return errors.Errorf("falha ao obter linhas afetadas: %w", err)
+		return fmt.Errorf("falha ao obter linhas afetadas: %w", err)
 	}
 
 	// Log informativo (em produção, usar logger apropriado)
@@ -386,14 +386,14 @@ func (r *radioKPIRepository) GetByTowerAndSector(ctx context.Context, towerID uu
 	`
 
 	kpi := &domain.RadioKPI{}
-	err := r.db.QueryContext(ctx, query, towerID, sectorID, technique).Scan(
+	err := r.db.QueryRowContext(ctx, query, towerID, sectorID, technique).Scan(
 		&kpi.ID, &kpi.TowerID, &kpi.SectorID, &kpi.CellTechnique,
 		&kpi.MeasuredAt, &kpi.ReceivedAt,
 		&kpi.TxPowerWatt, &kpi.TxPowerDbm, &kpi.RxPowerDbm, &kpi.SnrDb, &kpi.SinrDb, &kpi.RsrpDbm, &kpi.RsrqDbm,
 		&kpi.ConnectedUEs, &kpi.MaxSupportedUEs, &kpi.PRBUtilizationPct, &kpi.ChannelOccupancyPct,
 		&kpi.Ber, &kpi.Bler, &kpi.Fer, &kpi.CodecDropPct,
 		&kpi.HoAttempt, &kpi.HoSuccess, &kpi.HoFail, &kpi.HoPingPong,
-		&kpi.CallDropPct, &kpi.CallBlockPct, &kpi.PCPSDULossPct, &kpi.RLCRetransPct,
+			&kpi.CallDropPct, &kpi.CallBlockPct, &kpi.PDCPSDULossPct, &kpi.RLCRetransPct,
 		&kpi.SourceSystem, &kpi.CollectionIntervalSec, &kpi.RawData,
 		&kpi.CreatedAt, &kpi.UpdatedAt,
 	)
@@ -402,7 +402,7 @@ func (r *radioKPIRepository) GetByTowerAndSector(ctx context.Context, towerID uu
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil // Não encontrado - não é erro
 		}
-		return nil, errors.Errorf("falha ao buscar RadioKPI por torre/setor: %w", err)
+		return nil, fmt.Errorf("falha ao buscar RadioKPI por torre/setor: %w", err)
 	}
 
 	return kpi, nil

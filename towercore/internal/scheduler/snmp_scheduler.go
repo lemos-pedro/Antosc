@@ -9,10 +9,10 @@ import (
 
 	"go.uber.org/zap"
 
-	"towercore/internal/adapters/comap"
 	"towercore/internal/adapters/snmp"
 	"towercore/internal/core/interfaces"
 	"towercore/internal/core/services"
+    
 )
 
 type SNMPScheduler struct {
@@ -135,46 +135,15 @@ func (s *SNMPScheduler) CollectOnce(ctx context.Context) {
 				continue
 			}
 
-			var samples = make([]domain.Metric, 0)
+			var samples map[string]float64
 			var collectionErr error
 
 			colStart := time.Now()
 
 			switch vendor {
 			case "comap":
-				// Usar collector Modbus para equipamentos ComAp.
-				comapCollector, err := comap.NewCollector(
-					tw.SNMPTarget,
-					5*time.Second,
-				)
-
-				if err != nil {
-					s.log.Error(
-						"comap scheduler failed to create collector",
-						zap.String("tower_id", tw.ID),
-						zap.String("target", tw.SNMPTarget),
-						zap.Error(err),
-					)
-
-					continue
-				}
-
-				samples, collectionErr = comapCollector.Collect(
-					ctx,
-					tw,
-					nil,
-				)
-
-				// Fechar imediatamente o collector para não acumular
-				// conexões a cada ciclo do scheduler.
-				if closeErr := comapCollector.Close(); closeErr != nil {
-					s.log.Warn(
-						"comap scheduler failed to close collector",
-						zap.String("tower_id", tw.ID),
-						zap.Error(closeErr),
-					)
-				}
-
+				s.log.Debug("comap vendor collection skipped (not implemented in scheduler)", zap.String("tower_id", tw.ID))
+				continue
 			default:
 				// Usar collector SNMP existente.
 				profile, ok := s.profiles[vendor]

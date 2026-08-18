@@ -51,3 +51,13 @@ func writeError(w http.ResponseWriter, status int, code, message string) {
 		"error": map[string]string{"code": code, "message": message},
 	})
 }
+
+// ServeHTTP permite usar ComapReadingHandler como http.Handler.
+func (h *ComapReadingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		h.GetByTowerID(w, r)
+	default:
+		writeError(w, http.StatusMethodNotAllowed, "METHOD_NOT_ALLOWED", "method not allowed")
+	}
+}

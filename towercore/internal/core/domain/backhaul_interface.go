@@ -30,6 +30,7 @@ type BackhaulInterface struct {
 
 	// === TIPO E CAPACIDADE ===
 	IfType      string    `json:"if_type,omitempty"`     // Tipo da interface (ianaIfType: ethernetCsmacd(6), ieee8023adLag(137), etc.)
+	IfSpeedBigint *int64  `json:"if_speed_bps,omitempty"` // Velocidade nominal em bits por segundo
 	IfSpeedMbps *float64  `json:"if_speed_mbps,omitempty"` // Speed in Mbps
 	DuplexMode  *string   `json:"duplex_mode,omitempty"` // full/half/unknown
 	MediaType   *string   `json:"media_type,omitempty"`  // Tipo de meio: fiber, copper, wireless, etc.
@@ -110,16 +111,9 @@ type BackhaulInterfaceFilter struct {
 	OrderBy        []string // ex: []string{"measured_at DESC", "tower_id ASC"}
 }
 
-// BackhaulInterfaceRepository define a interface para repositórios de métricas de backhaul.
-type BackhaulInterfaceRepository interface {
-	// Create insere uma nova medição de interface de backhaul
-	Create(ctx context.Context, iface *BackhaulInterface) error
-	// CreateMany insere múltiplas medições de uma vez (ótimo para batch)
-	CreateMany(ctx context.Context, ifaces []*BackhaulInterface) error
-	// List retorna medições baseado em filtros
-	List(ctx context.Context, filter *BackhaulInterfaceFilter) ([]*BackhaulInterface, int, error)
-	// GetLatest retorna a medição mais recente para uma torre/interface
-	GetLatest(ctx context.Context, towerID uuid.UUID, interfaceName string) (*BackhaulInterface, error)
-	// DeleteOlderThan remove medições mais antigas que um determinado tempo (para retenção)
-	DeleteOlderThan(ctx context.Context, olderThan time.Time) error
-}
+// NOTA: BackhaulInterfaceRepository NÃO é definida aqui — hexagonal
+// architecture (ver estrutura.md) exige que interfaces/ports fiquem em
+// internal/core/interfaces, não em domain. A definição real está em
+// internal/core/interfaces/backhaul_interface.go. Esta cópia foi removida
+// por ser duplicada, morta, e ter causado confusão (o site_environment
+// caiu exatamente nesta armadilha, apontando para o pacote errado).

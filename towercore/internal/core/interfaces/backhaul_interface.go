@@ -6,6 +6,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
+
 	"towercore/internal/core/domain"
 )
 

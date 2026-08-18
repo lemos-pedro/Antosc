@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"towercore/internal/core/domain"
+	"towercore/internal/core/interfaces"
 )
 
 // backhaulInterfaceRepository implementa a interface BackhaulInterfaceRepository usando PostgreSQL.
@@ -19,7 +20,7 @@ type backhaulInterfaceRepository struct {
 }
 
 // NewBackhaulInterfaceRepository cria um novo repositório de métricas de backhaul.
-func NewBackhaulInterfaceRepository(db *sql.DB) domain.BackhaulInterfaceRepository {
+func NewBackhaulInterfaceRepository(db *sql.DB) interfaces.BackhaulInterfaceRepository {
 	return &backhaulInterfaceRepository{db: db}
 }
 
@@ -44,6 +45,12 @@ func (r *backhaulInterfaceRepository) Create(ctx context.Context, iface *domain.
 	}
 	if iface.ReceivedAt.IsZero() {
 		iface.ReceivedAt = now
+	}
+	if iface.CreatedAt.IsZero() {
+		iface.CreatedAt = now
+	}
+	if iface.UpdatedAt.IsZero() {
+		iface.UpdatedAt = now
 	}
 
 	query := `
@@ -72,20 +79,21 @@ func (r *backhaulInterfaceRepository) Create(ctx context.Context, iface *domain.
 			$4, $5,
 			$6, $7,
 			$8, $9, $10,
-			$11, $12, $13, $14, $15, $16, $17,
-			$18, $19,
-			$20, $21,
-			$22, $23,
-			$24, $25,
+			$11, $12, $13, $14, $15, $16,
+			$17, $18,
+			$19, $20,
+			$21, $22,
+			$23, $24,
+			$25,
 			$26, $27,
 			$28, $29,
 			$30, $31,
-			$32, $33,
-			$34, $35, $36, $37, $38,
-			$39, $40,
-			$41, $42,
-			$43,
-			$44, $45
+			$32,
+			$33, $34,
+			$35, $36, $37,
+			$38, $39,
+			$40, $41, $42,
+			$43, $44
 		)
 	`
 
@@ -114,7 +122,7 @@ func (r *backhaulInterfaceRepository) Create(ctx context.Context, iface *domain.
 	)
 
 	if err != nil {
-		return errors.Errorf("falha ao inserir medição de backhaul: %w", err)
+		return fmt.Errorf("falha ao inserir medição de backhaul: %w", err)
 	}
 
 	return nil
@@ -152,40 +160,41 @@ func (r *backhaulInterfaceRepository) CreateMany(ctx context.Context, ifaces []*
 			$4, $5,
 			$6, $7,
 			$8, $9, $10,
-			$11, $12, $13, $14, $15, $16, $17,
-			$18, $19,
-			$20, $21,
-			$22, $23,
-			$24, $25,
+			$11, $12, $13, $14, $15, $16,
+			$17, $18,
+			$19, $20,
+			$21, $22,
+			$23, $24,
+			$25,
 			$26, $27,
 			$28, $29,
 			$30, $31,
-			$32, $33,
-			$34, $35, $36, $37, $38,
-			$39, $40,
-			$41, $42,
-			$43,
-			$44, $45
+			$32,
+			$33, $34,
+			$35, $36, $37,
+			$38, $39,
+			$40, $41, $42,
+			$43, $44
 		)
 	`
 
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
-		return errors.Errorf("falha ao iniciar transação: %w", err)
+		return fmt.Errorf("falha ao iniciar transação: %w", err)
 	}
 	defer func() {
 		if err != nil {
 			tx.Rollback()
 		} else {
 			if errTx := tx.Commit(); errTx != nil {
-				err = errors.Errorf("falha ao commitar transação: %w", errTx)
+				err = fmt.Errorf("falha ao commitar transação: %w", errTx)
 			}
 		}
 	}()
 
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
-		return errors.Errorf("falha ao preparar statement: %w", err)
+		return fmt.Errorf("falha ao preparar statement: %w", err)
 	}
 	defer stmt.Close()
 
@@ -202,9 +211,15 @@ func (r *backhaulInterfaceRepository) CreateMany(ctx context.Context, ifaces []*
 		now := time.Now().UTC()
 		if iface.MeasuredAt.IsZero() {
 			iface.MeasuredAt = now
-			if iface.ReceivedAt.IsZero() {
-				iface.ReceivedAt = now
-			}
+		}
+		if iface.ReceivedAt.IsZero() {
+			iface.ReceivedAt = now
+		}
+		if iface.CreatedAt.IsZero() {
+			iface.CreatedAt = now
+		}
+		if iface.UpdatedAt.IsZero() {
+			iface.UpdatedAt = now
 		}
 
 		_, err = stmt.ExecContext(
@@ -231,7 +246,7 @@ func (r *backhaulInterfaceRepository) CreateMany(ctx context.Context, ifaces []*
 		)
 
 		if err != nil {
-			return errors.Errorf("falha ao inserir medição de backhaul: %w", err)
+			return fmt.Errorf("falha ao inserir medição de backhaul: %w", err)
 		}
 	}
 
@@ -367,7 +382,7 @@ func (r *backhaulInterfaceRepository) List(ctx context.Context, filter *domain.B
 	// Executar a query
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, 0, errors.Errorf("falha ao executar query de backhaul: %w", err)
+		return nil, 0, fmt.Errorf("falha ao executar query de backhaul: %w", err)
 	}
 	defer rows.Close()
 
@@ -397,18 +412,18 @@ func (r *backhaulInterfaceRepository) List(ctx context.Context, filter *domain.B
 			&iface.CreatedAt, &iface.UpdatedAt,
 		)
 		if err != nil {
-			return nil, 0, errors.Errorf("falha ao escanear medição de backhaul: %w", err)
+			return nil, 0, fmt.Errorf("falha ao escanear medição de backhaul: %w", err)
 		}
 		ifaces = append(ifaces, iface)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, 0, errors.Errorf("erro ao iterar resultados de backhaul: %w", err)
+		return nil, 0, fmt.Errorf("erro ao iterar resultados de backhaul: %w", err)
 	}
 
 	// Contar total sem limites para paginação informativa
 	countQuery := "SELECT COUNT(*) FROM backhaul_interface_history WHERE 1=1"
-	countArgs := []interface{}
+	countArgs := []interface{}{}
 	countArgIndex := 1
 
 	// Aplicar os mesmos filtros de contagem (sem ordenação, limite, offset)
@@ -419,57 +434,57 @@ func (r *backhaulInterfaceRepository) List(ctx context.Context, filter *domain.B
 	}
 	if filter.InterfaceName != nil {
 		countQuery += fmt.Sprintf(" AND interface_name = $%d", countArgIndex)
-		args = append(args, *filter.InterfaceName)
+		countArgs = append(countArgs, *filter.InterfaceName)
 		countArgIndex++
 	}
 	if filter.MeasuredAtAfter != nil {
 		countQuery += fmt.Sprintf(" AND measured_at >= $%d", countArgIndex)
-		countArgs = append(args, *filter.MeasuredAtAfter)
+		countArgs = append(countArgs, *filter.MeasuredAtAfter)
 		countArgIndex++
 	}
 	if filter.MeasuredAtBefore != nil {
 		countQuery += fmt.Sprintf(" AND measured_at <= $%d", countArgIndex)
-		countArgs = append(args, *filter.MeasuredAtBefore)
+		countArgs = append(countArgs, *filter.MeasuredAtBefore)
 		countArgIndex++
 	}
 	if filter.ReceivedAtAfter != nil {
 		countQuery += fmt.Sprintf(" AND received_at >= $%d", countArgIndex)
-		countArgs = append(args, *filter.ReceivedAtAfter)
+		countArgs = append(countArgs, *filter.ReceivedAtAfter)
 		countArgIndex++
 	}
 	if filter.ReceivedAtBefore != nil {
 		countQuery += fmt.Sprintf(" AND received_at <= $%d", countArgIndex)
-		countArgs = append(args, *filter.ReceivedAtBefore)
+		countArgs = append(countArgs, *filter.ReceivedAtBefore)
 		countArgIndex++
 	}
 	if filter.AdminStatus != nil {
 		countQuery += fmt.Sprintf(" AND admin_status = $%d", countArgIndex)
-		args = append(args, *filter.AdminStatus)
+		countArgs = append(countArgs, *filter.AdminStatus)
 		countArgIndex++
 	}
 	if filter.OperStatus != nil {
 		countQuery += fmt.Sprintf(" AND oper_status = $%d", countArgIndex)
-		args = append(args, *filter.OperStatus)
+		countArgs = append(countArgs, *filter.OperStatus)
 		countArgIndex++
 	}
 	if filter.MinUtilizationPct != nil {
 		countQuery += fmt.Sprintf(" AND utilization_pct >= $%d", countArgIndex)
-		countArgs = append(args, *filter.MinUtilizationPct)
+		countArgs = append(countArgs, *filter.MinUtilizationPct)
 		countArgIndex++
 	}
 	if filter.MaxUtilizationPct != nil {
 		countQuery += fmt.Sprintf(" AND utilization_pct <= $%d", countArgIndex)
-		args = append(args, *filter.MaxUtilizationPct)
+		countArgs = append(countArgs, *filter.MaxUtilizationPct)
 		countArgIndex++
 	}
 	if filter.MinLatencyMs != nil {
 		countQuery += fmt.Sprintf(" AND avg_latency_ms >= $%d", countArgIndex)
-		args = append(args, *filter.MinLatencyMs)
+		countArgs = append(countArgs, *filter.MinLatencyMs)
 		countArgIndex++
 	}
 	if filter.MaxLatencyMs != nil {
 		countQuery += fmt.Sprintf(" AND avg_latency_ms <= $%d", countArgIndex)
-		args = append(args, *filter.MaxLatencyMs)
+		countArgs = append(countArgs, *filter.MaxLatencyMs)
 		countArgIndex++
 	}
 	if filter.MaxLossPct != nil {
@@ -477,9 +492,9 @@ func (r *backhaulInterfaceRepository) List(ctx context.Context, filter *domain.B
 	}
 
 	var total int
-	err = r.db.QueryContext(ctx, countQuery, countArgs...).Scan(&total)
+	err = r.db.QueryRowContext(ctx, countQuery, countArgs...).Scan(&total)
 	if err != nil {
-		return nil, 0, errors.Errorf("falha ao contar medições de backhaul: %w", err)
+		return nil, 0, fmt.Errorf("falha ao contar medições de backhaul: %w", err)
 	}
 
 	return ifaces, total, nil
@@ -515,7 +530,7 @@ func (r *backhaulInterfaceRepository) GetLatest(ctx context.Context, towerID uui
 	`
 
 	iface := &domain.BackhaulInterface{}
-	err := r.db.QueryContext(ctx, query, towerID, interfaceName).Scan(
+	err := r.db.QueryRowContext(ctx, query, towerID, interfaceName).Scan(
 		&iface.ID, &iface.TowerID, &iface.InterfaceID,
 		&iface.Name, &iface.Description,
 		&iface.MeasuredAt, &iface.ReceivedAt,
@@ -541,7 +556,7 @@ func (r *backhaulInterfaceRepository) GetLatest(ctx context.Context, towerID uui
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil // Não encontrado - não é erro
 		}
-		return nil, errors.Errorf("falha ao buscar medição mais recente de backhaul: %w", err)
+		return nil, fmt.Errorf("falha ao buscar medição mais recente de backhaul: %w", err)
 	}
 
 	return iface, nil
@@ -556,12 +571,12 @@ func (r *backhaulInterfaceRepository) DeleteOlderThan(ctx context.Context, older
 	query := `DELETE FROM backhaul_interface_history WHERE received_at < $1`
 	result, err := r.db.ExecContext(ctx, query, olderThan)
 	if err != nil {
-		return errors.Errorf("falha ao excluir medições antigas de backhaul: %w", err)
+		return fmt.Errorf("falha ao excluir medições antigas de backhaul: %w", err)
 	}
 
-	rowsAffected, err := result.RowsAffected()
+	_, err = result.RowsAffected()
 	if err != nil {
-		return errors.Errorf("falha ao obter linhas afetadas: %w", err)
+		return fmt.Errorf("falha ao obter linhas afetadas: %w", err)
 	}
 
 	return nil

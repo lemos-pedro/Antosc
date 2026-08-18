@@ -1,6 +1,3 @@
-
-
-
 package main
 
 import (
@@ -11,12 +8,15 @@ import (
 	"syscall"
 	"time"
 
+	"go.uber.org/zap"
+
 	"towercore/internal/adapters/eltek"
 	"towercore/internal/adapters/enetek"
 	"towercore/internal/adapters/huawei"
 	"towercore/internal/adapters/nagios"
 	"towercore/internal/adapters/neteco"
 	"towercore/internal/adapters/snmp"
+	"towercore/internal/adapters/vertiv"
 	"towercore/internal/api/handlers"
 	"towercore/internal/api/routes"
 	"towercore/internal/core/services"
@@ -27,12 +27,16 @@ import (
 	"towercore/internal/infrastructure/security"
 	"towercore/internal/observability"
 	"towercore/internal/scheduler"
-	"towercore/internal/adapters/vertiv"
 )
 
 func main() {
 	cfg := config.Load()
 	log := logger.New(cfg.LogLevel)
+	zapLog, err := zap.NewProduction()
+	if err != nil {
+		log.Fatalf("failed to initialize structured logger: %v", err)
+	}
+	defer zapLog.Sync()
 
 	// Database
 	db, err := database.Open(cfg.DB)
@@ -67,6 +71,8 @@ func main() {
 	discoveredDeviceRepo := database.NewDiscoveredDeviceRepository(db, secretBox)
 	towerEndpointRepo := database.NewTowerEndpointRepository(db, secretBox)
 	comapReadingRepo := database.NewComapReadingRepository(db)
+	backhaulRepo := database.NewBackhaulInterfaceRepository(db)
+	siteEnvironmentRepo := database.NewSiteEnvironmentRepository(db)
 
 	regionRepo := database.NewRegionRepository(db)
 	operatorRepo := database.NewOperatorRepository(db)
@@ -89,6 +95,8 @@ func main() {
 	// Radio KPI service
 	radioKPIRepo := database.NewRadioKPIRepository(db)
 	radioKPISvc := services.NewRadioKPIService(radioKPIRepo)
+	backhaulSvc := services.NewBackhaulInterfaceService(backhaulRepo)
+	siteEnvironmentSvc := services.NewSiteEnvironmentService(siteEnvironmentRepo)
 
 	// NetEco (Huawei) — bateria e energia DC via API interna do NetEco +
 	// alarmes via SNMP trap. Enabled=false por default (NETECO_ENABLED) —
@@ -180,16 +188,49 @@ func main() {
 		time.Duration(cfg.Discovery.IntervalSeconds)*time.Second,
 	)
 
-	// SNMP scheduler
+	// SNMP collector (shared) and scheduler
+	collector := snmp.NewGoSNMPCollector(
+		time.Duration(cfg.SNMP.TimeoutSeconds)*time.Second,
+		cfg.SNMP.Retries,
+	)
+
 	snmpScheduler := scheduler.NewSNMPScheduler(
 		towerRepo,
 		snmpIngestSvc,
-		snmp.NewGoSNMPCollector(
-			time.Duration(cfg.SNMP.TimeoutSeconds)*time.Second,
-			cfg.SNMP.Retries,
-		),
+		collector,
 		snmpProfiles,
-		log,
+		zapLog,
+		time.Duration(cfg.Scheduler.IntervalSeconds)*time.Second,
+		cfg.Scheduler.BatchSize,
+	)
+
+	// Schedulers for Radio KPI, Backhaul interfaces and Site Environment
+	radioScheduler := scheduler.NewRadioScheduler(
+		towerRepo,
+		radioKPISvc,
+		collector,
+		snmpProfiles,
+		zapLog,
+		time.Duration(cfg.Scheduler.IntervalSeconds)*time.Second,
+		cfg.Scheduler.BatchSize,
+	)
+
+	backhaulScheduler := scheduler.NewBackhaulScheduler(
+		towerRepo,
+		backhaulSvc,
+		collector,
+		snmpProfiles,
+		zapLog,
+		time.Duration(cfg.Scheduler.IntervalSeconds)*time.Second,
+		cfg.Scheduler.BatchSize,
+	)
+
+	siteEnvironmentScheduler := scheduler.NewSiteEnvironmentScheduler(
+		towerRepo,
+		siteEnvironmentSvc,
+		collector,
+		snmpProfiles,
+		zapLog,
 		time.Duration(cfg.Scheduler.IntervalSeconds)*time.Second,
 		cfg.Scheduler.BatchSize,
 	)
@@ -221,6 +262,8 @@ func main() {
 
 	// Radio KPI handler
 	radioKPIHandler := handlers.NewRadioKPIHandler(radioKPISvc)
+	backhaulHandler := handlers.NewBackhaulInterfaceHandler(backhaulSvc)
+	siteEnvironmentHandler := handlers.NewSiteEnvironmentHandler(siteEnvironmentSvc)
 
 	discoveredDeviceHandler := handlers.NewDiscoveredDeviceHandler(
 		discoveredDeviceRepo,
@@ -232,26 +275,25 @@ func main() {
 	slaHandler := handlers.NewSLAHandler(slaSvc)
 
 	// Router
-	router := routes.NewRouter(
-		cfg,
-		log,
-		metrics,
-		towerHandler,
-		towerOperatorHandler,
-		eventHandler,
-		metricHandler,
-		snmpCollectHandler,
-		auditHandler,
-		authHandler,
-		userHandler,
-		ticketHandler,
-		discoveredDeviceHandler,
-		regionHandler,
-		operatorHandler,
-		slaHandler,
-		comapReadingHandler,
-		radioKPIHandler,
-	)
+	router := routes.NewRouter(cfg, log, metrics, routes.Handlers{
+		Tower:            towerHandler,
+		TowerOperator:    towerOperatorHandler,
+		Event:            eventHandler,
+		Metric:           metricHandler,
+		SNMPCollect:      snmpCollectHandler,
+		Audit:            auditHandler,
+		Auth:             authHandler,
+		User:             userHandler,
+		Ticket:           ticketHandler,
+		ComapReading:     comapReadingHandler,
+		DiscoveredDevice: discoveredDeviceHandler,
+		Region:           regionHandler,
+		Operator:         operatorHandler,
+		SLA:              slaHandler,
+		RadioKPI:         radioKPIHandler,
+		Backhaul:         backhaulHandler,
+		SiteEnvironment:  siteEnvironmentHandler,
+	})
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
@@ -281,6 +323,9 @@ func main() {
 		snmpCtx, cancel := context.WithCancel(context.Background())
 		snmpCancel = cancel
 		go snmpScheduler.Start(snmpCtx)
+		go radioScheduler.Start(snmpCtx)
+		go backhaulScheduler.Start(snmpCtx)
+		go siteEnvironmentScheduler.Start(snmpCtx)
 	} else {
 		log.Info("snmp scheduler disabled by configuration")
 	}

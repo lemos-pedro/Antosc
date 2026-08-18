@@ -126,3 +126,24 @@ func (h *DiscoveredDeviceHandler) Ignore(w http.ResponseWriter, r *http.Request)
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// ServeHTTP permite usar DiscoveredDeviceHandler como http.Handler.
+func (h *DiscoveredDeviceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		h.List(w, r)
+	case http.MethodPost:
+		// Determinar ação baseada na suffix da rota: /{id}/promote ou /{id}/ignore
+		if strings.HasSuffix(r.URL.Path, "/promote") {
+			h.Promote(w, r)
+			return
+		}
+		if strings.HasSuffix(r.URL.Path, "/ignore") {
+			h.Ignore(w, r)
+			return
+		}
+		apierror.MethodNotAllowed(w)
+	default:
+		apierror.MethodNotAllowed(w)
+	}
+}

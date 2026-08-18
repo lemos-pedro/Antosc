@@ -6,6 +6,8 @@ import (
 	"syscall"
 	"time"
 
+	"towercore/internal/infrastructure/logger"
+
 	"go.uber.org/zap"
 
 	"towercore/internal/adapters/eltek"
@@ -36,6 +38,9 @@ func main() {
 		panic("failed to create zap logger: " + err.Error())
 	}
 	defer zapLog.Sync()
+
+	// Adapter logger used by components that expect internal/logger.Logger
+	stdLog := logger.New("")
 
 	// Database — aponta para o Postgres remoto (EC2/RDS) via .env
 	db, err := database.Open(cfg.DB)
@@ -112,7 +117,7 @@ func main() {
 		towerRepo,
 		nagiosIngestSvc,
 		nagiosClient,
-		zapLog,
+		stdLog,
 		time.Duration(cfg.Nagios.PollIntervalSeconds)*time.Second,
 		cfg.Scheduler.BatchSize,
 	)
@@ -128,7 +133,7 @@ func main() {
 	comapScheduler := scheduler.NewComapScheduler(
 		towerEndpointRepo,
 		comapIngestSvc,
-		zapLog,
+		stdLog,
 		time.Duration(cfg.Comap.IntervalSeconds)*time.Second,
 		cfg.Scheduler.BatchSize,
 		time.Duration(cfg.Comap.TimeoutSeconds)*time.Second,
@@ -144,13 +149,13 @@ func main() {
 		snmp.NewEnterpriseVendorResolver(),
 		cfg.Discovery.Community,
 		cfg.Discovery.Concurrency,
-		zapLog,
+		stdLog,
 	)
 
 	discoveryScheduler := scheduler.NewDiscoveryScheduler(
 		discoverySvc,
 		cfg.Discovery.CIDR,
-		zapLog,
+		stdLog,
 		time.Duration(cfg.Discovery.IntervalSeconds)*time.Second,
 	)
 

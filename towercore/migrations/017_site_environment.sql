@@ -2,8 +2,8 @@
 -- Tabela para monitoramento de ambiente e condições físicas do site
 -- Foco em métricas acionáveis pelo técnico de campo: temperatura, umidade, porta, energia, fumaça, vibração
 CREATE TABLE site_environment (
-    id              BIGSERIAL PRIMARY KEY,
-    site_id         UUID NOT NULL REFERENCES towers(id) ON DELETE CASCADE,
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    site_id         UUID NOT NULL REFERENCES towers(tower_id) ON DELETE CASCADE,
     measured_at     TIMESTAMPTZ NOT NULL,
     received_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 

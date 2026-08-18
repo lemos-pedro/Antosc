@@ -49,7 +49,7 @@ func (s *SiteEnvironmentService) CollectEnvironment(ctx context.Context, env *do
 
 	// Salvar no repositório
 	if err := s.repo.Create(ctx, env); err != nil {
-		return errors.Errorf("falha ao coletar medição de ambiente: %w", err)
+		return fmt.Errorf("falha ao coletar medição de ambiente: %w", err)
 	}
 
 	return nil
@@ -86,7 +86,7 @@ func (s *SiteEnvironmentService) CollectMultipleEnvironment(ctx context.Context,
 
 	// Salvar todas de uma vez
 	if err := s.repo.CreateMany(ctx, envs); err != nil {
-		return errors.Errorf("falha ao coletar medições múltiplas de ambiente: %w", err)
+		return fmt.Errorf("falha ao coletar medições múltiplas de ambiente: %w", err)
 	}
 
 	return nil
@@ -99,7 +99,7 @@ func (s *SiteEnvironmentService) GetLatestEnvironment(ctx context.Context, siteI
 	}
 	env, err := s.repo.GetLatest(ctx, siteID)
 	if err != nil {
-		return nil, errors.Errorf("falha ao buscar medição mais recente de ambiente: %w", err)
+		return nil, fmt.Errorf("falha ao buscar medição mais recente de ambiente: %w", err)
 	}
 	return env, nil
 }
@@ -117,7 +117,7 @@ func (s *SiteEnvironmentService) GetEnvironmentHistory(ctx context.Context, site
 
 	envs, total, err := s.repo.List(ctx, filter)
 	if err != nil {
-		return nil, 0, errors.Errorf("falha ao buscar histórico de ambiente: %w", err)
+		return nil, 0, fmt.Errorf("falha ao buscar histórico de ambiente: %w", err)
 	}
 	return envs, total, nil
 }

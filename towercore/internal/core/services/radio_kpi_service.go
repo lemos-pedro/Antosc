@@ -76,7 +76,7 @@ func (s *RadioKPIService) IngestKPIs(ctx context.Context, kpis []*domain.RadioKP
 
 	// Ingestar no repositório
 	if err := s.repo.CreateMany(ctx, kpis); err != nil {
-		return errors.Errorf("falha ao ingestar KPIs de rádio: %w", err)
+		return fmt.Errorf("falha ao ingestar KPIs de rádio: %w", err)
 	}
 
 	return nil
@@ -96,7 +96,7 @@ func (s *RadioKPIService) GetLatestKPIs(ctx context.Context, towerID uuid.UUID, 
 
 	kpis, _, err := s.repo.List(ctx, filter)
 	if err != nil {
-		return nil, errors.Errorf("falha ao buscar KPIs de rádio: %w", err)
+		return nil, fmt.Errorf("falha ao buscar KPIs de rádio: %w", err)
 	}
 	return kpis, nil
 }
