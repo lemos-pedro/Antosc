@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 	"towercore/internal/adapters/neteco"
 	"towercore/internal/adapters/snmp"
 	"towercore/internal/adapters/vertiv"
+	"towercore/internal/adapters/zabbix"
 	"towercore/internal/api/handlers"
 	"towercore/internal/api/routes"
 	"towercore/internal/core/services"
@@ -73,6 +75,8 @@ func main() {
 	comapReadingRepo := database.NewComapReadingRepository(db)
 	backhaulRepo := database.NewBackhaulInterfaceRepository(db)
 	siteEnvironmentRepo := database.NewSiteEnvironmentRepository(db)
+	networkLinkRepo := database.NewNetworkLinkRepository(db)
+	networkLinkEventRepo := database.NewNetworkLinkEventRepository(db)
 
 	regionRepo := database.NewRegionRepository(db)
 	operatorRepo := database.NewOperatorRepository(db)
@@ -97,6 +101,8 @@ func main() {
 	radioKPISvc := services.NewRadioKPIService(radioKPIRepo)
 	backhaulSvc := services.NewBackhaulInterfaceService(backhaulRepo)
 	siteEnvironmentSvc := services.NewSiteEnvironmentService(siteEnvironmentRepo)
+	zabbixClient := zabbix.NewClient(cfg.Zabbix.BaseURL, cfg.Zabbix.Username, cfg.Zabbix.Password, cfg.Zabbix.APIToken, time.Duration(cfg.Zabbix.TimeoutSeconds)*time.Second)
+	zabbixLinkSvc := services.NewZabbixLinkSyncService(zabbixClient, networkLinkRepo, log)
 
 	// NetEco (Huawei) — bateria e energia DC via API interna do NetEco +
 	// alarmes via SNMP trap. Enabled=false por default (NETECO_ENABLED) —
@@ -264,6 +270,8 @@ func main() {
 	radioKPIHandler := handlers.NewRadioKPIHandler(radioKPISvc)
 	backhaulHandler := handlers.NewBackhaulInterfaceHandler(backhaulSvc)
 	siteEnvironmentHandler := handlers.NewSiteEnvironmentHandler(siteEnvironmentSvc)
+	networkLinksHandler := handlers.NewNetworkLinksHandler(networkLinkRepo, networkLinkEventRepo)
+	zabbixLinksHandler := handlers.NewZabbixLinksHandler(zabbixLinkSvc, splitConfigList(cfg.Zabbix.HostSearch))
 
 	discoveredDeviceHandler := handlers.NewDiscoveredDeviceHandler(
 		discoveredDeviceRepo,
@@ -276,6 +284,8 @@ func main() {
 
 	// Router
 	router := routes.NewRouter(cfg, log, metrics, routes.Handlers{
+		NetworkLinks:     networkLinksHandler,
+		ZabbixLinks:      zabbixLinksHandler,
 		Tower:            towerHandler,
 		TowerOperator:    towerOperatorHandler,
 		Event:            eventHandler,
@@ -411,4 +421,12 @@ func main() {
 	}
 
 	log.Info("http server stopped")
+}
+
+func splitConfigList(raw string) []string {
+	var out []string
+	for _, value := range strings.Split(raw, ",") {
+		if value = strings.TrimSpace(value); value != "" { out = append(out, value) }
+	}
+	return out
 }

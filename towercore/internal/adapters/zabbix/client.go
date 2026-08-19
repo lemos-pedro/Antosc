@@ -94,6 +94,9 @@ func (c *Client) call(method string, params interface{}, auth bool, out interfac
 		return fmt.Errorf("zabbix: request failed: %w", err)
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return fmt.Errorf("zabbix: HTTP status %s", resp.Status)
+	}
 
 	var rpcResp rpcResponse
 	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
@@ -147,6 +150,15 @@ type Host struct {
 	Host   string `json:"host"`
 	Name   string `json:"name"`
 	Status string `json:"status"`
+	Interfaces []HostInterface `json:"interfaces"`
+}
+
+type HostInterface struct {
+	InterfaceID string `json:"interfaceid"`
+	IP          string `json:"ip"`
+	DNS         string `json:"dns"`
+	Main        string `json:"main"`
+	Type        string `json:"type"`
 }
 
 // GetHostsByNameFilter procura hosts cujo nome contenha algum dos termos
@@ -155,6 +167,7 @@ type Host struct {
 func (c *Client) GetHostsByNameFilter(nameSearch []string) ([]Host, error) {
 	params := map[string]interface{}{
 		"output": []string{"hostid", "host", "name", "status"},
+		"selectInterfaces": []string{"interfaceid", "ip", "dns", "main", "type"},
 		"search": map[string]interface{}{
 			"name": nameSearch,
 		},

@@ -42,7 +42,7 @@ func (h *BackhaulInterfaceHandler) collect(w http.ResponseWriter, r *http.Reques
 			apierror.BadRequest(w, err.Error())
 			return
 		}
-		writeJSON(w, http.StatusCreated, map[string]any{"status": "ok", "count": len(batch)})
+		writeHandlerJSON(w, http.StatusCreated, map[string]any{"status": "ok", "count": len(batch)})
 		return
 	}
 	var iface domain.BackhaulInterface
@@ -54,7 +54,7 @@ func (h *BackhaulInterfaceHandler) collect(w http.ResponseWriter, r *http.Reques
 		apierror.BadRequest(w, err.Error())
 		return
 	}
-	writeJSON(w, http.StatusCreated, map[string]any{"status": "ok"})
+	writeHandlerJSON(w, http.StatusCreated, map[string]any{"status": "ok"})
 }
 
 func (h *BackhaulInterfaceHandler) list(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +66,7 @@ func (h *BackhaulInterfaceHandler) list(w http.ResponseWriter, r *http.Request) 
 	if to, ok := queryTime(w, r, "to"); !ok { return } else { filter.MeasuredAtBefore = to }
 	items, total, err := h.service.List(r.Context(), filter)
 	if err != nil { apierror.Internal(w); return }
-	writeJSON(w, http.StatusOK, map[string]any{"data": items, "count": len(items), "total": total, "limit": filter.Limit, "offset": filter.Offset})
+	writeHandlerJSON(w, http.StatusOK, map[string]any{"data": items, "count": len(items), "total": total, "limit": filter.Limit, "offset": filter.Offset})
 }
 
 func (h *BackhaulInterfaceHandler) GetTowerBackhaulStatus(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +74,7 @@ func (h *BackhaulInterfaceHandler) GetTowerBackhaulStatus(w http.ResponseWriter,
 	if err != nil { apierror.BadRequest(w, "invalid tower id"); return }
 	items, err := h.service.GetTowerBackhaulStatus(r.Context(), towerID)
 	if err != nil { apierror.Internal(w); return }
-	writeJSON(w, http.StatusOK, map[string]any{"data": items, "count": len(items)})
+	writeHandlerJSON(w, http.StatusOK, map[string]any{"data": items, "count": len(items)})
 }
 
 func queryUUID(w http.ResponseWriter, r *http.Request, name string) (uuid.UUID, bool) {

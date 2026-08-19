@@ -12,6 +12,8 @@ import (
 )
 
 type Handlers struct {
+	NetworkLinks *handlers.NetworkLinksHandler
+	ZabbixLinks *handlers.ZabbixLinksHandler
 	Tower *handlers.TowerHandler
 	TowerOperator *handlers.TowerOperatorHandler
 	Event *handlers.EventHandler
@@ -42,6 +44,11 @@ func NewRouter(cfg config.Config, log *logger.Logger, metrics *observability.Met
 	public.Handle("POST /api/v1/auth", h.Auth)
 
 	api := http.NewServeMux()
+	api.HandleFunc("GET /api/v1/links", h.NetworkLinks.ListLinks)
+	api.HandleFunc("GET /api/v1/links/{link_id}/events", h.NetworkLinks.GetLinkEvents)
+	api.HandleFunc("GET /api/v1/links/{link_id}", h.NetworkLinks.GetLink)
+	api.HandleFunc("POST /api/v1/links/sync/zabbix", h.ZabbixLinks.Sync)
+	api.HandleFunc("GET /api/v1/links/zabbix/items", h.ZabbixLinks.Inspect)
 	api.Handle("/api/v1/towers", h.Tower)
 	api.Handle("/api/v1/towers/", h.Tower)
 	api.Handle("POST /api/v1/towers/{id}/operators", h.TowerOperator)

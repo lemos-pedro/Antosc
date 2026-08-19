@@ -35,6 +35,7 @@ type Config struct {
 	Nagios          NagiosConfig
 	Comap           ComapConfig
 	NetEco          NetEco
+	Zabbix          ZabbixConfig
 }
 
 type CacheConfig struct {
@@ -129,6 +130,16 @@ type ComapConfig struct {
 	Retries         int
 }
 
+type ZabbixConfig struct {
+	Enabled        bool
+	BaseURL        string
+	Username       string
+	Password       string
+	APIToken       string
+	HostSearch     string
+	TimeoutSeconds int
+}
+
 func Load() Config {
 	loadEnvFile()
 
@@ -208,6 +219,15 @@ func Load() Config {
 			TLSInsecureSkipVerify: getEnvBool("NETECO_TLS_INSECURE_SKIP_VERIFY", true),
 			TrapPort:              getEnvInt("NETECO_TRAP_PORT", 162),
 			TrapCommunity:         getEnv("NETECO_TRAP_COMMUNITY", "TowercoreRead1"),
+		},
+		Zabbix: ZabbixConfig{
+			Enabled:        getEnvBool("ZABBIX_ENABLED", false),
+			BaseURL:        getEnv("ZABBIX_URL", "http://localhost/zabbix/api_jsonrpc.php"),
+			Username:       getEnv("ZABBIX_USERNAME", ""),
+			Password:       getEnv("ZABBIX_PASSWORD", ""),
+			APIToken:       getEnv("ZABBIX_API_TOKEN", ""),
+			HostSearch:     getEnv("ZABBIX_HOST_SEARCH", ""),
+			TimeoutSeconds: getEnvInt("ZABBIX_TIMEOUT_SECONDS", 15),
 		},
 	}
 }

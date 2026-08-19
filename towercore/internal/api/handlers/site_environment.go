@@ -34,13 +34,13 @@ func (h *SiteEnvironmentHandler) collect(w http.ResponseWriter, r *http.Request)
 	var batch []*domain.SiteEnvironment
 	if err := json.Unmarshal(payload, &batch); err == nil {
 		if err := h.service.CollectMultipleEnvironment(r.Context(), batch); err != nil { apierror.BadRequest(w, err.Error()); return }
-		writeJSON(w, http.StatusCreated, map[string]any{"status": "ok", "count": len(batch)})
+		writeHandlerJSON(w, http.StatusCreated, map[string]any{"status": "ok", "count": len(batch)})
 		return
 	}
 	var env domain.SiteEnvironment
 	if err := json.Unmarshal(payload, &env); err != nil { apierror.BadRequest(w, "expected a site environment object or array"); return }
 	if err := h.service.CollectEnvironment(r.Context(), &env); err != nil { apierror.BadRequest(w, err.Error()); return }
-	writeJSON(w, http.StatusCreated, map[string]any{"status": "ok"})
+	writeHandlerJSON(w, http.StatusCreated, map[string]any{"status": "ok"})
 }
 
 func (h *SiteEnvironmentHandler) list(w http.ResponseWriter, r *http.Request) {
@@ -52,13 +52,13 @@ func (h *SiteEnvironmentHandler) list(w http.ResponseWriter, r *http.Request) {
 	items, total, err := h.service.GetEnvironmentHistory(r.Context(), siteID, filter.Limit, filter.Offset, filter.MeasuredAtAfter, filter.MeasuredAtBefore)
 	if err != nil { apierror.Internal(w); return }
 	items = filterEnvironment(items, filter)
-	writeJSON(w, http.StatusOK, map[string]any{"data": items, "count": len(items), "total": total, "limit": filter.Limit, "offset": filter.Offset})
+	writeHandlerJSON(w, http.StatusOK, map[string]any{"data": items, "count": len(items), "total": total, "limit": filter.Limit, "offset": filter.Offset})
 }
 
 func (h *SiteEnvironmentHandler) GetSiteEnvironmentStatus(w http.ResponseWriter, r *http.Request) {
 	siteID, err := uuid.Parse(r.PathValue("id")); if err != nil { apierror.BadRequest(w, "invalid site id"); return }
 	env, err := h.service.GetLatestEnvironment(r.Context(), siteID); if err != nil { apierror.Internal(w); return }
-	writeJSON(w, http.StatusOK, map[string]any{"data": env})
+	writeHandlerJSON(w, http.StatusOK, map[string]any{"data": env})
 }
 
 func setEnvironmentBooleanFilters(r *http.Request, f *domain.SiteEnvironmentFilter) {

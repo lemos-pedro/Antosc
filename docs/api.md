@@ -235,3 +235,24 @@ Codigos sugeridos:
 - Modelo de autenticacao/autorizacao (API key, JWT, OAuth2).
 - Politica de rate limiting por cliente.
 - Idempotencia em endpoints de escrita critica (`/metrics`, `/tickets/*`).
+
+## Links de rede via Zabbix
+
+O TowerCore pode ler os itens IF-MIB já recolhidos pelo Zabbix e materializar
+links em `network_links` e leituras em `link_metric_snapshots`. Configure
+`ZABBIX_URL` e `ZABBIX_API_TOKEN` (ou `ZABBIX_USERNAME`/`ZABBIX_PASSWORD`) e
+defina `ZABBIX_HOST_SEARCH` com termos separados por vírgula.
+
+```text
+GET  /api/v1/links/zabbix/items
+POST /api/v1/links/sync/zabbix
+GET  /api/v1/links
+GET  /api/v1/links/{link_id}
+GET  /api/v1/links/{link_id}/events
+```
+
+É possível substituir os hosts configurados por request:
+
+```json
+{"host_search":["CONNECTED-BEN-RT","CONNECT-TO-AFRICELL"]}
+```

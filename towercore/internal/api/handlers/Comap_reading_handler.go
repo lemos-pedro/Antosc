@@ -44,14 +44,6 @@ func (h *ComapReadingHandler) GetByTowerID(w http.ResponseWriter, r *http.Reques
 // writeError segue o modelo de erro padrão já documentado em api.md.
 // ASSUNÇÃO: já existe um helper equivalente no pacote handlers — se
 // existir, remover esta função e usar o existente para não duplicar.
-func writeError(w http.ResponseWriter, status int, code, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]any{
-		"error": map[string]string{"code": code, "message": message},
-	})
-}
-
 // ServeHTTP permite usar ComapReadingHandler como http.Handler.
 func (h *ComapReadingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
