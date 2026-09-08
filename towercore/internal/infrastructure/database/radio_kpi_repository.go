@@ -34,7 +34,7 @@ func (r *radioKPIRepository) CreateMany(ctx context.Context, kpis []*domain.Radi
 		INSERT INTO radio_kpi_staging (
 			id, tower_id, sector_id, cell_technique,
 			measured_at, received_at,
-			tx_power_watt, tx_power_dbm, rx_power_dbm, snr_db, sinr_db, rsrp_dbm, rsrq_dbm,
+			tx_power_watt, tx_power_dbm, rx_power_dbm, snr_db, sinr_db, rsrp_dbm, rsrq_db,
 			connected_ues, max_supported_ues, prb_utilization_pct, channel_occupancy_pct,
 			ber, bler, fer, codec_drop_pct,
 			ho_attempt, ho_success, ho_fail, ho_ping_pong,
@@ -124,7 +124,7 @@ func (r *radioKPIRepository) List(ctx context.Context, filter *domain.RadioKPIFi
 		SELECT
 			id, tower_id, sector_id, cell_technique,
 			measured_at, received_at,
-			tx_power_watt, tx_power_dbm, rx_power_dbm, snr_db, sinr_db, rsrp_dbm, rsrq_dbm,
+			tx_power_watt, tx_power_dbm, rx_power_dbm, snr_db, sinr_db, rsrp_dbm, rsrq_db,
 			connected_ues, max_supported_ues, prb_utilization_pct, channel_occupancy_pct,
 			ber, bler, fer, codec_drop_pct,
 			ho_attempt, ho_success, ho_fail, ho_ping_pong,
@@ -372,7 +372,7 @@ func (r *radioKPIRepository) GetByTowerAndSector(ctx context.Context, towerID uu
 		SELECT
 			id, tower_id, sector_id, cell_technique,
 			measured_at, received_at,
-			tx_power_watt, tx_power_dbm, rx_power_dbm, snr_db, sinr_db, rsrp_dbm, rsrq_dbm,
+			tx_power_watt, tx_power_dbm, rx_power_dbm, snr_db, sinr_db, rsrp_dbm, rsrq_db,
 			connected_ues, max_supported_ues, prb_utilization_pct, channel_occupancy_pct,
 			ber, bler, fer, codec_drop_pct,
 			ho_attempt, ho_success, ho_fail, ho_ping_pong,
@@ -393,7 +393,7 @@ func (r *radioKPIRepository) GetByTowerAndSector(ctx context.Context, towerID uu
 		&kpi.ConnectedUEs, &kpi.MaxSupportedUEs, &kpi.PRBUtilizationPct, &kpi.ChannelOccupancyPct,
 		&kpi.Ber, &kpi.Bler, &kpi.Fer, &kpi.CodecDropPct,
 		&kpi.HoAttempt, &kpi.HoSuccess, &kpi.HoFail, &kpi.HoPingPong,
-			&kpi.CallDropPct, &kpi.CallBlockPct, &kpi.PDCPSDULossPct, &kpi.RLCRetransPct,
+		&kpi.CallDropPct, &kpi.CallBlockPct, &kpi.PDCPSDULossPct, &kpi.RLCRetransPct,
 		&kpi.SourceSystem, &kpi.CollectionIntervalSec, &kpi.RawData,
 		&kpi.CreatedAt, &kpi.UpdatedAt,
 	)

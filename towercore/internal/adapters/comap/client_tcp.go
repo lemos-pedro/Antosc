@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/simonvetter/modbus"
- 
+
 	"towercore/internal/core/interfaces"
 )
 

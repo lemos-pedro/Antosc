@@ -146,10 +146,10 @@ func (c *Client) Login() error {
 // Host representa o subconjunto de campos de host.get que interessam
 // para localizar os rádios de Benguela/Huambo.
 type Host struct {
-	HostID string `json:"hostid"`
-	Host   string `json:"host"`
-	Name   string `json:"name"`
-	Status string `json:"status"`
+	HostID     string          `json:"hostid"`
+	Host       string          `json:"host"`
+	Name       string          `json:"name"`
+	Status     string          `json:"status"`
 	Interfaces []HostInterface `json:"interfaces"`
 }
 
@@ -166,7 +166,7 @@ type HostInterface struct {
 // não igualdade exata.
 func (c *Client) GetHostsByNameFilter(nameSearch []string) ([]Host, error) {
 	params := map[string]interface{}{
-		"output": []string{"hostid", "host", "name", "status"},
+		"output":           []string{"hostid", "host", "name", "status"},
 		"selectInterfaces": []string{"interfaceid", "ip", "dns", "main", "type"},
 		"search": map[string]interface{}{
 			"name": nameSearch,

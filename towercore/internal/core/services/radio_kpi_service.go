@@ -32,7 +32,7 @@ func NewRadioKPIService(repo interfaces.RadioKPIGenericRepository) *RadioKPIServ
 // Exemplo de uso:
 //   service.IngestKPIs(ctx, []*domain.RadioKPI{
 //     {
- //       TowerID:     siteUUID,
+//       TowerID:     siteUUID,
 //       SectorID:    "A",
 //       CellTechnique: "LTE",
 //       MeasuredAt:  time.Now(),
@@ -86,8 +86,8 @@ func (s *RadioKPIService) IngestKPIs(ctx context.Context, kpis []*domain.RadioKP
 // Útil para dashboards e consultas em tempo real.
 func (s *RadioKPIService) GetLatestKPIs(ctx context.Context, towerID uuid.UUID, sectorID *string, technique *string) ([]*domain.RadioKPI, error) {
 	filter := &domain.RadioKPIFilter{
-		TowerID:     towerID,
-		SectorID:    sectorID,
+		TowerID:       towerID,
+		SectorID:      sectorID,
 		CellTechnique: technique,
 		Limit:         1, // apenas o mais recente por combinação torre/setor/técnica
 		Offset:        0,

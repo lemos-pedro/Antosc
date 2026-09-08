@@ -1,6 +1,6 @@
 module github.com/antosc/aip
 
-go 1.22
+go 1.26.5
 
 require (
 	github.com/lib/pq v1.10.9

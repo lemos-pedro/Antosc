@@ -40,7 +40,6 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func (h *UserHandler) list(w http.ResponseWriter, r *http.Request) {
 	users, err := h.repo.List(r.Context())
 	if err != nil {

@@ -9,22 +9,22 @@ import (
 )
 
 const (
-	mocIdDCPower         = 69999
-	mocIdDCDistribution  = 60009
-	mocIdRectifierGroup  = 60039
-	mocIdBatteryGroup    = 60016
-	mocIdGenset          = 60003
+	mocIdDCPower        = 69999
+	mocIdDCDistribution = 60009
+	mocIdRectifierGroup = 60039
+	mocIdBatteryGroup   = 60016
+	mocIdGenset         = 60003
 )
 
 type SiteCounterInfo struct {
-	DCOutputVoltage    *float64
-	DCLoadCurrent      *float64
-	RectifierCurrent   *float64
-	BatteryVoltage     *float64
-	BatteryCurrent     *float64
-	GensetL1Voltage    *float64
-	GensetL2Voltage    *float64
-	GensetL3Voltage    *float64
+	DCOutputVoltage  *float64
+	DCLoadCurrent    *float64
+	RectifierCurrent *float64
+	BatteryVoltage   *float64
+	BatteryCurrent   *float64
+	GensetL1Voltage  *float64
+	GensetL2Voltage  *float64
+	GensetL3Voltage  *float64
 }
 
 func mapSiteCounterInfo(raw map[string]interface{}) (*SiteCounterInfo, error) {

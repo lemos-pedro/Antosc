@@ -1,0 +1,9 @@
+version: 3
+agent:
+  authtoken: "$YOUR_AUTHTOKEN"
+endpoints:
+  - name: your_endpoint_name
+    url: https://careless-deplored-lure.ngrok-free.dev
+    pooling_enabled: true
+    upstream:
+      url: 80

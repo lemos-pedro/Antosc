@@ -107,11 +107,11 @@ func (s *SiteEnvironmentService) GetLatestEnvironment(ctx context.Context, siteI
 // GetEnvironmentHistory retorna o histórico de medições de ambiente para um site.
 func (s *SiteEnvironmentService) GetEnvironmentHistory(ctx context.Context, siteID uuid.UUID, limit int, offset int, measuredAfter *time.Time, measuredBefore *time.Time) ([]*domain.SiteEnvironment, int, error) {
 	filter := &domain.SiteEnvironmentFilter{
-		SiteID:         siteID,
-		Limit:          limit,
-		Offset:         offset,
-		OrderBy:        []string{"measured_at DESC"},
-		MeasuredAtAfter: measuredAfter,
+		SiteID:           siteID,
+		Limit:            limit,
+		Offset:           offset,
+		OrderBy:          []string{"measured_at DESC"},
+		MeasuredAtAfter:  measuredAfter,
 		MeasuredAtBefore: measuredBefore,
 	}
 

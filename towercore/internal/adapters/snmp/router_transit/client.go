@@ -89,9 +89,9 @@ func (c *Client) GetInterfaceMetrics(ctx context.Context, routerIP string, ifInd
 		name := strings.TrimPrefix(variable.Name, ".")
 		switch {
 		case strings.HasPrefix(name, strings.TrimPrefix(OIDIfOperStatus, ".")):
-			snapshot.OperStatus = domain.LinkOperStatus(operStatusIntToString[gosnmp.ToBigInt(variable.Value).IntPart()])
+			snapshot.OperStatus = domain.LinkOperStatus(operStatusIntToString[int(gosnmp.ToBigInt(variable.Value).Int64())])
 		case strings.HasPrefix(name, strings.TrimPrefix(OIDIfAdminStatus, ".")):
-			snapshot.AdminStatus = domain.LinkOperStatus(operStatusIntToString[gosnmp.ToBigInt(variable.Value).IntPart()])
+			snapshot.AdminStatus = domain.LinkOperStatus(operStatusIntToString[int(gosnmp.ToBigInt(variable.Value).Int64())])
 		case strings.HasPrefix(name, strings.TrimPrefix(OIDIfInErrors, ".")):
 			snapshot.InErrors = gosnmp.ToBigInt(variable.Value).Uint64()
 		case strings.HasPrefix(name, strings.TrimPrefix(OIDIfOutErrors, ".")):

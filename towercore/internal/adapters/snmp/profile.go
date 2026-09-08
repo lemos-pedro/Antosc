@@ -1,6 +1,9 @@
 package snmp
 
-import "towercore/internal/core/domain"
+import (
+	"log"
+	"towercore/internal/core/domain"
+)
 
 type MetricDefinition struct {
 	OID                string
@@ -50,6 +53,15 @@ func NormalizeSamples(profile Profile, samples map[string]float64) map[string]fl
 		if md.ZeroMeansNotTested && value == 0 {
 			normalized[md.Key+"_not_tested"] = 1
 		}
+	}
+	// If no mappings produced but we received raw samples, log OIDs to help
+	// diagnose missing MetricDefinition entries in vendor profiles.
+	if len(normalized) == 0 && len(samples) > 0 {
+		oids := make([]string, 0, len(samples))
+		for oid := range samples {
+			oids = append(oids, oid)
+		}
+		log.Printf("SNMP Normalize: profile=%s produced 0 mapped metrics, raw_oids=%v", profile.Vendor, oids)
 	}
 	return normalized
 }

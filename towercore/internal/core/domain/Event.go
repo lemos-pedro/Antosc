@@ -40,12 +40,12 @@ type Event struct {
 	Message    string        `json:"message"`
 	DataSource string        `json:"data_source"`
 
-	OccurredAt time.Time  `json:"occurred_at"`
-	CreatedAt  time.Time  `json:"created_at"`
+	OccurredAt time.Time   `json:"occurred_at"`
+	CreatedAt  time.Time   `json:"created_at"`
 	Status     EventStatus `json:"status"`
-	AlarmKey   string     `json:"alarm_key,omitempty"`
-	ResolvedAt *time.Time `json:"resolved_at,omitempty"`
-	LastSeenAt time.Time  `json:"last_seen_at"`
+	AlarmKey   string      `json:"alarm_key,omitempty"`
+	ResolvedAt *time.Time  `json:"resolved_at,omitempty"`
+	LastSeenAt time.Time   `json:"last_seen_at"`
 }
 
 // IsCritical indica se o evento requer atenção imediata.

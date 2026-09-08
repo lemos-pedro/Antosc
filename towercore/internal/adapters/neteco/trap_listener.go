@@ -18,7 +18,7 @@ const (
 
 	// OIDs do corpo do trap de alarme Huawei (NetEco NBI).
 	// Confirmados empiricamente via captura de traps reais em 2026-07-24.
-	oidAlarmEventType  = "1.3.6.1.4.1.2011.2.15.2.4.3.3.2.0"  // 1=ativo, 2=resolvido
+	oidAlarmEventType  = "1.3.6.1.4.1.2011.2.15.2.4.3.3.2.0" // 1=ativo, 2=resolvido
 	oidAlarmOccurTime  = "1.3.6.1.4.1.2011.2.15.2.4.3.3.3.0"
 	oidAlarmSiteName   = "1.3.6.1.4.1.2011.2.15.2.4.3.3.4.0"
 	oidAlarmNEID       = "1.3.6.1.4.1.2011.2.15.2.4.3.3.7.0"
@@ -255,8 +255,8 @@ func extractHuaweiFields(
 		case oidAlarmDesc:
 			event.Description = toString(variable.Value)
 
-		// Campos reconhecidos mas ainda não mapeados para o domínio:
-		// oidAlarmOccurTime, oidAlarmClearTime, oidAlarmSiteIDInfo
+			// Campos reconhecidos mas ainda não mapeados para o domínio:
+			// oidAlarmOccurTime, oidAlarmClearTime, oidAlarmSiteIDInfo
 		}
 	}
 }

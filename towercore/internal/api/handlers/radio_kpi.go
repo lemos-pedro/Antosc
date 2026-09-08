@@ -125,15 +125,19 @@ func (h *RadioKPIHandler) getKPIs(w http.ResponseWriter, r *http.Request) {
 
 	// Construir o filtro
 	filter := &domain.RadioKPIFilter{
-		TowerID:         towerID,
-		SectorID:        sectorID,
-		CellTechnique:   technique,
-		Limit:           limit,
-		Offset:          offset,
-		OrderBy:         []string{"measured_at DESC"},
+		TowerID:       towerID,
+		SectorID:      sectorID,
+		CellTechnique: technique,
+		Limit:         limit,
+		Offset:        offset,
+		OrderBy:       []string{"measured_at DESC"},
 	}
-	if !measuredAfter.IsZero() { filter.MeasuredAtAfter = &measuredAfter }
-	if !measuredBefore.IsZero() { filter.MeasuredAtBefore = &measuredBefore }
+	if !measuredAfter.IsZero() {
+		filter.MeasuredAtAfter = &measuredAfter
+	}
+	if !measuredBefore.IsZero() {
+		filter.MeasuredAtBefore = &measuredBefore
+	}
 
 	// Buscar os KPIs
 	kpis, total, err := h.service.GetKPIsHistorico(r.Context(), filter)
@@ -145,11 +149,11 @@ func (h *RadioKPIHandler) getKPIs(w http.ResponseWriter, r *http.Request) {
 	// Retornar resposta com metadados de paginação
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status":  "ok",
-		"count":   len(kpis),
-		"total":   total,
-		"limit":   limit,
-		"offset":  offset,
-		"data":    kpis,
+		"status": "ok",
+		"count":  len(kpis),
+		"total":  total,
+		"limit":  limit,
+		"offset": offset,
+		"data":   kpis,
 	})
 }

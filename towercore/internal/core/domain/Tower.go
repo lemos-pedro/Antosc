@@ -32,8 +32,8 @@ type Tower struct {
 	SiteCode            string           `json:"site_code"`
 	Status              TowerStatus      `json:"status"`
 	CollectionStatus    CollectionStatus `json:"collection_status"`
-	Latitude    		*float64 		 `json:"latitude,omitempty"`
-	Longitude 			*float64         `json:"longitude,omitempty"`
+	Latitude            *float64         `json:"latitude,omitempty"`
+	Longitude           *float64         `json:"longitude,omitempty"`
 	LastCollectedAt     *time.Time       `json:"last_collected_at,omitempty"`
 	LastSuccessfulAt    *time.Time       `json:"last_successful_at,omitempty"`
 	LastCollectionError string           `json:"last_collection_error,omitempty"`

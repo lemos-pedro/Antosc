@@ -51,7 +51,7 @@ type LinkMetricSnapshot struct {
 	OutErrors      uint64
 	InDiscards     uint64
 	OutDiscards    uint64
-	SpeedMb        int64 // ifHighSpeed, em Mbps
+	SpeedMb        int64   // ifHighSpeed, em Mbps
 	InUtilPercent  float64 // calculado: bps de entrada / capacidade nominal
 	OutUtilPercent float64 // calculado: bps de saída / capacidade nominal
 }

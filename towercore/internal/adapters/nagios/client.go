@@ -43,13 +43,13 @@ type statusJSONResponse struct {
 	} `json:"result"`
 	Data struct {
 		Host struct {
-			Name                  string `json:"name"`
-			PluginOutput          string `json:"plugin_output"`
-			Status                int    `json:"status"`
-			LastCheck             int64  `json:"last_check"`
-			LastStateChange       int64  `json:"last_state_change"`
-			NotificationsEnabled  bool   `json:"notifications_enabled"`
-			ChecksEnabled         bool   `json:"checks_enabled"`
+			Name                 string `json:"name"`
+			PluginOutput         string `json:"plugin_output"`
+			Status               int    `json:"status"`
+			LastCheck            int64  `json:"last_check"`
+			LastStateChange      int64  `json:"last_state_change"`
+			NotificationsEnabled bool   `json:"notifications_enabled"`
+			ChecksEnabled        bool   `json:"checks_enabled"`
 		} `json:"host"`
 	} `json:"data"`
 }
@@ -86,9 +86,9 @@ func (c *Client) FetchHostStatus(ctx context.Context, hostname string) (interfac
 
 	h := parsed.Data.Host
 	return interfaces.HostStatus{
-		Hostname:             h.Name,
-		State:                mapHostState(h.Status),
-		PluginOutput:         h.PluginOutput,
+		Hostname:     h.Name,
+		State:        mapHostState(h.Status),
+		PluginOutput: h.PluginOutput,
 		// Nagios statusjson.cgi devolve epoch em SEGUNDOS, não ms.
 		// Usar UnixMilli aqui dava datas perto de 1970.
 		LastCheck:            time.Unix(h.LastCheck, 0),

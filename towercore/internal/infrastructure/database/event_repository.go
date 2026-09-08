@@ -126,7 +126,7 @@ func (r *EventRepository) List(ctx context.Context, filter interfaces.EventFilte
 		return nil, 0, err
 	}
 
-listQuery := `
+	listQuery := `
 SELECT
 	event_id::text,
 	tower_id::text,
@@ -160,7 +160,7 @@ FROM events` + where + fmt.Sprintf(" ORDER BY occurred_at DESC LIMIT $%d OFFSET 
 			&t,
 			&sev,
 			&ev.Message,
-			&ev.DataSource, 
+			&ev.DataSource,
 			&ev.OccurredAt,
 			&ev.CreatedAt,
 			&status,

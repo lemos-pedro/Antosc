@@ -17,7 +17,7 @@ type ComapReadingHandler struct {
 
 func NewComapReadingHandler(repo interfaces.ComapReadingRepository) *ComapReadingHandler {
 	return &ComapReadingHandler{repo: repo}
-} 
+}
 
 // GetByTowerID trata GET /towers/{tower_id}/energy/generator
 func (h *ComapReadingHandler) GetByTowerID(w http.ResponseWriter, r *http.Request) {

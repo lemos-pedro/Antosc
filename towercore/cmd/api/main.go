@@ -101,6 +101,10 @@ func main() {
 	radioKPISvc := services.NewRadioKPIService(radioKPIRepo)
 	backhaulSvc := services.NewBackhaulInterfaceService(backhaulRepo)
 	siteEnvironmentSvc := services.NewSiteEnvironmentService(siteEnvironmentRepo)
+
+	// Zabbix — client + serviço de sincronização de links de rede
+	// (network_links + link_metric_snapshots). O scheduler correspondente
+	// é registado mais abaixo, junto aos outros pollers.
 	zabbixClient := zabbix.NewClient(cfg.Zabbix.BaseURL, cfg.Zabbix.Username, cfg.Zabbix.Password, cfg.Zabbix.APIToken, time.Duration(cfg.Zabbix.TimeoutSeconds)*time.Second)
 	zabbixLinkSvc := services.NewZabbixLinkSyncService(zabbixClient, networkLinkRepo, log)
 
@@ -254,6 +258,23 @@ func main() {
 		time.Duration(cfg.Comap.TimeoutSeconds)*time.Second,
 	)
 
+	// Zabbix link scheduler — sincroniza network_links + link_metric_snapshots
+	// a partir do Zabbix (host.get + item.get) periodicamente. Substitui a
+	// dependência de chamadas manuais a POST /api/v1/zabbix/links/sync, que
+	// era a única forma de os dados entrarem até agora (ver os dois
+	// timestamps isolados em link_metric_snapshots: 15:06:33 e 15:10:25,
+	// sem cadência regular). Enabled=false por default (ZABBIX_ENABLED) até
+	// confirmares o ZABBIX_HOST_SEARCH certo (ex.: "Benguela,Huambo") — o
+	// scheduler recusa-se a arrancar com host_search vazio para não
+	// importar todos os hosts do Zabbix.
+	zabbixScheduler := scheduler.NewZabbixScheduler(
+		zabbixLinkSvc,
+		splitConfigList(cfg.Zabbix.HostSearch),
+		time.Duration(cfg.Zabbix.IntervalSeconds)*time.Second,
+		cfg.Zabbix.Enabled,
+		log,
+	)
+
 	// Handlers
 	towerHandler := handlers.NewTowerHandler(towerSvc, availabilitySvc)
 	towerOperatorHandler := handlers.NewTowerOperatorHandler(towerSvc)
@@ -397,6 +418,19 @@ func main() {
 		log.Info("neteco scheduler disabled by configuration")
 	}
 
+	// Zabbix link scheduler — só arranca se ZABBIX_ENABLED=true. O próprio
+	// scheduler valida internamente se ZABBIX_HOST_SEARCH está preenchido
+	// antes de correr a primeira sincronização.
+	var zabbixCancel context.CancelFunc = func() {}
+	if cfg.Zabbix.Enabled {
+		zabbixCtx, cancel := context.WithCancel(context.Background())
+		zabbixCancel = cancel
+		go zabbixScheduler.Start(zabbixCtx)
+		log.Info("zabbix link scheduler successfully started in background")
+	} else {
+		log.Info("zabbix link scheduler disabled by configuration")
+	}
+
 	nagiosCtx, nagiosCancel := context.WithCancel(context.Background())
 	go nagiosScheduler.Start(nagiosCtx)
 
@@ -408,6 +442,7 @@ func main() {
 	discoveryCancel()
 	comapCancel()
 	netEcoCancel()
+	zabbixCancel()
 	nagiosCancel()
 
 	shutdownCtx, cancel := context.WithTimeout(
@@ -426,7 +461,9 @@ func main() {
 func splitConfigList(raw string) []string {
 	var out []string
 	for _, value := range strings.Split(raw, ",") {
-		if value = strings.TrimSpace(value); value != "" { out = append(out, value) }
+		if value = strings.TrimSpace(value); value != "" {
+			out = append(out, value)
+		}
 	}
 	return out
 }

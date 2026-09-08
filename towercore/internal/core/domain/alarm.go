@@ -12,13 +12,13 @@ const (
 )
 
 type DeviceAlarm struct {
-	ID string
-	DeviceID string
-	AlarmID int
-	Name string
-	Message string
-	Severity AlarmSeverity
-	Active bool
+	ID        string
+	DeviceID  string
+	AlarmID   int
+	Name      string
+	Message   string
+	Severity  AlarmSeverity
+	Active    bool
 	StartedAt time.Time
-	EndedAt *time.Time
+	EndedAt   *time.Time
 }

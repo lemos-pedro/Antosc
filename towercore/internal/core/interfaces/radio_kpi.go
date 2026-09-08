@@ -6,9 +6,8 @@ import (
 	"context"
 	"time"
 
-	"towercore/internal/core/domain"
 	"github.com/google/uuid"
-	
+	"towercore/internal/core/domain"
 )
 
 // RadioKPIGenericRepository define a interface genérica para repositórios de KPIs de rádio.

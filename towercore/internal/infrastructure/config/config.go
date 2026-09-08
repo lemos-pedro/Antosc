@@ -130,14 +130,20 @@ type ComapConfig struct {
 	Retries         int
 }
 
+// ZabbixConfig controla a integração com a API JSON-RPC do Zabbix, usada
+// para sincronizar network_links + link_metric_snapshots (ver
+// adapters/zabbix e services.ZabbixLinkSyncService). TimeoutSeconds
+// alimenta o http.Client do zabbix.Client (chamadas host.get/item.get);
+// IntervalSeconds controla a cadência do scheduler.ZabbixScheduler.
 type ZabbixConfig struct {
-	Enabled        bool
-	BaseURL        string
-	Username       string
-	Password       string
-	APIToken       string
-	HostSearch     string
-	TimeoutSeconds int
+	Enabled         bool
+	BaseURL         string
+	Username        string
+	Password        string
+	APIToken        string
+	HostSearch      string
+	TimeoutSeconds  int
+	IntervalSeconds int
 }
 
 func Load() Config {
@@ -221,13 +227,14 @@ func Load() Config {
 			TrapCommunity:         getEnv("NETECO_TRAP_COMMUNITY", "TowercoreRead1"),
 		},
 		Zabbix: ZabbixConfig{
-			Enabled:        getEnvBool("ZABBIX_ENABLED", false),
-			BaseURL:        getEnv("ZABBIX_URL", "http://localhost/zabbix/api_jsonrpc.php"),
-			Username:       getEnv("ZABBIX_USERNAME", ""),
-			Password:       getEnv("ZABBIX_PASSWORD", ""),
-			APIToken:       getEnv("ZABBIX_API_TOKEN", ""),
-			HostSearch:     getEnv("ZABBIX_HOST_SEARCH", ""),
-			TimeoutSeconds: getEnvInt("ZABBIX_TIMEOUT_SECONDS", 15),
+			Enabled:         getEnvBool("ZABBIX_ENABLED", false),
+			BaseURL:         getEnv("ZABBIX_URL", "http://192.168.116.10/zabbix"),
+			Username:        getEnv("ZABBIX_USERNAME", ""),
+			Password:        getEnv("ZABBIX_PASSWORD", ""),
+			APIToken:        getEnv("ZABBIX_API_TOKEN", ""),
+			HostSearch:      getEnv("ZABBIX_HOST_SEARCH", ""),
+			TimeoutSeconds:  getEnvInt("ZABBIX_TIMEOUT_SECONDS", 10),
+			IntervalSeconds: getEnvInt("ZABBIX_POLL_INTERVAL_SECONDS", 60),
 		},
 	}
 }

@@ -16,7 +16,7 @@ import (
 // inventados": estes são limites explícitos e documentados, não silenciosos.
 const (
 	HighUtilizationThresholdPercent = 85.0
-	ErrorRateWarningThreshold       = 100  // erros acumulados entre polls
+	ErrorRateWarningThreshold       = 100 // erros acumulados entre polls
 	ErrorRateCriticalThreshold      = 1000
 )
 

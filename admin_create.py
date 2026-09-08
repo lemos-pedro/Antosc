@@ -23,7 +23,7 @@ TABLE_NAME = "users"
 
 # Ajusta conforme o schema real (migration 00002_users_auth)
 COLUMNS = {
-    "id": "id",
+    "user_id": "user_id",
     "username": "username",
     "email": "email",      # ou "email", conforme o schema
     "password_hash": "password_hash",
@@ -55,6 +55,14 @@ def main():
     hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(rounds=12))
     hashed_str = hashed.decode("utf-8")
 
+    # Se o username fornecido for um email, usa-o como email; caso contrario
+    # acrescenta dominio por omissao.
+    if "@" in username:
+        email = username
+    else:
+        email = username + "@antosc.ao"
+
+    # As colunas devem corresponder aos valores na mesma ordem: username, email, password_hash
     sql = f"""
 INSERT INTO {TABLE_NAME} (
     {COLUMNS['id']},
@@ -66,6 +74,7 @@ INSERT INTO {TABLE_NAME} (
 ) VALUES (
     '{user_id}',
     '{username}',
+    '{email}',
     '{hashed_str}',
     '{ROLE}',
     now()

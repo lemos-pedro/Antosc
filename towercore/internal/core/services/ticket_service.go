@@ -59,7 +59,7 @@ func (s *TicketService) Create(ctx context.Context, towerID, eventID string) (*d
 }
 
 func (s *TicketService) List(ctx context.Context, filter interfaces.TicketFilter) ([]domain.Ticket, int, error) {
-	if filter.Limit <= 0 || filter.Limit > 20000000{
+	if filter.Limit <= 0 || filter.Limit > 2000 {
 		filter.Limit = 50
 	}
 	if filter.Offset < 0 {

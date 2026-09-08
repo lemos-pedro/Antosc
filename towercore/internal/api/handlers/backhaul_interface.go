@@ -13,7 +13,9 @@ import (
 	"towercore/pkg/apierror"
 )
 
-type BackhaulInterfaceHandler struct{ service *services.BackhaulInterfaceService }
+type BackhaulInterfaceHandler struct {
+	service *services.BackhaulInterfaceService
+}
 
 func NewBackhaulInterfaceHandler(service *services.BackhaulInterfaceService) *BackhaulInterfaceHandler {
 	return &BackhaulInterfaceHandler{service: service}
@@ -59,26 +61,68 @@ func (h *BackhaulInterfaceHandler) collect(w http.ResponseWriter, r *http.Reques
 
 func (h *BackhaulInterfaceHandler) list(w http.ResponseWriter, r *http.Request) {
 	towerID, ok := queryUUID(w, r, "tower_id")
-	if !ok { return }
+	if !ok {
+		return
+	}
 	filter := &domain.BackhaulInterfaceFilter{TowerID: towerID, Limit: queryInt(r, "limit", 100), Offset: queryInt(r, "offset", 0), OrderBy: []string{"measured_at DESC"}}
-	if name := r.URL.Query().Get("interface_name"); name != "" { filter.InterfaceName = &name }
-	if from, ok := queryTime(w, r, "from"); !ok { return } else { filter.MeasuredAtAfter = from }
-	if to, ok := queryTime(w, r, "to"); !ok { return } else { filter.MeasuredAtBefore = to }
+	if name := r.URL.Query().Get("interface_name"); name != "" {
+		filter.InterfaceName = &name
+	}
+	if from, ok := queryTime(w, r, "from"); !ok {
+		return
+	} else {
+		filter.MeasuredAtAfter = from
+	}
+	if to, ok := queryTime(w, r, "to"); !ok {
+		return
+	} else {
+		filter.MeasuredAtBefore = to
+	}
 	items, total, err := h.service.List(r.Context(), filter)
-	if err != nil { apierror.Internal(w); return }
+	if err != nil {
+		apierror.Internal(w)
+		return
+	}
 	writeHandlerJSON(w, http.StatusOK, map[string]any{"data": items, "count": len(items), "total": total, "limit": filter.Limit, "offset": filter.Offset})
 }
 
 func (h *BackhaulInterfaceHandler) GetTowerBackhaulStatus(w http.ResponseWriter, r *http.Request) {
 	towerID, err := uuid.Parse(r.PathValue("id"))
-	if err != nil { apierror.BadRequest(w, "invalid tower id"); return }
+	if err != nil {
+		apierror.BadRequest(w, "invalid tower id")
+		return
+	}
 	items, err := h.service.GetTowerBackhaulStatus(r.Context(), towerID)
-	if err != nil { apierror.Internal(w); return }
+	if err != nil {
+		apierror.Internal(w)
+		return
+	}
 	writeHandlerJSON(w, http.StatusOK, map[string]any{"data": items, "count": len(items)})
 }
 
 func queryUUID(w http.ResponseWriter, r *http.Request, name string) (uuid.UUID, bool) {
-	v, err := uuid.Parse(r.URL.Query().Get(name)); if err != nil { apierror.BadRequest(w, "invalid "+name); return uuid.Nil, false }; return v, true
+	v, err := uuid.Parse(r.URL.Query().Get(name))
+	if err != nil {
+		apierror.BadRequest(w, "invalid "+name)
+		return uuid.Nil, false
+	}
+	return v, true
 }
-func queryInt(r *http.Request, name string, fallback int) int { if v, err := strconv.Atoi(r.URL.Query().Get(name)); err == nil && v >= 0 { return v }; return fallback }
-func queryTime(w http.ResponseWriter, r *http.Request, name string) (*time.Time, bool) { v := r.URL.Query().Get(name); if v == "" { return nil, true }; t, err := time.Parse(time.RFC3339, v); if err != nil { apierror.BadRequest(w, "invalid "+name); return nil, false }; return &t, true }
+func queryInt(r *http.Request, name string, fallback int) int {
+	if v, err := strconv.Atoi(r.URL.Query().Get(name)); err == nil && v >= 0 {
+		return v
+	}
+	return fallback
+}
+func queryTime(w http.ResponseWriter, r *http.Request, name string) (*time.Time, bool) {
+	v := r.URL.Query().Get(name)
+	if v == "" {
+		return nil, true
+	}
+	t, err := time.Parse(time.RFC3339, v)
+	if err != nil {
+		apierror.BadRequest(w, "invalid "+name)
+		return nil, false
+	}
+	return &t, true
+}
