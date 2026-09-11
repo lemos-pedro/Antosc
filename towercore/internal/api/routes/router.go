@@ -231,7 +231,7 @@ func NewRouter(
 
 	mux.Handle("GET /api/v1/towers/{tower_id}/work-orders", metrics.Instrument("/api/v1/towers/{tower_id}/work-orders", http.HandlerFunc(h.Lock.GetWorkOrders)))
 
-
+	mux.Handle("GET /api/v1/hizima/debug/stations", metrics.Instrument("/api/v1/hizima/debug/stations", http.HandlerFunc(h.Lock.GetAllStations)))
 	// ---------------------------------------------------------
 	// FINISH
 	// ---------------------------------------------------------
