@@ -6,33 +6,6 @@ import (
 	"towercore/internal/core/domain"
 )
 
-// Layout usado pelo CMS para timestamps em server-local-time.
-// Ex.: "2026-08-30 14:05:00". Não confundir com os campos *Utc,
-// que já vêm em RFC3339 e devem ser preferidos quando existirem.
-const cmsLocalLayout = "2006-01-02 15:04:05"
-
-func parseCMSLocalTime(s string) *time.Time {
-	if s == "" {
-		return nil
-	}
-	t, err := time.Parse(cmsLocalLayout, s)
-	if err != nil {
-		return nil // nunca fabricar valor — antes nil que um timestamp errado
-	}
-	return &t
-}
-
-func parseUTC(s string) (time.Time, bool) {
-	if s == "" {
-		return time.Time{}, false
-	}
-	t, err := time.Parse(time.RFC3339, s)
-	if err != nil {
-		return time.Time{}, false
-	}
-	return t, true
-}
-
 func mapOpenState(openState *int) domain.LockState {
 	if openState == nil {
 		return domain.LockStateUnknown
@@ -81,8 +54,7 @@ func mapWorkOrderStatus(status int) domain.WorkOrderStatus {
 
 // toDomainLock converte o DTO para o domínio. TowerID fica vazio aqui
 // de propósito — a resolução StationNo/CustomerSiteID -> tower_id é
-// responsabilidade da camada de serviço (core/services), não do adapter,
-// para manter o adapter livre de dependências do resto do schema.
+// responsabilidade da camada de serviço (core/services), não do adapter.
 func toDomainLock(d lockStatusDTO) domain.Lock {
 	return domain.Lock{
 		LockID:          d.LockID,
@@ -94,22 +66,25 @@ func toDomainLock(d lockStatusDTO) domain.Lock {
 		DeviceID:        d.DeviceID,
 		State:           mapOpenState(d.OpenState),
 		BatteryPercent:  d.Battery,
-		BatteryTime:     parseCMSLocalTime(d.BatteryTime),
-		LastOperTime:    parseCMSLocalTime(d.LastOperTime),
-		LastSyncTime:    parseCMSLocalTime(d.LastSyncTime),
+		BatteryTime:     d.BatteryTime.Time(),
+		LastOperTime:    d.LastOperTime.Time(),
+		LastSyncTime:    d.LastSyncTime.Time(),
 		FirmwareVersion: d.FirmwareVersion,
 		HardwareModel:   d.HardwareModel,
 	}
 }
 
 func toDomainLockEvent(d lockEventDTO) domain.LockEvent {
-	occurredAt, ok := parseUTC(d.OperTimeUtc)
-	if !ok {
-		// fallback: sem UTC parseável, usar local time se existir
-		if lt := parseCMSLocalTime(d.OperTime); lt != nil {
-			occurredAt = *lt
-		}
+	// Preferir OperTimeUtc; se vier nil, tentar OperTimeIso, depois OperTime.
+	var occurredAt time.Time
+	if t := d.OperTimeUtc.Time(); t != nil {
+		occurredAt = *t
+	} else if t := d.OperTimeIso.Time(); t != nil {
+		occurredAt = *t
+	} else if t := d.OperTime.Time(); t != nil {
+		occurredAt = *t
 	}
+
 	return domain.LockEvent{
 		LogID:            d.ID,
 		DeviceID:         d.DeviceID,
@@ -135,20 +110,20 @@ func toDomainWorkOrder(d workOrderDTO) domain.WorkOrder {
 		ApplicantName:    d.ApplicantName,
 		Status:           mapWorkOrderStatus(d.Status),
 	}
-	if t, ok := parseUTC(d.CreateTimeUtc); ok {
-		wo.CreatedAt = t
-	} else if lt := parseCMSLocalTime(d.CreateTime); lt != nil {
-		wo.CreatedAt = *lt
+	if t := d.CreateTimeUtc.Time(); t != nil {
+		wo.CreatedAt = *t
+	} else if t := d.CreateTime.Time(); t != nil {
+		wo.CreatedAt = *t
 	}
-	if d.ApproveTimeUtc != "" {
-		if t, ok := parseUTC(d.ApproveTimeUtc); ok {
-			wo.ApprovedAt = &t
-		}
+	if t := d.ApproveTimeUtc.Time(); t != nil {
+		wo.ApprovedAt = t
+	} else if t := d.ApproveTime.Time(); t != nil {
+		wo.ApprovedAt = t
 	}
-	if d.FinishTimeUtc != nil && *d.FinishTimeUtc != "" {
-		if t, ok := parseUTC(*d.FinishTimeUtc); ok {
-			wo.FinishedAt = &t
-		}
+	if t := d.FinishTimeUtc.Time(); t != nil {
+		wo.FinishedAt = t
+	} else if t := d.FinishTime.Time(); t != nil {
+		wo.FinishedAt = t
 	}
 	return wo
 }
