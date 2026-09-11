@@ -13,6 +13,7 @@ import (
 
 	"towercore/internal/adapters/eltek"
 	"towercore/internal/adapters/enetek"
+	"towercore/internal/adapters/hizima"
 	"towercore/internal/adapters/huawei"
 	"towercore/internal/adapters/nagios"
 	"towercore/internal/adapters/neteco"
@@ -140,6 +141,31 @@ func main() {
 		cfg.Auth.BootstrapRole,
 	); err != nil {
 		log.Fatalf("failed to ensure bootstrap user: %v", err)
+	}
+
+	// Hizima (ZMACS) — API read-only para estado de locks, eventos de
+	// acesso e work orders. Sem endpoint de controlo remoto (a app mobile
+	// do técnico é quem tranca/destranca via BLE local) — este client
+	// serve apenas consulta/auditoria, nunca comando. Enabled=false por
+	// default (HIZIMA_ENABLED) — reservado para uso futuro de scheduler;
+	// os handlers HTTP funcionam independentemente disso, pois chamam a
+	// API ao vivo a cada pedido.
+	hizimaClient := hizima.NewClient(hizima.Config{
+		Host:     cfg.Hizima.Host,
+		ClientID: cfg.Hizima.ClientID,
+		Security: cfg.Hizima.Security,
+		Username: cfg.Hizima.Username,
+		Password: cfg.Hizima.Password,
+	}, nil)
+
+	// resolveStationNo: mapeamento tower_id (UUID interno) -> sno (StationNo
+	// Hizima). Config estática via HIZIMA_STATION_MAP ("uuid1:sno1,uuid2:sno2")
+	// — sem tabela nova em base de dados. Migra-se para coluna/tabela própria
+	// só se crescer demasiado para caber em env var.
+	hizimaStationMap := parseStationMap(cfg.Hizima.StationMap)
+	resolveStationNo := func(towerID string) (string, bool) {
+		v, ok := hizimaStationMap[towerID]
+		return v, ok
 	}
 
 	// SNMP profiles
@@ -303,6 +329,10 @@ func main() {
 	operatorHandler := handlers.NewOperatorHandler(operatorSvc)
 	slaHandler := handlers.NewSLAHandler(slaSvc)
 
+	// Hizima (ZMACS) handler — expõe lock-status/lock-events/work-orders
+	// por torre ao dashboard. Read-only, sem persistência própria.
+	lockHandler := handlers.NewLockHandler(hizimaClient, resolveStationNo)
+
 	// Router
 	router := routes.NewRouter(cfg, log, metrics, routes.Handlers{
 		NetworkLinks:     networkLinksHandler,
@@ -324,6 +354,7 @@ func main() {
 		RadioKPI:         radioKPIHandler,
 		Backhaul:         backhaulHandler,
 		SiteEnvironment:  siteEnvironmentHandler,
+		Lock:             lockHandler,
 	})
 
 	server := &http.Server{
@@ -464,6 +495,30 @@ func splitConfigList(raw string) []string {
 		if value = strings.TrimSpace(value); value != "" {
 			out = append(out, value)
 		}
+	}
+	return out
+}
+
+// parseStationMap lê o formato "tower_id1:sno1,tower_id2:sno2" de
+// HIZIMA_STATION_MAP e devolve o mapa pronto a usar. Entradas malformadas
+// são ignoradas — nunca fabricar uma correspondência incerta.
+func parseStationMap(raw string) map[string]string {
+	out := make(map[string]string)
+	for _, pair := range strings.Split(raw, ",") {
+		pair = strings.TrimSpace(pair)
+		if pair == "" {
+			continue
+		}
+		parts := strings.SplitN(pair, ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		towerID := strings.TrimSpace(parts[0])
+		sno := strings.TrimSpace(parts[1])
+		if towerID == "" || sno == "" {
+			continue
+		}
+		out[towerID] = sno
 	}
 	return out
 }

@@ -36,6 +36,7 @@ type Config struct {
 	Comap           ComapConfig
 	NetEco          NetEco
 	Zabbix          ZabbixConfig
+	Hizima		    HizimaConfig
 }
 
 type CacheConfig struct {
@@ -146,6 +147,17 @@ type ZabbixConfig struct {
 	IntervalSeconds int
 }
 
+
+type HizimaConfig struct {
+	Enabled    bool   // HIZIMA_ENABLED — reservado para uso futuro (scheduler de alarmes)
+	Host       string // HIZIMA_HOST, ex: "https://antosc.hizima.com"
+	ClientID   string // HIZIMA_CLIENT_ID, ex: "anglobal"
+	Security   string // HIZIMA_SECURITY — segredo, nunca versionar
+	Username   string // HIZIMA_USERNAME
+	Password   string // HIZIMA_PASSWORD
+	StationMap string 
+}
+
 func Load() Config {
 	loadEnvFile()
 
@@ -235,6 +247,15 @@ func Load() Config {
 			HostSearch:      getEnv("ZABBIX_HOST_SEARCH", ""),
 			TimeoutSeconds:  getEnvInt("ZABBIX_TIMEOUT_SECONDS", 10),
 			IntervalSeconds: getEnvInt("ZABBIX_POLL_INTERVAL_SECONDS", 60),
+		},
+		Hizima: HizimaConfig{
+			Enabled:    getEnvBool("HIZIMA_ENABLED", false),
+			Host:       getEnv("HIZIMA_HOST", ""),
+			ClientID:   getEnv("HIZIMA_CLIENT_ID", ""),
+			Security:   getEnv("HIZIMA_SECURITY", ""),
+			Username:   getEnv("HIZIMA_USERNAME", ""),
+			Password:   getEnv("HIZIMA_PASSWORD", ""),
+			StationMap: getEnv("HIZIMA_STATION_MAP", ""),
 		},
 	}
 }

@@ -31,6 +31,7 @@ type Handlers struct {
 	RadioKPI         *handlers.RadioKPIHandler
 	Backhaul         *handlers.BackhaulInterfaceHandler
 	SiteEnvironment  *handlers.SiteEnvironmentHandler
+	Lock             *handlers.LockHandler
 }
 
 func NewRouter(
@@ -221,9 +222,19 @@ func NewRouter(
 	})))
 
 	// ---------------------------------------------------------
-	// FINAL MIDDLEWARE PIPELINE
+	// HIZIMA / LOCKS (ZMACS)
 	// ---------------------------------------------------------
 
+	mux.Handle("GET /api/v1/towers/{tower_id}/lock-status", metrics.Instrument("/api/v1/towers/{tower_id}/lock-status", http.HandlerFunc(h.Lock.GetStatus)))
+
+	mux.Handle("GET /api/v1/towers/{tower_id}/lock-events", metrics.Instrument("/api/v1/towers/{tower_id}/lock-events", http.HandlerFunc(h.Lock.GetEvents)))
+
+	mux.Handle("GET /api/v1/towers/{tower_id}/work-orders", metrics.Instrument("/api/v1/towers/{tower_id}/work-orders", http.HandlerFunc(h.Lock.GetWorkOrders)))
+
+
+	// ---------------------------------------------------------
+	// FINISH
+	// ---------------------------------------------------------
 	return middleware.Chain(
 		mux,
 		middleware.CORS([]string{
