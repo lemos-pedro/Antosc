@@ -1,9 +1,198 @@
-version: 3
-agent:
-  authtoken: "$YOUR_AUTHTOKEN"
-endpoints:
-  - name: your_endpoint_name
-    url: https://careless-deplored-lure.ngrok-free.dev
-    pooling_enabled: true
-    upstream:
-      url: 80
+-- Atualizacao de localizacoes (latitude/longitude), tipologia e IP retificador master
+-- Fonte: lista fornecida por Lemos (182 sites ANTOSC), 2026-09-14
+-- Match por towers.site_code
+-- ATENCAO: ZASOY001 nao tem latitude na fonte original - so longitude sera atualizada, latitude fica NULL.
+
+BEGIN;
+
+UPDATE towers SET latitude = -12.62289, longitude = 13.40245, site_typology = 'Greenfield', rectifier_ip_master = '192.168.113.5' WHERE site_code = 'BEBEN002';
+UPDATE towers SET latitude = -12.383707, longitude = 13.23537, site_typology = 'Greenfield', rectifier_ip_master = '192.168.112.5' WHERE site_code = 'BEBEN004';
+UPDATE towers SET latitude = -7.86063, longitude = 13.118185, site_typology = 'Greenfield', rectifier_ip_master = '192.168.211.101' WHERE site_code = 'BGAMB002';
+UPDATE towers SET latitude = -8.67985, longitude = 13.456875, site_typology = 'Greenfield', rectifier_ip_master = '192.168.194.5' WHERE site_code = 'BGDAN001';
+UPDATE towers SET latitude = -8.58035, longitude = 13.65125, site_typology = 'Greenfield', rectifier_ip_master = '192.168.203.165' WHERE site_code = 'BGDAN002';
+UPDATE towers SET latitude = -8.554932, longitude = 13.641045, site_typology = 'Greenfield', rectifier_ip_master = '192.168.200.33' WHERE site_code = 'BGDAN004';
+UPDATE towers SET latitude = -12.017969, longitude = 17.489269, site_typology = 'Greenfield', rectifier_ip_master = '192.168.201.197' WHERE site_code = 'BICAM001';
+UPDATE towers SET latitude = -12.509728, longitude = 17.324178, site_typology = 'Greenfield', rectifier_ip_master = '192.168.127.5' WHERE site_code = 'BIKUI001';
+UPDATE towers SET latitude = -12.436361, longitude = 16.917694, site_typology = 'Greenfield', rectifier_ip_master = '192.168.126.5' WHERE site_code = 'BIKUI002';
+UPDATE towers SET latitude = -12.42021, longitude = 16.95203, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.197' WHERE site_code = 'BIKUI003';
+UPDATE towers SET latitude = -12.45101, longitude = 16.93504, site_typology = 'Greenfield', rectifier_ip_master = '192.168.206.5' WHERE site_code = 'BIKUI004';
+UPDATE towers SET latitude = -12.42707, longitude = 16.92712, site_typology = 'Greenfield', rectifier_ip_master = '192.168.211.37' WHERE site_code = 'BIKUI005';
+UPDATE towers SET latitude = -17.07842, longitude = 15.71623, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.165' WHERE site_code = 'CUOND001';
+UPDATE towers SET latitude = -17.08097, longitude = 15.73475, site_typology = 'Greenfield', rectifier_ip_master = '192.168.208.165' WHERE site_code = 'CUOND002';
+UPDATE towers SET latitude = -12.18418, longitude = 15.83798, site_typology = 'Greenfield', rectifier_ip_master = '192.168.206.133' WHERE site_code = 'HBBAI001';
+UPDATE towers SET latitude = -12.74636, longitude = 15.756639, site_typology = 'Greenfield', rectifier_ip_master = '192.168.129.5' WHERE site_code = 'HBHUB001';
+UPDATE towers SET latitude = -8.9851, longitude = 13.408169, site_typology = 'Greenfield', rectifier_ip_master = '192.168.163.5' WHERE site_code = 'LDVIA016';
+UPDATE towers SET latitude = -12.762588, longitude = 15.706427, site_typology = 'Greenfield', rectifier_ip_master = '192.168.128.5' WHERE site_code = 'HBHUB002';
+UPDATE towers SET latitude = -12.81477, longitude = 15.64556, site_typology = 'Greenfield', rectifier_ip_master = '192.168.201.229' WHERE site_code = 'HBHUB004';
+UPDATE towers SET latitude = -8.962869, longitude = 13.316139, site_typology = 'Greenfield', rectifier_ip_master = '192.168.171.5' WHERE site_code = 'LDVIA003';
+UPDATE towers SET latitude = -12.799075, longitude = 15.762157, site_typology = 'Greenfield', rectifier_ip_master = '192.168.206.37' WHERE site_code = 'HBHUB005';
+UPDATE towers SET latitude = -12.755558, longitude = 15.768977, site_typology = 'Greenfield', rectifier_ip_master = '192.168.206.101' WHERE site_code = 'HBHUB006';
+UPDATE towers SET latitude = -12.770351, longitude = 15.730059, site_typology = 'Greenfield', rectifier_ip_master = '192.168.213.5' WHERE site_code = 'HBHUB009';
+UPDATE towers SET latitude = -8.989711, longitude = 13.325189, site_typology = 'Greenfield', rectifier_ip_master = '192.168.191.5' WHERE site_code = 'LDVIA004';
+UPDATE towers SET latitude = -8.980731, longitude = 13.364011, site_typology = 'Greenfield', rectifier_ip_master = '192.168.158.5' WHERE site_code = 'LDVIA007';
+UPDATE towers SET latitude = -14.910069, longitude = 13.549931, site_typology = 'Greenfield', rectifier_ip_master = '192.168.139.5' WHERE site_code = 'HLLUG001';
+UPDATE towers SET latitude = -14.93031, longitude = 13.55086, site_typology = 'Greenfield', rectifier_ip_master = '192.168.201.5' WHERE site_code = 'HLLUG002';
+UPDATE towers SET latitude = -14.90758, longitude = 13.5177, site_typology = 'Greenfield', rectifier_ip_master = '192.168.201.37' WHERE site_code = 'HLLUG003';
+UPDATE towers SET latitude = -8.902219, longitude = 13.113089, site_typology = 'Greenfield', rectifier_ip_master = '192.168.104.5' WHERE site_code = 'LDTAL011';
+UPDATE towers SET latitude = -8.997389, longitude = 13.241417, site_typology = 'Greenfield', rectifier_ip_master = '192.168.161.5' WHERE site_code = 'LDBEL006';
+UPDATE towers SET latitude = -14.95763, longitude = 13.48646, site_typology = 'Greenfield', rectifier_ip_master = '192.168.200.197' WHERE site_code = 'HLLUG004';
+UPDATE towers SET latitude = -14.92611, longitude = 13.50681, site_typology = 'Greenfield', rectifier_ip_master = '192.168.206.165' WHERE site_code = 'HLLUG005';
+UPDATE towers SET latitude = -8.983069, longitude = 13.103412, site_typology = 'Greenfield', rectifier_ip_master = '192.168.173.5' WHERE site_code = 'LDBEL001';
+UPDATE towers SET latitude = -8.998, longitude = 13.111614, site_typology = 'Greenfield', rectifier_ip_master = '192.168.174.5' WHERE site_code = 'LDBEL003';
+UPDATE towers SET latitude = -14.933246, longitude = 13.478981, site_typology = 'Greenfield', rectifier_ip_master = '192.168.210.229' WHERE site_code = 'HLLUG006';
+UPDATE towers SET latitude = -8.8977, longitude = 13.5133, site_typology = 'Greenfield', rectifier_ip_master = '192.168.177.5' WHERE site_code = 'LDCAC002';
+UPDATE towers SET latitude = -8.82729, longitude = 13.41788, site_typology = 'Greenfield', rectifier_ip_master = '192.168.211.197' WHERE site_code = 'IBCAL001';
+UPDATE towers SET latitude = -9.545083, longitude = 13.914767, site_typology = 'Greenfield', rectifier_ip_master = '192.168.210.5' WHERE site_code = 'IBQUI001';
+UPDATE towers SET latitude = -11.37505, longitude = 15.126739, site_typology = 'Greenfield', rectifier_ip_master = '192.168.120.5' WHERE site_code = 'KSCEL001';
+UPDATE towers SET latitude = -10.008239, longitude = 14.90245, site_typology = 'Greenfield', rectifier_ip_master = '192.168.179.5' WHERE site_code = 'KSLIB001';
+UPDATE towers SET latitude = -12.762603, longitude = 15.762603, site_typology = 'Greenfield', rectifier_ip_master = '192.168.207.5' WHERE site_code = 'KSQUI001';
+UPDATE towers SET latitude = -9.062519, longitude = 13.046831, site_typology = 'Greenfield', rectifier_ip_master = '192.168.180.5' WHERE site_code = 'LDBEL002';
+UPDATE towers SET latitude = -8.98585, longitude = 13.131139, site_typology = 'Greenfield', rectifier_ip_master = '192.168.203.69' WHERE site_code = 'LDBEL007';
+UPDATE towers SET latitude = -8.993389, longitude = 13.202642, site_typology = 'Greenfield', rectifier_ip_master = '192.168.149.5' WHERE site_code = 'LDBEL008';
+UPDATE towers SET latitude = -8.9959, longitude = 13.30144, site_typology = 'Greenfield', rectifier_ip_master = '192.168.205.165' WHERE site_code = 'LDBEL010';
+UPDATE towers SET latitude = -8.0234, longitude = 13.38059, site_typology = 'Greenfield', rectifier_ip_master = '192.168.200.5' WHERE site_code = 'BGAMB001';
+UPDATE towers SET latitude = -8.592189, longitude = 14.672978, site_typology = 'Greenfield', rectifier_ip_master = '192.168.135.5' WHERE site_code = 'BGDEM001';
+UPDATE towers SET latitude = -8.374519, longitude = 13.4801, site_typology = 'Greenfield', rectifier_ip_master = '192.168.132.5' WHERE site_code = 'BGDAN003';
+UPDATE towers SET latitude = -8.989327, longitude = 13.193485, site_typology = 'Greenfield', rectifier_ip_master = '192.168.207.101' WHERE site_code = 'LDBEL014';
+UPDATE towers SET latitude = -12.616828, longitude = 13.339153, site_typology = 'Greenfield', rectifier_ip_master = '192.168.145.5' WHERE site_code = 'BEBEN001';
+UPDATE towers SET latitude = -12.616589, longitude = 13.260931, site_typology = 'Greenfield', rectifier_ip_master = '192.168.114.5' WHERE site_code = 'BEBFA001';
+UPDATE towers SET latitude = -12.461, longitude = 14.119931, site_typology = 'Greenfield', rectifier_ip_master = '192.168.147.5' WHERE site_code = 'BEBOC001';
+UPDATE towers SET latitude = -12.462281, longitude = 13.738361, site_typology = 'Greenfield', rectifier_ip_master = '192.168.142.5' WHERE site_code = 'BECAT001';
+UPDATE towers SET latitude = -12.612056, longitude = 13.36975, site_typology = 'Greenfield', rectifier_ip_master = '192.168.111.5' WHERE site_code = 'BEBEN003';
+UPDATE towers SET latitude = -13.032361, longitude = 14.26755, site_typology = 'Greenfield', rectifier_ip_master = '192.168.118.5' WHERE site_code = 'BECUB002';
+UPDATE towers SET latitude = -12.479208, longitude = 13.514869, site_typology = 'Greenfield', rectifier_ip_master = '192.168.115.5' WHERE site_code = 'BECAT002';
+UPDATE towers SET latitude = -13.065694, longitude = 14.240803, site_typology = 'Greenfield', rectifier_ip_master = '192.168.119.5' WHERE site_code = 'BECUB001';
+UPDATE towers SET latitude = -12.545546, longitude = 13.476209, site_typology = 'Greenfield', rectifier_ip_master = '192.168.206.229' WHERE site_code = 'BEBEN006';
+UPDATE towers SET latitude = -12.37803, longitude = 13.596656, site_typology = 'Greenfield', rectifier_ip_master = '192.168.208.37' WHERE site_code = 'BELOB002';
+UPDATE towers SET latitude = -12.366274, longitude = 13.539979, site_typology = 'Greenfield', rectifier_ip_master = '192.168.211.229' WHERE site_code = 'BELOB003';
+UPDATE towers SET latitude = -8.797646, longitude = 13.384141, site_typology = 'Greenfield', rectifier_ip_master = '192.168.201.165' WHERE site_code = 'LDCAC001';
+UPDATE towers SET latitude = -8.77116, longitude = 13.29076, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.101' WHERE site_code = 'LDCAC006';
+UPDATE towers SET latitude = -11.492731, longitude = 16.720269, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.133' WHERE site_code = 'BIAND001';
+UPDATE towers SET latitude = -9.031553, longitude = 13.578108, site_typology = 'Greenfield', rectifier_ip_master = '192.168.176.5' WHERE site_code = 'LDICB001';
+UPDATE towers SET latitude = -8.873714, longitude = 13.297303, site_typology = 'Greenfield', rectifier_ip_master = '192.168.164.5' WHERE site_code = 'LDKIK005';
+UPDATE towers SET latitude = -8.91103, longitude = 13.21888, site_typology = 'Greenfield', rectifier_ip_master = '192.168.162.5' WHERE site_code = 'LDKIK006';
+UPDATE towers SET latitude = -8.860689, longitude = 13.29525, site_typology = 'Greenfield', rectifier_ip_master = '192.168.190.5' WHERE site_code = 'LDKIK007';
+UPDATE towers SET latitude = -5.556164, longitude = 12.192622, site_typology = 'Greenfield', rectifier_ip_master = '192.168.102.5' WHERE site_code = 'CACAB001';
+UPDATE towers SET latitude = -5.011725, longitude = 12.328283, site_typology = 'Greenfield', rectifier_ip_master = '192.168.189.5' WHERE site_code = 'CACAC002';
+UPDATE towers SET latitude = -5.56608, longitude = 12.26436, site_typology = 'Greenfield', rectifier_ip_master = '192.168.200.101' WHERE site_code = 'CACAB002';
+UPDATE towers SET latitude = -5.580896, longitude = 12.175971, site_typology = 'Greenfield', rectifier_ip_master = '192.168.210.197' WHERE site_code = 'CACAB004';
+UPDATE towers SET latitude = -5.603584, longitude = 12.171843, site_typology = 'Greenfield', rectifier_ip_master = '192.168.210.165' WHERE site_code = 'CACAB005';
+UPDATE towers SET latitude = -14.636947, longitude = 17.687644, site_typology = 'Greenfield', rectifier_ip_master = '192.168.182.5' WHERE site_code = 'KKMEN001';
+UPDATE towers SET latitude = -14.6471, longitude = 17.657869, site_typology = 'Greenfield', rectifier_ip_master = '192.168.185.5' WHERE site_code = 'KKMEN002';
+UPDATE towers SET latitude = -14.65739, longitude = 17.67704, site_typology = 'Greenfield', rectifier_ip_master = '192.168.204.37' WHERE site_code = 'KKMEN005';
+UPDATE towers SET latitude = -14.65967, longitude = 17.66112, site_typology = 'Greenfield', rectifier_ip_master = '192.168.203.229' WHERE site_code = 'KKMEN003';
+UPDATE towers SET latitude = -14.653794, longitude = 17.694536, site_typology = 'Greenfield', rectifier_ip_master = '192.168.204.5' WHERE site_code = 'KKMEN004';
+UPDATE towers SET latitude = -9.211811, longitude = 14.254881, site_typology = 'Greenfield', rectifier_ip_master = '192.168.198.5' WHERE site_code = 'KNROD001';
+UPDATE towers SET latitude = -9.146589, longitude = 14.460019, site_typology = 'Greenfield', rectifier_ip_master = '192.168.199.5' WHERE site_code = 'KNROD002';
+UPDATE towers SET latitude = -9.177069, longitude = 14.635761, site_typology = 'Greenfield', rectifier_ip_master = '192.168.188.5' WHERE site_code = 'KNROD003';
+UPDATE towers SET latitude = -9.249311, longitude = 14.762381, site_typology = 'Greenfield', rectifier_ip_master = '192.168.197.5' WHERE site_code = 'KNROD004';
+UPDATE towers SET latitude = -9.301931, longitude = 14.899789, site_typology = 'Greenfield', rectifier_ip_master = '192.168.204.133' WHERE site_code = 'KNCAZ001';
+UPDATE towers SET latitude = -9.35675, longitude = 14.79935, site_typology = 'Greenfield', rectifier_ip_master = '192.168.175.5' WHERE site_code = 'KNCAZ002';
+UPDATE towers SET latitude = -9.307361, longitude = 14.867981, site_typology = 'Greenfield', rectifier_ip_master = '192.168.152.5' WHERE site_code = 'KNCAZ003';
+UPDATE towers SET latitude = -9.331919, longitude = 14.908839, site_typology = 'Greenfield', rectifier_ip_master = '192.168.138.5' WHERE site_code = 'KNCAZ004';
+UPDATE towers SET latitude = -9.3057, longitude = 14.9308, site_typology = 'Greenfield', rectifier_ip_master = '192.168.204.229' WHERE site_code = 'KNCAZ005';
+UPDATE towers SET latitude = -9.67609, longitude = 14.38333, site_typology = 'Greenfield', rectifier_ip_master = '192.168.205.5' WHERE site_code = 'KNDON001';
+UPDATE towers SET latitude = -5.566086, longitude = 12.208661, site_typology = 'Greenfield', rectifier_ip_master = '192.168.210.133' WHERE site_code = 'CACAB006';
+UPDATE towers SET latitude = -8.872528, longitude = 13.290969, site_typology = 'Greenfield', rectifier_ip_master = '192.168.200.133' WHERE site_code = 'LDKIK008';
+UPDATE towers SET latitude = -11.18185, longitude = 13.84742, site_typology = 'Greenfield', rectifier_ip_master = '192.168.124.5' WHERE site_code = 'KSSUM001';
+UPDATE towers SET latitude = -8.889764, longitude = 13.26598, site_typology = 'Greenfield', rectifier_ip_master = '192.168.203.101' WHERE site_code = 'LDKIK009';
+UPDATE towers SET latitude = -10.845061, longitude = 14.679439, site_typology = 'Greenfield', rectifier_ip_master = '192.168.122.5' WHERE site_code = 'KSEBO001';
+UPDATE towers SET latitude = -11.263781, longitude = 13.883189, site_typology = 'Greenfield', rectifier_ip_master = '192.168.125.5' WHERE site_code = 'KSSUM002';
+UPDATE towers SET latitude = -11.349339, longitude = 15.089431, site_typology = 'Greenfield', rectifier_ip_master = '192.168.121.5' WHERE site_code = 'KSCEL002';
+UPDATE towers SET latitude = -10.812189, longitude = 14.489039, site_typology = 'Greenfield', rectifier_ip_master = '192.168.123.5' WHERE site_code = 'KSAMB001';
+UPDATE towers SET latitude = -8.915375, longitude = 13.231957, site_typology = 'Greenfield', rectifier_ip_master = '192.168.205.101' WHERE site_code = 'LDKIK010';
+UPDATE towers SET latitude = -11.186802, longitude = 13.923888, site_typology = 'Greenfield', rectifier_ip_master = '192.168.208.69' WHERE site_code = 'KSSUM004';
+UPDATE towers SET latitude = -16.524939, longitude = 16.327261, site_typology = 'Greenfield', rectifier_ip_master = '192.168.117.5' WHERE site_code = 'CUCHM001';
+UPDATE towers SET latitude = -8.865182, longitude = 13.252764, site_typology = 'Greenfield', rectifier_ip_master = '192.168.211.69' WHERE site_code = 'LDKIK011';
+UPDATE towers SET latitude = -17.06786, longitude = 15.74491, site_typology = 'Greenfield', rectifier_ip_master = '192.168.206.69' WHERE site_code = 'CUOND003';
+UPDATE towers SET latitude = -8.868848, longitude = 13.27027, site_typology = 'Greenfield', rectifier_ip_master = '192.168.212.37' WHERE site_code = 'LDKIK012';
+UPDATE towers SET latitude = -13.34724, longitude = 15.106791, site_typology = 'Greenfield', rectifier_ip_master = '192.168.140.5' WHERE site_code = 'HBHUB003';
+UPDATE towers SET latitude = -8.830519, longitude = 13.259889, site_typology = 'Greenfield', rectifier_ip_master = '192.168.178.5' WHERE site_code = 'LDLDA001';
+UPDATE towers SET latitude = -8.83569, longitude = 13.2713, site_typology = 'Greenfield', rectifier_ip_master = '192.168.209.69' WHERE site_code = 'LDLDA005';
+UPDATE towers SET latitude = -8.860519, longitude = 13.203622, site_typology = 'Greenfield', rectifier_ip_master = '192.168.133.5' WHERE site_code = 'LDLDA008';
+UPDATE towers SET latitude = -9.104000, longitude = 13.28648, site_typology = 'Greenfield', rectifier_ip_master = '162.168.213.101' WHERE site_code = 'LDPLN013';
+UPDATE towers SET latitude = -8.916121, longitude = 13.23855, site_typology = 'Greenfield', rectifier_ip_master = '192.168.209.37' WHERE site_code = 'LDTAL002';
+UPDATE towers SET latitude = -8.914419, longitude = 13.286131, site_typology = 'Greenfield', rectifier_ip_master = '192.168.159.5' WHERE site_code = 'LDTAL003';
+UPDATE towers SET latitude = -8.911519, longitude = 13.270461, site_typology = 'Greenfield', rectifier_ip_master = '192.168.160.5' WHERE site_code = 'LDTAL006';
+UPDATE towers SET latitude = -8.917041, longitude = 13.19944, site_typology = 'Greenfield', rectifier_ip_master = '192.168.108.5' WHERE site_code = 'LDTAL007';
+UPDATE towers SET latitude = -8.921281, longitude = 13.245758, site_typology = 'Greenfield', rectifier_ip_master = '192.168.165.5' WHERE site_code = 'LDTAL008';
+UPDATE towers SET latitude = -8.935844, longitude = 13.233858, site_typology = 'Greenfield', rectifier_ip_master = '192.168.110.5' WHERE site_code = 'LDTAL009';
+UPDATE towers SET latitude = -8.930069, longitude = 13.207619, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.69' WHERE site_code = 'LDTAL010';
+UPDATE towers SET latitude = -8.915862, longitude = 13.313055, site_typology = 'Greenfield', rectifier_ip_master = '192.168.192.5' WHERE site_code = 'LDVIA001';
+UPDATE towers SET latitude = -8.862361, longitude = 13.3241, site_typology = 'Greenfield', rectifier_ip_master = '192.168.170.5' WHERE site_code = 'LDVIA002';
+UPDATE towers SET latitude = -8.953194, longitude = 13.379383, site_typology = 'Greenfield', rectifier_ip_master = '192.168.169.5' WHERE site_code = 'LDVIA005';
+UPDATE towers SET latitude = -8.91855, longitude = 13.397169, site_typology = 'Greenfield', rectifier_ip_master = '192.168.172.5' WHERE site_code = 'LDVIA006';
+UPDATE towers SET latitude = -9.041573, longitude = 13.398547, site_typology = 'Greenfield', rectifier_ip_master = '192.168.168.5' WHERE site_code = 'LDVIA008';
+UPDATE towers SET latitude = -9.062313, longitude = 13.412504, site_typology = 'Greenfield', rectifier_ip_master = '192.168.166.5' WHERE site_code = 'LDVIA009';
+UPDATE towers SET latitude = -9.067035, longitude = 13.426815, site_typology = 'Greenfield', rectifier_ip_master = '192.168.167.5' WHERE site_code = 'LDVIA010';
+UPDATE towers SET latitude = -9.19465, longitude = 13.99894, site_typology = 'Greenfield', rectifier_ip_master = '192.168.204.69' WHERE site_code = 'LDPLN012';
+UPDATE towers SET latitude = -8.988961, longitude = 13.399719, site_typology = 'Rooftop', rectifier_ip_master = '192.168.187.5' WHERE site_code = 'LDVIA011';
+UPDATE towers SET latitude = -8.894590, longitude = 13.41685, site_typology = 'Greenfield', rectifier_ip_master = '192.168.107.5' WHERE site_code = 'LDVIA012';
+UPDATE towers SET latitude = -8.966939, longitude = 13.794311, site_typology = 'Greenfield', rectifier_ip_master = '192.168.148.5' WHERE site_code = 'LDICB002';
+UPDATE towers SET latitude = -8.992825, longitude = 13.157922, site_typology = 'Greenfield', rectifier_ip_master = '192.168.136.5' WHERE site_code = 'LDBEL009';
+UPDATE towers SET latitude = -9.040553, longitude = 13.282853, site_typology = 'Greenfield', rectifier_ip_master = '192.168.200.229' WHERE site_code = 'LDBEL011';
+UPDATE towers SET latitude = -14.62166, longitude = 17.66505, site_typology = 'Greenfield', rectifier_ip_master = '192.168.204.101' WHERE site_code = 'KKMEN006';
+UPDATE towers SET latitude = -8.856231, longitude = 13.358481, site_typology = 'Greenfield', rectifier_ip_master = '192.168.203.5' WHERE site_code = 'LDVIA015';
+UPDATE towers SET latitude = -8.9166211, longitude = 13.328667, site_typology = 'Greenfield', rectifier_ip_master = '192.168.201.133' WHERE site_code = 'LDVIA020';
+UPDATE towers SET latitude = -8.763939, longitude = 17.609519, site_typology = 'Greenfield', rectifier_ip_master = '192.168.134.5' WHERE site_code = 'LNXAM001';
+UPDATE towers SET latitude = -8.952511, longitude = 13.317719, site_typology = 'Greenfield', rectifier_ip_master = '192.168.205.133' WHERE site_code = 'LDVIA026';
+UPDATE towers SET latitude = -8.467156, longitude = 20.558672, site_typology = 'Greenfield', rectifier_ip_master = '192.168.205.69' WHERE site_code = 'LNLUC001';
+UPDATE towers SET latitude = -9.072013, longitude = 13.049586, site_typology = 'Greenfield', rectifier_ip_master = '192.168.207.69' WHERE site_code = 'LDBEL012';
+UPDATE towers SET latitude = -8.973369, longitude = 13.354153, site_typology = 'Greenfield', rectifier_ip_master = '192.168.109.5' WHERE site_code = 'LDVIA017';
+UPDATE towers SET latitude = -8.974894, longitude = 13.309143, site_typology = 'Greenfield', rectifier_ip_master = '192.168.205.197' WHERE site_code = 'LDVIA019';
+UPDATE towers SET latitude = -8.90635, longitude = 13.40345, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.37' WHERE site_code = 'LDVIA025';
+UPDATE towers SET latitude = -8.925410, longitude = 13.40777, site_typology = 'Greenfield', rectifier_ip_master = '192.168.203.197' WHERE site_code = 'LDVIA028';
+UPDATE towers SET latitude = -9.016732, longitude = 13.388254, site_typology = 'Greenfield', rectifier_ip_master = '192.168.207.37' WHERE site_code = 'LDVIA029';
+UPDATE towers SET latitude = -8.942520, longitude = 13.38865, site_typology = 'Greenfield', rectifier_ip_master = '192.168.209.101' WHERE site_code = 'LDVIA027';
+UPDATE towers SET latitude = -9.069645, longitude = 13.39966, site_typology = 'Greenfield', rectifier_ip_master = '192.168.208.133' WHERE site_code = 'LDVIA030';
+UPDATE towers SET latitude = -9.00113, longitude = 13.402916, site_typology = 'Greenfield', rectifier_ip_master = '192.168.208.229' WHERE site_code = 'LDVIA031';
+UPDATE towers SET latitude = -8.897493, longitude = 13.347075, site_typology = 'Greenfield', rectifier_ip_master = '192.168.208.197' WHERE site_code = 'LDVIA032';
+UPDATE towers SET latitude = -9.002184, longitude = 13.316986, site_typology = 'Greenfield', rectifier_ip_master = '192.168.209.133' WHERE site_code = 'LDVIA033';
+UPDATE towers SET latitude = -8.971051, longitude = 13.411452, site_typology = 'Greenfield', rectifier_ip_master = '192.168.212.69' WHERE site_code = 'IBCAL002';
+UPDATE towers SET latitude = -8.975202, longitude = 13.37566, site_typology = 'Greenfield', rectifier_ip_master = '192.168.210.101' WHERE site_code = 'LDVIA036';
+UPDATE towers SET latitude = -9.138068, longitude = 18.053757, site_typology = 'Greenfield', rectifier_ip_master = '192.168.208.5' WHERE site_code = 'LNCUG001';
+UPDATE towers SET latitude = -7.415081, longitude = 20.785556, site_typology = 'Rooftop', rectifier_ip_master = '192.168.181.5' WHERE site_code = 'LNDUN001';
+UPDATE towers SET latitude = -9.282495, longitude = 18.244628, site_typology = 'Greenfield', rectifier_ip_master = '192.168.207.165' WHERE site_code = 'LNXAM003';
+UPDATE towers SET latitude = -8.059311, longitude = 19.063989, site_typology = 'Greenfield', rectifier_ip_master = '192.168.141.5' WHERE site_code = 'LNCAG001';
+UPDATE towers SET latitude = -7.432111, longitude = 20.516239, site_typology = 'Greenfield', rectifier_ip_master = '192.168.200.69' WHERE site_code = 'LNLOV001';
+UPDATE towers SET latitude = -8.622894, longitude = 17.6270836, site_typology = 'Greenfield', rectifier_ip_master = '192.168.143.5' WHERE site_code = 'LNXAM002';
+UPDATE towers SET latitude = -7.429192, longitude = 20.803554, site_typology = 'Greenfield', rectifier_ip_master = '192.168.207.133' WHERE site_code = 'LNDUN002';
+UPDATE towers SET latitude = -9.61121, longitude = 20.41933, site_typology = 'Greenfield', rectifier_ip_master = '192.168.205.37' WHERE site_code = 'LSSAU001';
+UPDATE towers SET latitude = -9.433808, longitude = 15.735885, site_typology = 'Greenfield', rectifier_ip_master = '192.168.207.229' WHERE site_code = 'MACAC001';
+UPDATE towers SET latitude = -10.587919, longitude = 21.9689, site_typology = 'Greenfield', rectifier_ip_master = '192.168.130.5' WHERE site_code = 'LSMUD001';
+UPDATE towers SET latitude = -9.906161, longitude = 21.215211, site_typology = 'Greenfield', rectifier_ip_master = '192.168.131.5' WHERE site_code = 'LSMUD002';
+UPDATE towers SET latitude = -8.966947, longitude = 13.404347, site_typology = 'Greenfield', rectifier_ip_master = '192.168.210.69' WHERE site_code = 'LDVIA034';
+UPDATE towers SET latitude = -9.547157, longitude = 16.389442, site_typology = 'Greenfield', rectifier_ip_master = '192.168.212.165' WHERE site_code = 'MAMAJ003';
+UPDATE towers SET latitude = -9.50507, longitude = 16.34305, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.37' WHERE site_code = 'MAMAJ001';
+UPDATE towers SET latitude = -11.741844, longitude = 19.977864, site_typology = 'Greenfield', rectifier_ip_master = '192.168.208.101' WHERE site_code = 'MOLUA005';
+UPDATE towers SET latitude = -15.232619, longitude = 12.148461, site_typology = 'Greenfield', rectifier_ip_master = '192.168.186.5' WHERE site_code = 'NAMOÇ001';
+UPDATE towers SET latitude = -9.578672, longitude = 16.37741, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.229' WHERE site_code = 'MAMAJ002';
+UPDATE towers SET latitude = -10.693539, longitude = 22.234889, site_typology = 'Greenfield', rectifier_ip_master = '192.168.184.5' WHERE site_code = 'MOLUA001';
+UPDATE towers SET latitude = -11.516781, longitude = 23.021769, site_typology = 'Greenfield', rectifier_ip_master = '192.168.144.5' WHERE site_code = 'MOAZB001';
+UPDATE towers SET latitude = -11.79622, longitude = 19.86249, site_typology = 'Greenfield', rectifier_ip_master = '192.168.209.229' WHERE site_code = 'MOLUA003';
+UPDATE towers SET latitude = -15.22543, longitude = 12.19061, site_typology = 'Greenfield', rectifier_ip_master = '192.168.201.69' WHERE site_code = 'NAMOÇ002';
+UPDATE towers SET latitude = -15.23052, longitude = 12.13052, site_typology = 'Greenfield', rectifier_ip_master = '192.168.201.101' WHERE site_code = 'NAMOÇ003';
+UPDATE towers SET latitude = -15.21439, longitude = 12.14141, site_typology = 'Greenfield', rectifier_ip_master = '192.168.206.197' WHERE site_code = 'NAMOÇ004';
+UPDATE towers SET latitude = -15.2245, longitude = 12.083181, site_typology = 'Greenfield', rectifier_ip_master = '192.168.183.5' WHERE site_code = 'NAPRA001';
+UPDATE towers SET latitude = -5.8860472, longitude = 15.0027083, site_typology = 'Greenfield', rectifier_ip_master = '192.168.156.5' WHERE site_code = 'UIMAZ001';
+UPDATE towers SET latitude = -11.816502, longitude = 19.901178, site_typology = 'Greenfield', rectifier_ip_master = '192.168.207.197' WHERE site_code = 'MOLUA002';
+UPDATE towers SET latitude = -7.637849, longitude = 15.013052, site_typology = 'Greenfield', rectifier_ip_master = '192.168.209.5' WHERE site_code = 'UISZP001';
+UPDATE towers SET latitude = -7.624061, longitude = 15.073436, site_typology = 'Greenfield', rectifier_ip_master = '192.168.155.5' WHERE site_code = 'UIUIG001';
+UPDATE towers SET latitude = -7.602586, longitude = 15.007072, site_typology = 'Greenfield', rectifier_ip_master = '192.168.154.5' WHERE site_code = 'UIUIG002';
+UPDATE towers SET latitude = -6.901326, longitude = 15.316256, site_typology = 'Greenfield', rectifier_ip_master = '192.168.150.5' WHERE site_code = 'UIDAM001';
+UPDATE towers SET latitude = -8.288811, longitude = 14.80525, site_typology = 'Greenfield', rectifier_ip_master = '192.168.151.5' WHERE site_code = 'UIQUI001';
+UPDATE towers SET latitude = -11.780205, longitude = 19.887776, site_typology = 'Greenfield', rectifier_ip_master = '192.168.209.197' WHERE site_code = 'MOLUA004';
+UPDATE towers SET latitude = -7.5692, longitude = 15.02309, site_typology = 'Greenfield', rectifier_ip_master = '192.168.157.5' WHERE site_code = 'UIUIG003';
+UPDATE towers SET latitude = -7.64126, longitude = 15.0567, site_typology = 'Greenfield', rectifier_ip_master = '192.168.153.5' WHERE site_code = 'UIUIG004';
+UPDATE towers SET latitude = -6.248469, longitude = 14.238139, site_typology = 'Greenfield', rectifier_ip_master = '192.168.196.5' WHERE site_code = 'ZAMBC001';
+UPDATE towers SET latitude = -6.224761, longitude = 14.22832, site_typology = 'Greenfield', rectifier_ip_master = '192.168.193.5' WHERE site_code = 'ZAMBC002';
+UPDATE towers SET latitude = -7.230311, longitude = 12.883519, site_typology = 'Greenfield', rectifier_ip_master = '192.168.195.5' WHERE site_code = 'ZANZE001';
+UPDATE towers SET latitude = NULL, longitude = 12.38732, site_typology = 'Greenfield', rectifier_ip_master = '192.168.202.5' WHERE site_code = 'ZASOY001';
+
+COMMIT;
+
+-- Verificacao pos-update: sites da lista que nao existem em towers (site_code sem match)
+-- Corra isto separadamente para confirmar cobertura total antes de dar como concluido.
+-- SELECT unnest(ARRAY[...]) AS site_code_lista
+-- EXCEPT
+-- SELECT site_code FROM towers WHERE site_code IS NOT NULL;

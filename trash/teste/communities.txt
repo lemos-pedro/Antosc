@@ -1,6 +1,0 @@
-# Lista de comunidades SNMP v2c candidatas a testar
-# Uma por linha. Adiciona aqui qualquer comunidade conhecida/suspeita
-# (ex.: convencoes usadas pelo GETIC, defaults de fabrica dos vendors, etc.)
-
-public
-private

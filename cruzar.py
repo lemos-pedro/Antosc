@@ -80,5 +80,3 @@ for status, count in Counter(r["status"] for r in rows).most_common():
 print(f"\nTotal pares gerados: {len(pairs)}")
 
 
-pip install pandas openpyxl --break-system-packages
-python3 cruzar.py

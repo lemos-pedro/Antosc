@@ -22,75 +22,103 @@ func NewLockHandler(client *hizima.Client, resolveStationNo func(towerID string)
 	return &LockHandler{Client: client, ResolveStationNo: resolveStationNo}
 }
 
-
 // GetStatus atende GET /api/v1/towers/{tower_id}/lock-status
+//
+// NOTA: não usamos o filtro "sno" server-side da Hizima — o campo bruto
+// stationNo vem inconsistente entre sites (com/sem espaço, com/sem sufixo
+// " - NomeDoSite"). Em vez disso pedimos uma página grande sem filtro e
+// filtramos aqui pelo stationName, que é sempre o código limpo (ex: LDTAL008).
 func (h *LockHandler) GetStatus(w http.ResponseWriter, r *http.Request) {
 	towerID := r.PathValue("tower_id")
-	stationNo, ok := h.ResolveStationNo(towerID)
+	stationCode, ok := h.ResolveStationNo(towerID)
 	if !ok {
 		apierror.Write(w, http.StatusNotFound, "resource_not_found", "tower has no associated Hizima station")
 		return
 	}
 
 	result, err := h.Client.GetLockStatus(r.Context(),
-		interfaces.LockStatusFilter{StationNo: stationNo},
-		interfaces.PageRequest{Current: 1, Size: 20},
+		interfaces.LockStatusFilter{}, // sem filtro server-side
+		interfaces.PageRequest{Current: 1, Size: 200},
 	)
 	if err != nil {
 		apierror.Write(w, http.StatusBadGateway, "internal_error", "failed to fetch lock status from Hizima")
 		return
 	}
 
+	matched := make([]any, 0)
+	for _, lock := range result.Records {
+		if lock.StationName == stationCode {
+			matched = append(matched, lock)
+		}
+	}
+
 	writeJSON(w, http.StatusOK, map[string]any{
-		"data": result.Records,
-		"meta": map[string]int{"total": result.Total, "current": result.Current, "size": result.Size},
+		"data": matched,
+		"meta": map[string]int{"total": len(matched)},
 	})
 }
 
 // GetEvents atende GET /api/v1/towers/{tower_id}/lock-events
+// Mesma nota do GetStatus: filtramos por StationName no nosso lado.
 func (h *LockHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	towerID := r.PathValue("tower_id")
-	stationNo, ok := h.ResolveStationNo(towerID)
+	stationCode, ok := h.ResolveStationNo(towerID)
 	if !ok {
 		apierror.Write(w, http.StatusNotFound, "resource_not_found", "tower has no associated Hizima station")
 		return
 	}
 
 	result, err := h.Client.GetLockEvents(r.Context(),
-		interfaces.LockEventFilter{StationNo: stationNo},
-		interfaces.PageRequest{Current: 1, Size: 50},
+		interfaces.LockEventFilter{},
+		interfaces.PageRequest{Current: 1, Size: 200},
 	)
 	if err != nil {
 		apierror.Write(w, http.StatusBadGateway, "internal_error", "failed to fetch lock events from Hizima")
 		return
 	}
 
+	matched := make([]any, 0)
+	for _, ev := range result.Records {
+		if ev.StationName == stationCode {
+			matched = append(matched, ev)
+		}
+	}
+
 	writeJSON(w, http.StatusOK, map[string]any{
-		"data": result.Records,
-		"meta": map[string]int{"total": result.Total, "current": result.Current, "size": result.Size},
+		"data": matched,
+		"meta": map[string]int{"total": len(matched)},
 	})
 }
 
 // GetWorkOrders atende GET /api/v1/towers/{tower_id}/work-orders
+// Mesma nota do GetStatus: filtramos por SiteName no nosso lado, já que
+// o campo bruto SiteNo tem o mesmo problema de inconsistência de formato.
 func (h *LockHandler) GetWorkOrders(w http.ResponseWriter, r *http.Request) {
 	towerID := r.PathValue("tower_id")
-	stationNo, ok := h.ResolveStationNo(towerID)
+	stationCode, ok := h.ResolveStationNo(towerID)
 	if !ok {
 		apierror.Write(w, http.StatusNotFound, "resource_not_found", "tower has no associated Hizima station")
 		return
 	}
 
 	result, err := h.Client.GetWorkOrders(r.Context(),
-		interfaces.WorkOrderFilter{StationName: stationNo},
-		interfaces.PageRequest{Current: 1, Size: 20},
+		interfaces.WorkOrderFilter{},
+		interfaces.PageRequest{Current: 1, Size: 200},
 	)
 	if err != nil {
 		apierror.Write(w, http.StatusBadGateway, "internal_error", "failed to fetch work orders from Hizima")
 		return
 	}
 
+	matched := make([]any, 0)
+	for _, wo := range result.Records {
+		if wo.SiteName == stationCode {
+			matched = append(matched, wo)
+		}
+	}
+
 	writeJSON(w, http.StatusOK, map[string]any{
-		"data": result.Records,
-		"meta": map[string]int{"total": result.Total, "current": result.Current, "size": result.Size},
+		"data": matched,
+		"meta": map[string]int{"total": len(matched)},
 	})
 }
