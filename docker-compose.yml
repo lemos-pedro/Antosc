@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:18-alpine
     environment:
-      POSTGRES_DB: antosc
+      POSTGRES_DB: towercore
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: Towercore:2026@antosc.co.ao
     ports:
       - "5432:5432"
     volumes:
@@ -24,9 +24,9 @@ services:
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: antosc
+      DB_NAME: towercore
       DB_USER: postgres
-      DB_PASSWORD: postgres
+      DB_PASSWORD: Towercore:2026@antosc.co.ao
       DB_SSL_MODE: disable
     ports:
       - "8000:8000"
